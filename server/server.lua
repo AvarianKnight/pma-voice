@@ -30,7 +30,7 @@ end)
 
 function removePlayerFromRadio(source, currentChannel)
     radioData[currentChannel] = radioData[currentChannel] or {}
-    for player, _ in ipairs(radioData[currentChannel]) do
+    for player, _ in pairs(radioData[currentChannel]) do
         TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source)
     end
     radioData[currentChannel][source] = nil
@@ -41,7 +41,7 @@ function addPlayerToRadio(source, channel)
     -- check if the channel exists, if it does set the varaible to it
     -- if not create it (basically if not radiodata make radiodata)
     radioData[channel] = radioData[channel] or {}
-    for player, _ in ipairs(radioData[channel]) do
+    for player, _ in pairs(radioData[channel]) do
         TriggerClientEvent('pma-voice:addPlayerToRadio', player, source)
     end
     voiceData[source].radio = channel
@@ -76,7 +76,7 @@ AddEventHandler('pma-voice:setTalkingOnRadio', function(talking)
     local plyVoice = voiceData[source]
     local radioTbl = radioData[plyVoice.radio]
     if radioTbl then
-        for player, _ in ipairs(radioTbl) do
+        for player, _ in pairs(radioTbl) do
             TriggerClientEvent('pma-voice:setTalkingOnRadio', player, source, talking)
         end
     end
@@ -84,7 +84,7 @@ end)
 
 function removePlayerFromCall(source, currentChannel)
     callData[currentChannel] = callData[currentChannel] or {}
-    for player, _ in ipairs(callData[currentChannel]) do
+    for player, _ in pairs(callData[currentChannel]) do
         TriggerClientEvent('pma-voice:removePlayerFromCall', player, source)
     end
     callData[currentChannel][source] = nil
