@@ -24,6 +24,17 @@ AddEventHandler('pma-voice:addPlayerToCall', function(plySource)
     playerTargets(radioData, callData)
 end)
 
+RegisterNetEvent('pma-voice:removePlayerFromCall')
+AddEventHandler('pma-voice:removePlayerFromCall', function(plySource)
+    if plySource == playerServerId then 
+        callData = {}
+        playerTargets(radioData, callData)
+    else
+        callData[plySource] = nil
+        playerTargets(radioData, callData)
+    end
+end)
+
 function setCallChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerCall', channel)
     voiceData.call = channel
