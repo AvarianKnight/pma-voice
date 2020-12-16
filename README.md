@@ -12,7 +12,7 @@ A voice system designed around the use if FiveM's interal mumble voip server.
 | Export              | Description               | Parameter(s) |
 |---------------------|---------------------------|--------------|
 | setVoiceProperty    | Set config options        | string       |
-| setRadioChannel      | Set radio channel         | int          |
+| setRadioChannel     | Set radio channel         | int          |
 | setCallChannel      | Set call channel          | int          |
 
 Supported from mumble-voip
@@ -32,6 +32,7 @@ Supported from mumble-voip
 |----------------------|--------------------------------------|--------------|
 | setPlayerRadio       | Sets the players radio channel       | int, int     |
 | setPlayerCall        | Sets the players call channel        | int, int     |
+| updateRoutingBucket  | Updates the players routing bucket   | int          |
 
 ### Credits
 
