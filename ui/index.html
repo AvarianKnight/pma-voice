@@ -1,8 +1,19 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>pma-voip</title>
-	</head>
+        <title>pma-voip</title>
+    </head>
+    <script type="text/javascript">
+        window.addEventListener("message", function(event) {
+            var item = event.data;
+            if (item.sound) {
+                let click = document.getElementById(item.sound);
+                click.load();
+                click.volume = item.volume;
+                click.play();
+            }
+        });
+    </script>
 	<body>
 		<audio id="audio_on" src="mic_click_on.ogg"></audio>
 		<audio id="audio_off" src="mic_click_off.ogg"></audio>

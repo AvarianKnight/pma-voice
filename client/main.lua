@@ -21,38 +21,16 @@ local zoneOffzet = Cfg.zoneOffset
 local intialized = false
 local voiceTarget = 1
 
-AddEventHandler('onClientResourceStart', function(resource)
-    if resource ~= GetCurrentResourceName() then return end
-    
-    while not NetworkIsSessionStarted() do
-        Citizen.Wait(10)
-    end
-
-    TriggerServerEvent('pma-voice:registerVoiceInfo')
-
-    NetworkSetTalkerProximity(3.0)
-
-    if Cfg.useExternalServer then
-		MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
-    end
-    
-    while not MumbleIsConnected() do
-        Citizen.Wait(250)
-        print('[pma-voice] Can\'t connect to external server.')
-    end
-
-    MumbleSetVoiceTarget(0)
-    MumbleClearVoiceTarget(voiceTarget)
-    MumbleSetVoiceTarget(voiceTarget)
-
-    updateZone()
-
-    intialized = true
-end)
-
 RegisterNetEvent('pma-voice:updateRoutingBucket')
 AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
     voiceData.routingBucket = routingBucket
+end)
+
+RegisterCommand('vol', function(source, args)
+    local vol = tonumber(args[1])
+    if vol then
+        volume = vol / 100
+    end
 end)
 
 function toggleVoice(tgtId, enabled)
@@ -128,4 +106,34 @@ Citizen.CreateThread(function()
         updateZone()
         Citizen.Wait(0)
     end
+end)
+
+
+AddEventHandler('onClientResourceStart', function(resource)
+    if resource ~= GetCurrentResourceName() then return end
+    
+    while not NetworkIsSessionStarted() do
+        Citizen.Wait(10)
+    end
+
+    TriggerServerEvent('pma-voice:registerVoiceInfo')
+
+    NetworkSetTalkerProximity(3.0)
+
+    if Cfg.useExternalServer then
+		MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
+    end
+    
+    while not MumbleIsConnected() do
+        Citizen.Wait(250)
+        print('[pma-voice] Can\'t connect to external server.')
+    end
+
+    MumbleSetVoiceTarget(0)
+    MumbleClearVoiceTarget(voiceTarget)
+    MumbleSetVoiceTarget(voiceTarget)
+
+    updateZone()
+
+    intialized = true
 end)

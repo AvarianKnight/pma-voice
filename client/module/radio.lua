@@ -4,9 +4,9 @@ AddEventHandler('pma-voice:syncRadioData', function(radioTable)
     for tgt, enabled in pairs(radioTable) do
         if tgt ~= playerServerId then
             toggleVoice(tgt, enabled)
-            playerTargets(radioData, callData)
         end
     end
+    playerTargets(radioData, callData)
 end)
 
 RegisterNetEvent('pma-voice:setTalkingOnRadio')
@@ -28,10 +28,16 @@ end)
 RegisterNetEvent('pma-voice:removePlayerFromRadio')
 AddEventHandler('pma-voice:removePlayerFromRadio', function(plySource)
     if plySource == playerServerId then 
+        for tgt, enabled in pairs(radioTable) do
+            if tgt ~= playerServerId then
+                toggleVoice(tgt, false)
+            end
+        end
         radioData = {}
         playerTargets(radioData, callData)
     else
         radioData[plySource] = nil
+        toggleVoice(plySource, false)
         playerTargets(radioData, callData)
     end
 end)

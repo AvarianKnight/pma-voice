@@ -27,11 +27,17 @@ end)
 RegisterNetEvent('pma-voice:removePlayerFromCall')
 AddEventHandler('pma-voice:removePlayerFromCall', function(plySource)
     if plySource == playerServerId then 
+        for tgt, enabled in pairs(callData) do
+            if tgt ~= playerServerId then
+                toggleVoice(tgt, false)
+            end
+        end
         callData = {}
         playerTargets(radioData, callData)
     else
         callData[plySource] = nil
         playerTargets(radioData, callData)
+        toggleVoice(plySource, false)
     end
 end)
 
