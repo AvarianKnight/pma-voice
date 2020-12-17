@@ -5,6 +5,10 @@ function removePlayerFromRadio(source, currentChannel)
     end
     radioData[currentChannel][source] = nil
     voiceData[source].radio = 0
+
+    if #radioData[currentChannel] == 0 then
+        radioData[currentChannel] = nil
+    end
 end
 
 function addPlayerToRadio(source, channel)

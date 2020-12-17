@@ -5,17 +5,20 @@ function removePlayerFromCall(source, currentChannel)
     end
     callData[currentChannel][source] = nil
     voiceData[source].call = 0
+    if #callData[currentChannel] == 0 then
+        callData[currentChannel] = nil
+    end
 end
 
 function addPlayerToCall(source, channel)
     -- check if the channel exists, if it does set the varaible to it
     -- if not create it (basically if not callData make callData)
     callData[channel] = callData[channel] or {}
-    callData[channel][source] = false
-    voiceData[source].call = channel
     for player, _ in pairs(callData[channel]) do
         TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
     end
+    callData[channel][source] = false
+    voiceData[source].call = channel
     TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
 end
 
@@ -41,6 +44,7 @@ end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall')
 AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
+    local source = source
     local plyVoice = voiceData[source]
     local callTbl = callData[plyVoice.call]
     if callTbl then
