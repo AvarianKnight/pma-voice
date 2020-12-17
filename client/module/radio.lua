@@ -27,8 +27,8 @@ end)
 
 RegisterNetEvent('pma-voice:removePlayerFromRadio')
 AddEventHandler('pma-voice:removePlayerFromRadio', function(plySource)
-    if plySource == playerServerId then 
-        for tgt, enabled in pairs(radioTable) do
+    if plySource == playerServerId then
+        for tgt, enabled in pairs(radioData) do
             if tgt ~= playerServerId then
                 toggleVoice(tgt, false)
             end
