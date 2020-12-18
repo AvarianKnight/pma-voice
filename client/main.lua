@@ -82,19 +82,22 @@ local function getGridZone()
     local offset = zoneOffzet
     -- just increase offset so players can't be in the same zone (so they can't hear eachother)
     if Cfg.enableRouteSupport then
-        offset = zoneOffzet + voiceData.routingBucket
+        offset = zoneOffzet + (voiceData.routingBucket * 2)
     end
     local grid = offset + math.ceil((plyPos.x + plyPos.y) / (zoneRadius * 2))
     return grid
 end
 
+local hasDisconnected = false
+
 local function updateZone()
     local newGrid = getGridZone()
-    if newGrid ~= currentGrid then
+    if newGrid ~= currentGrid or hasDisconnected then
         currentGrid = newGrid
         MumbleClearVoiceTargetChannels(voiceTarget)
         NetworkSetVoiceChannel(currentGrid)
         MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
+        hasDisconnected = false
     end
 end
 
@@ -103,9 +106,27 @@ Citizen.CreateThread(function()
         Citizen.Wait(100)
     end
     while true do
-        updateZone()
+        if MumbleIsConnected() then
+            updateZone()
+        else
+            hasDisconnected = true
+            Citizen.Wait(100)
+        end
         Citizen.Wait(0)
     end
+end)
+
+RegisterCommand('vsync', function()
+    currentGrid = getGridZone()
+    if Cfg.useExternalServer then
+        MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
+        while not MumbleIsConnected() do
+            Citizen.Wait(250)
+        end
+    end
+    MumbleClearVoiceTargetChannels(voiceTarget)
+    NetworkSetVoiceChannel(currentGrid)
+    MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
 end)
 
 
@@ -126,7 +147,6 @@ AddEventHandler('onClientResourceStart', function(resource)
     
     while not MumbleIsConnected() do
         Citizen.Wait(250)
-        print('[pma-voice] Can\'t connect to external server.')
     end
 
     MumbleSetVoiceTarget(0)

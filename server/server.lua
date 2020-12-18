@@ -16,9 +16,9 @@ AddEventHandler("onResourceStart", function(resName)
 end)
 
 Citizen.CreateThread(function()
-    local maxChannel = Cfg.zoneOffset + math.ceil((4500.0 + 8022.00) / (Cfg.zoneRadius * 2))
+    local maxChannel = Cfg.zoneOffset + math.ceil((4500.0 + 8022.00) / (Cfg.zoneRadius * 2)) + 10 -- coat 10 channels just to be safe
     if Cfg.enableRouteSupport then
-        maxChannel = maxChannel + 100
+        maxChannel = maxChannel + 128
     end
 
     print('[pma-voice] Creating ' .. maxChannel .. ' channels in mumble')
