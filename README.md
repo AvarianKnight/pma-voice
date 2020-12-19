@@ -1,7 +1,7 @@
 # pma-voice
 A voice system designed around the use if FiveM's interal mumble voip server.
 
-## NOTE: If you have any please make an 'issue', DO NOT MESSAGE ME FOR SUPPORT.
+## NOTE: If you have any issues please make an [Issue](https://github.com/AvarianKnight/pma-voice/issues), DO NOT MESSAGE ME FOR SUPPORT.
 
 ### Exports
 
