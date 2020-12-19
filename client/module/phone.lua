@@ -26,7 +26,7 @@ end)
 
 RegisterNetEvent('pma-voice:removePlayerFromCall')
 AddEventHandler('pma-voice:removePlayerFromCall', function(plySource)
-    if plySource == playerServerId then 
+    if plySource == playerServerId then
         for tgt, enabled in pairs(callData) do
             if tgt ~= playerServerId then
                 toggleVoice(tgt, false)
@@ -43,12 +43,13 @@ end)
 
 function setCallChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerCall', channel)
-	voiceData.call = channel
-	SendNUIMessage({
-        callInfo = channel,
+    voiceData.call = channel
+    SendNUIMessage({
+        callInfo = channel
     })
     Citizen.CreateThread(function()
         while voiceData.call ~= 0 do
+            -- check if they're pressing voice keybinds
             if IsControlJustPressed(0, 249) or IsControlJustPressed(1, 249) or IsControlJustPressed(2, 249) then
                 TriggerServerEvent('pma-voice:setTalkingOnCall', true)
             elseif IsControlJustReleased(0, 249) or IsControlJustReleased(1, 249) or IsControlJustReleased(2, 249) then

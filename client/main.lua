@@ -17,6 +17,7 @@ callData = {}
 local currentGrid = 0
 local volume = 0.3
 local zoneRadius = Cfg.zoneRadius -- faster to access than a table
+
 local zoneOffzet = Cfg.zoneOffset
 local intialized = false
 local voiceTarget = 1
@@ -38,38 +39,42 @@ function toggleVoice(tgtId, enabled)
 end
 
 function playerTargets(...)
-    local targets = { ... }
+    local targets = {...}
 
     MumbleClearVoiceTargetPlayers(voiceTarget)
 
-	for i = 1, #targets do
-		for id, _ in pairs(targets[i]) do
+    for i = 1, #targets do
+        for id, _ in pairs(targets[i]) do
             MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
-		end
-	end
+        end
+    end
 end
 
 function playMicClicks(channel, value)
-	if channel <= Cfg.radioClickMaxChannel then
+    if channel <= Cfg.radioClickMaxChannel then
         if Cfg.micClicks then
-            SendNUIMessage({ sound = (value and "audio_on" or "audio_off"), volume = (value and (volume) or 0.05) })
-		end
-	end
+            SendNUIMessage({
+                sound = (value and "audio_on" or "audio_off"),
+                volume = (value and (volume) or 0.05)
+            })
+        end
+    end
 end
 
 RegisterCommand('+cycleproximity', function()
     local voiceMode = voiceData.mode
     local newMode = voiceMode + 1
-    
+
     voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
     NetworkSetTalkerProximity(Cfg.voiceModes[voiceMode][1] + 0.0)
     voiceData.mode = voiceMode
+    -- make sure we update the UI to the latest voice mode
     SendNUIMessage({
         voiceMode = voiceMode - 1
     })
 end, false)
 RegisterCommand('-cycleproximity', function() end)
-RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', 'f11')
+RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', Cfg.defaultCycle)
 
 function setVoiceProperty(type, value)
     if type == "radioEnabled" then
@@ -117,7 +122,7 @@ Citizen.CreateThread(function()
         else
             hasDisconnected = true
             Citizen.Wait(100)
-		end
+        end
         if Cfg.enableUi then
             SendNUIMessage({
                 usingRadio = Cfg.radioPressed,
@@ -141,10 +146,9 @@ RegisterCommand('vsync', function()
     MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
 end)
 
-
 AddEventHandler('onClientResourceStart', function(resource)
     if resource ~= GetCurrentResourceName() then return end
-    
+
     while not NetworkIsSessionStarted() do
         Citizen.Wait(10)
     end
@@ -154,9 +158,9 @@ AddEventHandler('onClientResourceStart', function(resource)
     NetworkSetTalkerProximity(3.0)
 
     if Cfg.useExternalServer then
-		MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
+        MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
     end
-    
+
     while not MumbleIsConnected() do
         Citizen.Wait(250)
     end
@@ -170,6 +174,8 @@ AddEventHandler('onClientResourceStart', function(resource)
 
     intialized = true
 
+    -- not waiting right here (in testing) let to some cases of the UI 
+    -- just not working at all.
     Citizen.Wait(1000)
     if Cfg.enableUi then
         SendNUIMessage({

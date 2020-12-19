@@ -44,7 +44,7 @@ end)
 
 function setRadioChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerRadio', channel)
-	voiceData.radio = channel
+    voiceData.radio = channel
     SendNUIMessage({
         radioChannel = channel,
         radioEnabled = Cfg.radioEnabled
@@ -62,7 +62,15 @@ exports('addPlayerToRadio', function(radio)
 end)
 
 RegisterCommand('+radiotalk', function()
-    if exports["esx_ambulancejob"]:isPlayerDead() then return false end
+    -- since this is a shared resource (between my server and the public), probably don't want to try and use our export :P
+    -- use fallback in this case.
+    if GetResourceState("pma-ambulance") ~= "missing" then
+        if exports["pma-ambulance"]:isPlayerDead() then
+            return false
+        end
+    elseif IsPlayerDead(PlayerId()) then
+        return false
+    end
 
     if not Cfg.radioPressed and Cfg.radioEnabled then
         if voiceData.radio > 0 then
@@ -72,6 +80,7 @@ RegisterCommand('+radiotalk', function()
             Citizen.CreateThread(function()
                 TriggerEvent("pma-voice:radioActive", true)
                 while Cfg.radioPressed do
+                    -- 
                     Citizen.Wait(0)
                     SetControlNormal(0, 249, 1.0)
                     SetControlNormal(1, 249, 1.0)
@@ -90,4 +99,4 @@ RegisterCommand('-radiotalk', function()
         TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
     end
 end, false)
-RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', 'LMENU')
+RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', Cfg.defaultRadio)

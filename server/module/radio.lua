@@ -23,8 +23,6 @@ function addPlayerToRadio(source, channel)
     TriggerClientEvent('pma-voice:syncRadioData', source, radioData[channel])
 end
 
-
-
 function setPlayerRadio(source, radioChannel)
     local plyVoice = voiceData[source]
     local radioChannel = tonumber(radioChannel)

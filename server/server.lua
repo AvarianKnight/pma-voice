@@ -1,18 +1,22 @@
 voiceData = {}
 radioData = {}
-callData  = {}
+callData = {}
 
-TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+TriggerEvent('esx:getSharedObject', function(obj)
+    ESX = obj
+end)
 
 AddEventHandler("onResourceStart", function(resName)
-    if GetCurrentResourceName() ~= resName then return end
+    if GetCurrentResourceName() ~= resName then
+        return
+    end
     -- it was stated that you use one or the other, not both.3
     if Cfg.useNativeAudio then
         SetConvarReplicated("voice_useNativeAudio", 1)
     elseif Cfg.use3dAudio then
         SetConvarReplicated("voice_use3dAudio", 1)
     end
-	SetConvarReplicated("voice_useSendingRangeOnly", 1)
+    SetConvarReplicated("voice_useSendingRangeOnly", 1)
 end)
 
 Citizen.CreateThread(function()
@@ -50,7 +54,6 @@ function updateRoutingBucket(source)
 end
 exports('updateRoutingBucket', updateRoutingBucket)
 
-
 AddEventHandler("playerDropped", function()
     local source = source
     if voiceData[source] then
@@ -64,6 +67,6 @@ AddEventHandler("playerDropped", function()
             removePlayerFromCall(source, plyData.call)
         end
 
-		voiceData[source] = nil
-	end
+        voiceData[source] = nil
+    end
 end)

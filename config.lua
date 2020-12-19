@@ -1,10 +1,14 @@
 Cfg = {
     debugMode = true,
     -- enable support for routing buckets, it just offsets the players channel by their routing bucket.
-    enableRouteSupport = true,
-    -- if you change this you also have to change the base offset from 31!
+	enableRouteSupport = true,
+	-- you can change these to whatever key you want, Jaymo released a bunch of the input mappings on the Cfx.re discord
+	-- https://cdn.discordapp.com/attachments/553235301632573459/780729758408245258/inputmappings-info.txt
+	defaultCycle = 'F11',
+	defaultRadio = 'LMENU',
+	-- if you change this you also have to change the base offset from 31!
     -- you have to go to the bottom right corner of the map and print what the current grid
-    -- is there and add or subtract till the value is 0.
+	-- is there and add or subtract till the value is 0.
     zoneRadius = 128,
     zoneOffset = 31,
     voiceModes = {
