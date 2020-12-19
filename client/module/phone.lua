@@ -43,10 +43,12 @@ end)
 
 function setCallChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerCall', channel)
-    voiceData.call = channel
-    SendNUIMessage({
-        callInfo = channel
-    })
+	voiceData.call = channel
+	if Cfg.enableUi then
+		SendNUIMessage({
+			callInfo = channel
+		})
+	end
     Citizen.CreateThread(function()
         while voiceData.call ~= 0 do
             -- check if they're pressing voice keybinds
