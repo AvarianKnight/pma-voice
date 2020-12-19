@@ -64,6 +64,9 @@ RegisterCommand('+cycleproximity', function()
     voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
     NetworkSetTalkerProximity(Cfg.voiceModes[voiceMode][1] + 0.0)
     voiceData.mode = voiceMode
+    SendNUIMessage({
+        voiceMode = voiceMode - 1
+    })
 end, false)
 RegisterCommand('-cycleproximity', function() end)
 RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', 'f11')
@@ -96,7 +99,10 @@ local function updateZone()
         currentGrid = newGrid
         MumbleClearVoiceTargetChannels(voiceTarget)
         NetworkSetVoiceChannel(currentGrid)
-        MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
+        -- add nearby grids to voice targets
+        for nearbyGrids = currentGrid - 3, currentGrid + 3 do
+            MumbleAddVoiceTargetChannel(voiceTarget, nearbyGrids)
+        end
         hasDisconnected = false
     end
 end
@@ -111,8 +117,14 @@ Citizen.CreateThread(function()
         else
             hasDisconnected = true
             Citizen.Wait(100)
+		end
+        if Cfg.enableUi then
+            SendNUIMessage({
+                usingRadio = Cfg.radioPressed,
+                talking = NetworkIsPlayerTalking(PlayerId()) == 1
+            })
         end
-        Citizen.Wait(0)
+        Citizen.Wait(150)
     end
 end)
 
@@ -152,8 +164,17 @@ AddEventHandler('onClientResourceStart', function(resource)
     MumbleSetVoiceTarget(0)
     MumbleClearVoiceTarget(voiceTarget)
     MumbleSetVoiceTarget(voiceTarget)
+    NetworkSetTalkerProximity(Cfg.voiceModes[voiceData.mode][1] + 0.0)
 
     updateZone()
 
     intialized = true
+
+    Citizen.Wait(1000)
+    if Cfg.enableUi then
+        SendNUIMessage({
+            voiceModes = json.encode(Cfg.voiceModes),
+            voiceMode = voiceData.mode - 1
+        })
+    end
 end)

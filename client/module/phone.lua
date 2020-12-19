@@ -43,7 +43,10 @@ end)
 
 function setCallChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerCall', channel)
-    voiceData.call = channel
+	voiceData.call = channel
+	SendNUIMessage({
+        callInfo = channel,
+    })
     Citizen.CreateThread(function()
         while voiceData.call ~= 0 do
             if IsControlJustPressed(0, 249) or IsControlJustPressed(1, 249) or IsControlJustPressed(2, 249) then

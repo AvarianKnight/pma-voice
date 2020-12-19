@@ -44,7 +44,11 @@ end)
 
 function setRadioChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerRadio', channel)
-    voiceData.radio = channel
+	voiceData.radio = channel
+    SendNUIMessage({
+        radioChannel = channel,
+        radioEnabled = Cfg.radioEnabled
+    })
 end
 exports('setRadioChannel', setRadioChannel)
 exports('removePlayerFromRadio', function()

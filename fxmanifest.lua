@@ -4,11 +4,6 @@ fx_version 'adamant'
 author 'AvarianKnight'
 description 'VOIP built using FiveM\'s built in mumble.'
 
-files {
-    'ui/*.ogg',
-    'ui/index.html'
-}
-
 shared_script 'config.lua'
 
 client_scripts {
@@ -19,6 +14,14 @@ client_scripts {
 server_scripts {
     'server/server.lua',
     'server/module/*.lua'
+}
+
+files {
+    'ui/*.ogg',
+    'ui/css/app.css',
+    'ui/js/app.js',
+    'ui/js/chunk-vendors.js',
+    'ui/index.html',
 }
 
 ui_page 'ui/index.html'
