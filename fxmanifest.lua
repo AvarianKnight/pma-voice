@@ -18,9 +18,8 @@ server_scripts {
 
 files {
     'ui/*.ogg',
-    'ui/css/app.css',
-    'ui/js/app.js',
-    'ui/js/chunk-vendors.js',
+    'ui/css/*.css',
+    'ui/js/*.js',
     'ui/index.html',
 }
 

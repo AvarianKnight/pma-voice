@@ -79,11 +79,15 @@ RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', Cfg.default
 function setVoiceProperty(type, value)
     if type == "radioEnabled" then
         Cfg.radioEnabled = value
+        SendNUIMessage({
+            radioEnabled = value
+        })
     elseif type == "micClick" then
         Cfg.micClicks = value
     end
 end
 exports('setVoiceProperty', setVoiceProperty)
+
 
 local function getGridZone()
     local plyPos = GetEntityCoords(PlayerPedId(), false)
@@ -170,17 +174,24 @@ AddEventHandler('onClientResourceStart', function(resource)
     MumbleSetVoiceTarget(voiceTarget)
     NetworkSetTalkerProximity(Cfg.voiceModes[voiceData.mode][1] + 0.0)
 
+    hasDisconnected = true
+
     updateZone()
 
+    print('[pma-voice] Intitalized voices.')
     intialized = true
 
     -- not waiting right here (in testing) let to some cases of the UI 
     -- just not working at all.
     Citizen.Wait(1000)
     if Cfg.enableUi then
-        SendNUIMessage({
-            voiceModes = json.encode(Cfg.voiceModes),
-            voiceMode = voiceData.mode - 1
-        })
+		SendNUIMessage({
+			voiceModes = json.encode(Cfg.voiceModes),
+			voiceMode = voiceData.mode - 1
+		})
     end
+end)
+
+RegisterCommand("grid", function()
+    print(currentGrid)
 end)
