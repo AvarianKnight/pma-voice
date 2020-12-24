@@ -5,9 +5,6 @@ function removePlayerFromCall(source, currentChannel)
     end
     callData[currentChannel][source] = nil
     voiceData[source].call = 0
-    if #callData[currentChannel] == 0 then
-        callData[currentChannel] = nil
-    end
 end
 
 function addPlayerToCall(source, channel)
