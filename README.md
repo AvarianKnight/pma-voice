@@ -3,6 +3,12 @@ A voice system designed around the use if FiveM's interal mumble voip server.
 
 ## NOTE: If you have any issues please make an [Issue](https://github.com/AvarianKnight/pma-voice/issues), DO NOT MESSAGE ME FOR SUPPORT.
 
+### Credits
+
+- @Frazzle for the original mumble-voip (for which this is rewritten off of, and some code adapted from)
+- @picotm for pVoice (where the grid concept came from)
+
+
 ### Exports
 
 #### Client
@@ -33,8 +39,3 @@ Supported from mumble-voip
 | setPlayerRadio       | Sets the players radio channel       | int, int     |
 | setPlayerCall        | Sets the players call channel        | int, int     |
 | updateRoutingBucket  | Updates the players routing bucket   | int          |
-
-### Credits
-
-- @Frazzle for the original mumble-voip (for which this is rewritten off of)
-- @picotm for pVoice (where the grid concept came from)
