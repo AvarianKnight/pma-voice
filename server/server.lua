@@ -22,7 +22,7 @@ end)
 Citizen.CreateThread(function()
     local maxChannel = Cfg.zoneOffset + math.ceil((4500.0 + 8022.00) / (Cfg.zoneRadius * 2)) + 10 -- coat 10 channels just to be safe
     if Cfg.enableRouteSupport then
-        maxChannel = maxChannel + 128
+        maxChannel = maxChannel + (Cfg.maxRoutingBuckets * 5)
     end
 
     print('[pma-voice] Creating ' .. maxChannel .. ' channels in mumble')
@@ -47,8 +47,18 @@ AddEventHandler('pma-voice:registerVoiceInfo', function()
     end
 end)
 
-function updateRoutingBucket(source)
-    local route = GetPlayerRoutingBucket(source)
+function updateRoutingBucket(source, routingBucket)
+	if routingBucket > Cfg.maxRoutingBuckets then
+		print(('[pma-voice] %s tried setting a routing bucket above the max routing buckets!'):format(GetInvokingResource()))
+	local route = 0
+	-- make it optional to provide the routing bucket just incase 
+	-- people use another resource to manage their routing buckets.
+	if routingBucket then
+		SetPlayerRoutingBucket(source, routingBucket)
+		route = routingBucket
+	else
+		route = GetPlayerRoutingBucket(source)
+	end
     voiceData[source].routingBucket = route
     TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
 end

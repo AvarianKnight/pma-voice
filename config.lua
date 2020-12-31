@@ -2,6 +2,10 @@ Cfg = {
     debugMode = true,
     -- enable support for routing buckets, it just offsets the players channel by their routing bucket.
 	enableRouteSupport = true,
+	-- setting this too high will lead to your server crashing on startup as it makes more channels 
+	-- based off of the max routing buckets, going over 1000 channels will lead to the server taking 
+	-- longer to make each channel and shortly after, crashing the entire server because it happens on main thread.
+	maxRoutingBuckets = 63,
 	-- you can change these to whatever key you want, Jaymo released a bunch of the input mappings on the Cfx.re discord
 	-- https://cdn.discordapp.com/attachments/553235301632573459/780729758408245258/inputmappings-info.txt
 	defaultCycle = 'F11',

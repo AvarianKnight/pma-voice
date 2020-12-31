@@ -94,7 +94,7 @@ local function getGridZone()
     local offset = zoneOffzet
     -- just increase offset so players can't be in the same zone (so they can't hear eachother)
     if Cfg.enableRouteSupport then
-        offset = zoneOffzet + (voiceData.routingBucket * 2)
+        offset = offset + (voiceData.routingBucket * 5)
     end
     local grid = offset + math.ceil((plyPos.x + plyPos.y) / (zoneRadius * 2))
     return grid
