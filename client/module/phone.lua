@@ -49,12 +49,14 @@ function setCallChannel(channel)
 			callInfo = channel
 		})
 	end
-    Citizen.CreateThread(function()
+	Citizen.CreateThread(function()
+		local changed = false
         while voiceData.call ~= 0 do
             -- check if they're pressing voice keybinds
-            if IsControlJustPressed(0, 249) or IsControlJustPressed(1, 249) or IsControlJustPressed(2, 249) then
+			if NetworkIsPlayerTalking(PlayerId()) then
+				changed = true
                 TriggerServerEvent('pma-voice:setTalkingOnCall', true)
-            elseif IsControlJustReleased(0, 249) or IsControlJustReleased(1, 249) or IsControlJustReleased(2, 249) then
+            elseif changed then
                 TriggerServerEvent('pma-voice:setTalkingOnCall', false)
             end
             Citizen.Wait(0)
