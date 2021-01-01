@@ -32,3 +32,9 @@ Cfg = {
     externalAddress = "127.0.0.1",
     externalPort = 64985
 }
+
+function Cfg.debug(message)
+	if Cfg.debugMode then
+		print(('[pma-voice:debug] %s'):format(message))
+	end
+end

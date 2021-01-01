@@ -22,6 +22,8 @@ local zoneOffzet = Cfg.zoneOffset
 local intialized = false
 local voiceTarget = 1
 
+local currentOverride = {}
+
 RegisterNetEvent('pma-voice:updateRoutingBucket')
 AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
     voiceData.routingBucket = routingBucket
@@ -35,7 +37,7 @@ RegisterCommand('vol', function(source, args)
 end)
 
 function toggleVoice(tgtId, enabled)
-    MumbleSetVolumeOverrideByServerId(tgtId, (enabled and volume) or -1.0)
+	MumbleSetVolumeOverrideByServerId(tgtId, enabled and volume or -1.0)
 end
 
 function playerTargets(...)
@@ -100,11 +102,10 @@ local function getGridZone()
     return grid
 end
 
-local hasDisconnected = false
-
 local function updateZone()
     local newGrid = getGridZone()
-    if newGrid ~= currentGrid or hasDisconnected then
+	if newGrid ~= currentGrid then
+		Cfg.debug(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
         currentGrid = newGrid
         MumbleClearVoiceTargetChannels(voiceTarget)
         NetworkSetVoiceChannel(currentGrid)
@@ -112,7 +113,6 @@ local function updateZone()
         for nearbyGrids = currentGrid - 3, currentGrid + 3 do
             MumbleAddVoiceTargetChannel(voiceTarget, nearbyGrids)
         end
-        hasDisconnected = false
     end
 end
 
@@ -121,12 +121,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(100)
     end
     while true do
-        if MumbleIsConnected() then
-            updateZone()
-        else
-            hasDisconnected = true
-            Citizen.Wait(100)
-        end
+		updateZone()
         if Cfg.enableUi then
             SendNUIMessage({
                 usingRadio = Cfg.radioPressed,
@@ -144,10 +139,12 @@ RegisterCommand('vsync', function()
         while not MumbleIsConnected() do
             Citizen.Wait(250)
         end
-    end
+	end
+	MumbleClearVoiceTargetPlayers(voiceTarget)
     MumbleClearVoiceTargetChannels(voiceTarget)
     NetworkSetVoiceChannel(currentGrid)
-    MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
+	MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
+	Cfg.debug(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid))
 end)
 
 AddEventHandler('onClientResourceStart', function(resource)
@@ -174,8 +171,6 @@ AddEventHandler('onClientResourceStart', function(resource)
     MumbleSetVoiceTarget(voiceTarget)
     NetworkSetTalkerProximity(Cfg.voiceModes[voiceData.mode][1] + 0.0)
 
-    hasDisconnected = true
-
     updateZone()
 
     print('[pma-voice] Intitalized voices.')
@@ -189,7 +184,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 			voiceModes = json.encode(Cfg.voiceModes),
 			voiceMode = voiceData.mode - 1
 		})
-    end
+	end
 end)
 
 RegisterCommand("grid", function()
