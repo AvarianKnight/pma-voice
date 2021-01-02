@@ -23,8 +23,6 @@ function setPlayerCall(source, callChannel)
     local plyVoice = voiceData[source]
     local callChannel = tonumber(callChannel)
 
-    if not callChannel then return end
-
     if callChannel ~= 0 and plyVoice.call == 0 then
         addPlayerToCall(source, callChannel)
     elseif callChannel == 0 then

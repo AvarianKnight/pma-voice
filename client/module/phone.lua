@@ -4,9 +4,9 @@ AddEventHandler('pma-voice:syncCallData', function(callTable)
     for tgt, enabled in pairs(callTable) do
         if tgt ~= playerServerId then
             toggleVoice(tgt, enabled)
-            playerTargets(radioData, callData)
         end
     end
+	playerTargets(radioData, callData)
 end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall')
@@ -36,8 +36,8 @@ AddEventHandler('pma-voice:removePlayerFromCall', function(plySource)
         playerTargets(radioData, callData)
     else
         callData[plySource] = nil
-        playerTargets(radioData, callData)
         toggleVoice(plySource, false)
+        playerTargets(radioData, callData)
     end
 end)
 
