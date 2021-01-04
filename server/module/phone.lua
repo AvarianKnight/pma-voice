@@ -16,7 +16,7 @@ function addPlayerToCall(source, channel)
     end
     callData[channel][source] = false
     voiceData[source].call = channel
-    TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
+    TriggerClientEvent('pma-voice:syncCallData', source, callData[channel], channel)
 end
 
 function setPlayerCall(source, callChannel)

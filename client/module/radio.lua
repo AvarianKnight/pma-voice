@@ -83,7 +83,7 @@ RegisterCommand('+radiotalk', function()
                 TriggerEvent("pma-voice:radioActive", true)
                 while Cfg.radioPressed do
                     -- 
-                    Citizen.Wait(0)
+                    Wait(0)
                     SetControlNormal(0, 249, 1.0)
                     SetControlNormal(1, 249, 1.0)
                     SetControlNormal(2, 249, 1.0)

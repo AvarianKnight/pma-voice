@@ -1,12 +1,31 @@
+local function phoneThread()
+    Citizen.CreateThread(function()
+        local changed = false
+        while voiceData.call ~= 0 do
+            -- check if they're pressing voice keybinds
+            if NetworkIsPlayerTalking(PlayerId()) and not changed then
+                changed = true
+                TriggerServerEvent('pma-voice:setTalkingOnCall', true)
+            elseif changed and NetworkIsPlayerTalking(PlayerId()) ~= 1 then
+                changed = false
+                TriggerServerEvent('pma-voice:setTalkingOnCall', false)
+            end
+            Wait(0)
+        end
+    end)
+end
+
 RegisterNetEvent('pma-voice:syncCallData')
-AddEventHandler('pma-voice:syncCallData', function(callTable)
+AddEventHandler('pma-voice:syncCallData', function(callTable, channel)
     callData = callTable
+    voiceData.call = channel
     for tgt, enabled in pairs(callTable) do
         if tgt ~= playerServerId then
             toggleVoice(tgt, enabled)
         end
     end
-	playerTargets(radioData, callData)
+    playerTargets(radioData, callData)
+    phoneThread()
 end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall')
@@ -49,19 +68,7 @@ function setCallChannel(channel)
 			callInfo = channel
 		})
 	end
-	Citizen.CreateThread(function()
-		local changed = false
-        while voiceData.call ~= 0 do
-            -- check if they're pressing voice keybinds
-			if NetworkIsPlayerTalking(PlayerId()) then
-				changed = true
-                TriggerServerEvent('pma-voice:setTalkingOnCall', true)
-            elseif changed then
-                TriggerServerEvent('pma-voice:setTalkingOnCall', false)
-            end
-            Citizen.Wait(0)
-        end
-    end)
+	phoneThread()
 end
 
 exports('setCallChannel', setCallChannel)

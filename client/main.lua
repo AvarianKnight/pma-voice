@@ -118,7 +118,7 @@ end
 
 Citizen.CreateThread(function()
     while not intialized do
-        Citizen.Wait(100)
+        Wait(100)
     end
     while true do
 		updateZone()
@@ -128,7 +128,7 @@ Citizen.CreateThread(function()
                 talking = NetworkIsPlayerTalking(PlayerId()) == 1
             })
         end
-        Citizen.Wait(150)
+        Wait(150)
     end
 end)
 
@@ -137,7 +137,7 @@ RegisterCommand('vsync', function()
     if Cfg.useExternalServer then
         MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
         while not MumbleIsConnected() do
-            Citizen.Wait(250)
+            Wait(250)
         end
 	end
 	MumbleClearVoiceTargetPlayers(voiceTarget)
@@ -151,7 +151,7 @@ AddEventHandler('onClientResourceStart', function(resource)
     if resource ~= GetCurrentResourceName() then return end
 
     while not NetworkIsSessionStarted() do
-        Citizen.Wait(10)
+        Wait(10)
     end
 
     TriggerServerEvent('pma-voice:registerVoiceInfo')
@@ -163,7 +163,7 @@ AddEventHandler('onClientResourceStart', function(resource)
     end
 
     while not MumbleIsConnected() do
-        Citizen.Wait(250)
+        Wait(250)
     end
 
     MumbleSetVoiceTarget(0)
@@ -178,7 +178,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 
     -- not waiting right here (in testing) let to some cases of the UI 
     -- just not working at all.
-    Citizen.Wait(1000)
+    Wait(1000)
     if Cfg.enableUi then
 		SendNUIMessage({
 			voiceModes = json.encode(Cfg.voiceModes),
