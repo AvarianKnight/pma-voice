@@ -16,10 +16,16 @@ function addPlayerToCall(source, channel)
     end
     callData[channel][source] = false
     voiceData[source].call = channel
-    TriggerClientEvent('pma-voice:syncCallData', source, callData[channel], channel)
+    TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
 end
 
 function setPlayerCall(source, callChannel)
+	if GetInvokingResource() then
+		-- got set in a export, need to update the client to tell them that their radio
+		-- changed
+		TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
+	end
+
     local plyVoice = voiceData[source]
     local callChannel = tonumber(callChannel)
 

@@ -1,4 +1,4 @@
-local function phoneThread()
+local function createPhoneThread()
     Citizen.CreateThread(function()
         local changed = false
         while voiceData.call ~= 0 do
@@ -18,14 +18,12 @@ end
 RegisterNetEvent('pma-voice:syncCallData')
 AddEventHandler('pma-voice:syncCallData', function(callTable, channel)
     callData = callTable
-    voiceData.call = channel
     for tgt, enabled in pairs(callTable) do
         if tgt ~= playerServerId then
             toggleVoice(tgt, enabled)
         end
     end
     playerTargets(radioData, callData)
-    phoneThread()
 end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall')
@@ -68,7 +66,7 @@ function setCallChannel(channel)
 			callInfo = channel
 		})
 	end
-	phoneThread()
+	createPhoneThread()
 end
 
 exports('setCallChannel', setCallChannel)
@@ -80,4 +78,9 @@ exports('addPlayerToCall', function(call)
 end)
 exports('removePlayerFromCall', function()
     setCallChannel(0)
+end)
+
+AddEventHandler('pma-voice:clSetPlayerCall', function(callChannel)
+	voiceData.call = callChannel
+	createPhoneThread()
 end)

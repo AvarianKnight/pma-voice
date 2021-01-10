@@ -84,7 +84,7 @@ function setVoiceProperty(type, value)
         SendNUIMessage({
             radioEnabled = value
         })
-    elseif type == "micClick" then
+    elseif type == "micClicks" then
         Cfg.micClicks = value
     end
 end
@@ -133,7 +133,9 @@ Citizen.CreateThread(function()
 end)
 
 RegisterCommand('vsync', function()
-    currentGrid = getGridZone()
+	local newGrid = getGridZone()
+	Cfg.debug(('Forcing zone from %s to %s and adding nearby grids (vsync).'):format(currentGrid, newGrid))
+    currentGrid = newGrid
     if Cfg.useExternalServer then
         MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
         while not MumbleIsConnected() do
@@ -144,7 +146,6 @@ RegisterCommand('vsync', function()
     MumbleClearVoiceTargetChannels(voiceTarget)
     NetworkSetVoiceChannel(currentGrid)
 	MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
-	Cfg.debug(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid))
 end)
 
 AddEventHandler('onClientResourceStart', function(resource)

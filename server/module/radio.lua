@@ -20,6 +20,11 @@ function addPlayerToRadio(source, channel)
 end
 
 function setPlayerRadio(source, radioChannel)
+	if GetInvokingResource() then
+		-- got set in a export, need to update the client to tell them that their radio
+		-- changed
+		TriggerClientEvent('pma-voice:clSetPlayerRadio', source, radioChannel)
+	end
     local plyVoice = voiceData[source]
     local radioChannel = tonumber(radioChannel)
 
