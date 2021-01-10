@@ -3,6 +3,9 @@ A voice system designed around the use if FiveM's interal mumble voip server.
 
 ## NOTE: If you have any issues please make an [Issue](https://github.com/AvarianKnight/pma-voice/issues), DO NOT MESSAGE ME FOR SUPPORT.
 
+# This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
+# Please do not override NetworkSetTalkerProximity in any of your other scripts as it can break pma-voice.
+
 ### Credits
 
 - @Frazzle for the original mumble-voip (for which this is rewritten off of, and some code adapted from)
