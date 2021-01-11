@@ -2,10 +2,6 @@ voiceData = {}
 radioData = {}
 callData = {}
 
-TriggerEvent('esx:getSharedObject', function(obj)
-    ESX = obj
-end)
-
 AddEventHandler("onResourceStart", function(resName)
     if GetCurrentResourceName() ~= resName then
         return

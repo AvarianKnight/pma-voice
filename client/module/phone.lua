@@ -80,6 +80,7 @@ exports('removePlayerFromCall', function()
     setCallChannel(0)
 end)
 
+RegisterNetEvent('pma-voice:clSetPlayerCall')
 AddEventHandler('pma-voice:clSetPlayerCall', function(callChannel)
 	voiceData.call = callChannel
 	createPhoneThread()

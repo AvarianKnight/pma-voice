@@ -103,6 +103,7 @@ RegisterCommand('-radiotalk', function()
 end, false)
 RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', Cfg.defaultRadio)
 
+RegisterNetEvent('pma-voice:clSetPlayerRadio')
 AddEventHandler('pma-voice:clSetPlayerRadio', function(radioChannel)
 	voiceData.radio = radioChannel
 end)
