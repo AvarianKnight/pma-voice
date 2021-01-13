@@ -63,20 +63,34 @@ function playMicClicks(channel, value)
     end
 end
 
+local playerMuted = false
 RegisterCommand('+cycleproximity', function()
-    local voiceMode = voiceData.mode
-    local newMode = voiceMode + 1
+	if not playerMuted then
+		local voiceMode = voiceData.mode
+		local newMode = voiceMode + 1
 
-    voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
-    NetworkSetTalkerProximity(Cfg.voiceModes[voiceMode][1] + 0.0)
-    voiceData.mode = voiceMode
-    -- make sure we update the UI to the latest voice mode
-    SendNUIMessage({
-        voiceMode = voiceMode - 1
-    })
+		voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
+		MumbleSetAudioInputDistance(Cfg.voiceModes[voiceMode][1] + 0.0)
+		voiceData.mode = voiceMode
+		-- make sure we update the UI to the latest voice mode
+		SendNUIMessage({
+			voiceMode = voiceMode - 1
+		})
+		TriggerEvent('pma-voice:setTalkingMode', voiceMode)
+	end
 end, false)
 RegisterCommand('-cycleproximity', function() end)
 RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', Cfg.defaultCycle)
+
+RegisterNetEvent('pma-voice:mutePlayer')
+AddEventHandler('pma-voice:mutePlayer', function()
+	playerMuted = not playerMuted
+	if playerMuted then
+		MumbleSetAudioInputDistance(0.1)
+	else
+		MumbleSetAudioInputDistance(Cfg.voiceModes[voiceData.mode][1])
+	end
+end)
 
 function setVoiceProperty(type, value)
     if type == "radioEnabled" then
@@ -149,7 +163,7 @@ RegisterCommand('vsync', function()
 end)
 
 AddEventHandler('onClientResourceStart', function(resource)
-    if resource ~= GetCurrentResourceName() then return end
+	if resource ~= GetCurrentResourceName() then return end
 
     while not NetworkIsSessionStarted() do
         Wait(10)
@@ -157,7 +171,11 @@ AddEventHandler('onClientResourceStart', function(resource)
 
     TriggerServerEvent('pma-voice:registerVoiceInfo')
 
-    NetworkSetTalkerProximity(3.0)
+	-- sets how far the player can talk
+	MumbleSetAudioInputDistance(3.0)
+
+	-- this sets how far the player can hear.
+	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
 
     if Cfg.useExternalServer then
         MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
@@ -170,7 +188,7 @@ AddEventHandler('onClientResourceStart', function(resource)
     MumbleSetVoiceTarget(0)
     MumbleClearVoiceTarget(voiceTarget)
     MumbleSetVoiceTarget(voiceTarget)
-    NetworkSetTalkerProximity(Cfg.voiceModes[voiceData.mode][1] + 0.0)
+    MumbleSetAudioInputDistance(Cfg.voiceModes[voiceData.mode][1] + 0.0)
 
     updateZone()
 
