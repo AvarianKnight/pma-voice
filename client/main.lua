@@ -1,4 +1,8 @@
-local Cfg = Cfg -- micro optimzation
+local Cfg = Cfg
+local currentGrid = 0
+local volume = 0.3
+local intialized = false
+local voiceTarget = 1
 
 -- this is used for my hud, if you don't want it you can delete it 
 AddEventHandler('pma-voice:settingsCallback', function(cb)
@@ -14,13 +18,6 @@ voiceData = {
 }
 radioData = {}
 callData = {}
-local currentGrid = 0
-local volume = 0.3
-local zoneRadius = Cfg.zoneRadius -- faster to access than a table
-
-local zoneOffzet = Cfg.zoneOffset
-local intialized = false
-local voiceTarget = 1
 
 local currentOverride = {}
 
@@ -53,14 +50,12 @@ function playerTargets(...)
 end
 
 function playMicClicks(channel, value)
-    if channel <= Cfg.radioClickMaxChannel then
-        if Cfg.micClicks then
-            SendNUIMessage({
-                sound = (value and "audio_on" or "audio_off"),
-                volume = (value and (volume) or 0.05)
-            })
-        end
-    end
+	if Cfg.micClicks then
+		SendNUIMessage({
+			sound = (value and "audio_on" or "audio_off"),
+			volume = (value and (volume) or 0.05)
+		})
+	end
 end
 
 local playerMuted = false
@@ -80,7 +75,7 @@ RegisterCommand('+cycleproximity', function()
 	end
 end, false)
 RegisterCommand('-cycleproximity', function() end)
-RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', Cfg.defaultCycle)
+RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 
 RegisterNetEvent('pma-voice:mutePlayer')
 AddEventHandler('pma-voice:mutePlayer', function()
@@ -107,19 +102,14 @@ exports('setVoiceProperty', setVoiceProperty)
 
 local function getGridZone()
     local plyPos = GetEntityCoords(PlayerPedId(), false)
-    local offset = zoneOffzet
-    -- just increase offset so players can't be in the same zone (so they can't hear eachother)
-    if Cfg.enableRouteSupport then
-        offset = offset + (voiceData.routingBucket * 5)
-    end
-    local grid = offset + math.ceil((plyPos.x + plyPos.y) / (zoneRadius * 2))
-    return grid
+    local offset = 31 + (voiceData.routingBucket * 5)
+    return offset + math.ceil((plyPos.x + plyPos.y) / (128 * 2))
 end
 
 local function updateZone()
     local newGrid = getGridZone()
 	if newGrid ~= currentGrid then
-		Cfg.debug(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
+		debug(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
         currentGrid = newGrid
         MumbleClearVoiceTargetChannels(voiceTarget)
         NetworkSetVoiceChannel(currentGrid)
@@ -136,22 +126,25 @@ Citizen.CreateThread(function()
     end
     while true do
 		updateZone()
-        if Cfg.enableUi then
+        if GetConvarInt('voice_enableUi', 1) == 1 then
             SendNUIMessage({
                 usingRadio = Cfg.radioPressed,
                 talking = NetworkIsPlayerTalking(PlayerId()) == 1
             })
-        end
+		end
+		if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
+			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
+		end
         Wait(150)
     end
 end)
 
 RegisterCommand('vsync', function()
 	local newGrid = getGridZone()
-	Cfg.debug(('Forcing zone from %s to %s and adding nearby grids (vsync).'):format(currentGrid, newGrid))
+	debug(('Forcing zone from %s to %s and adding nearby grids (vsync).'):format(currentGrid, newGrid))
     currentGrid = newGrid
-    if Cfg.useExternalServer then
-        MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
+	if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
+		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
         while not MumbleIsConnected() do
             Wait(250)
         end
@@ -177,10 +170,6 @@ AddEventHandler('onClientResourceStart', function(resource)
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
 
-    if Cfg.useExternalServer then
-        MumbleSetServerAddress(Cfg.externalAddress, Cfg.externalPort)
-    end
-
     while not MumbleIsConnected() do
         Wait(250)
     end
@@ -198,7 +187,7 @@ AddEventHandler('onClientResourceStart', function(resource)
     -- not waiting right here (in testing) let to some cases of the UI 
     -- just not working at all.
     Wait(1000)
-    if Cfg.enableUi then
+    if GetConvarInt('voice_enableUi', 1) == 1 then
 		SendNUIMessage({
 			voiceModes = json.encode(Cfg.voiceModes),
 			voiceMode = voiceData.mode - 1

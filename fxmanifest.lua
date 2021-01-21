@@ -4,7 +4,7 @@ fx_version 'adamant'
 author 'AvarianKnight'
 description 'VOIP built using FiveM\'s built in mumble.'
 
-shared_script 'config.lua'
+shared_script 'shared.lua'
 
 client_scripts {
 	'client/main.lua',

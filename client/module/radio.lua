@@ -45,7 +45,7 @@ end)
 function setRadioChannel(channel)
     TriggerServerEvent('pma-voice:setPlayerRadio', channel)
 	voiceData.radio = channel
-	if Cfg.enableUi then
+	if GetConvarInt('voice_enableUi', 1) == 1 then
 		SendNUIMessage({
 			radioChannel = channel,
 			radioEnabled = Cfg.radioEnabled
@@ -82,7 +82,6 @@ RegisterCommand('+radiotalk', function()
             Citizen.CreateThread(function()
                 TriggerEvent("pma-voice:radioActive", true)
                 while Cfg.radioPressed do
-                    -- 
                     Wait(0)
                     SetControlNormal(0, 249, 1.0)
                     SetControlNormal(1, 249, 1.0)
@@ -101,7 +100,7 @@ RegisterCommand('-radiotalk', function()
         TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
     end
 end, false)
-RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', Cfg.defaultRadio)
+RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
 
 RegisterNetEvent('pma-voice:clSetPlayerRadio')
 AddEventHandler('pma-voice:clSetPlayerRadio', function(radioChannel)
