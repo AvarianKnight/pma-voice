@@ -2,17 +2,15 @@ voiceData = {}
 radioData = {}
 callData = {}
 
-defaultVoice = {
-	radio = 0,
-	call = 0,
-	lastRadio = 0,
-	lastCall = 0,
-	routingBucket = 0
-}
-
 RegisterNetEvent('pma-voice:registerVoiceInfo')
 AddEventHandler('pma-voice:registerVoiceInfo', function()
-    voiceData[source] = defaultVoice
+    voiceData[source] = {
+		radio = 0,
+		call = 0,
+		lastRadio = 0,
+		lastCall = 0,
+		routingBucket = 0
+	}
 	TriggerClientEvent('pma-voice:setRoutingBucket', source, 0)
 end)
 
@@ -26,7 +24,13 @@ function updateRoutingBucket(source, routingBucket)
 	else
 		route = GetPlayerRoutingBucket(source)
 	end
-	voiceData[source] = voiceData[source] or defaultVoice
+	voiceData[source] = voiceData[source] or {
+		radio = 0,
+		call = 0,
+		lastRadio = 0,
+		lastCall = 0,
+		routingBucket = 0
+	}
     voiceData[source].routingBucket = route
     TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
 end
