@@ -24,3 +24,7 @@ files {
 }
 
 ui_page 'ui/index.html'
+
+provides {
+	'mumble-voip'
+}
