@@ -70,9 +70,10 @@ export default {
 
 			if (data.sound && voice.radioEnabled) {
 				let click = document.getElementById(data.sound);
+				// discord these errors as its usually just a 'uncaught promise' from two clicks happening too fast.
 				click.load();
 				click.volume = data.volume;
-				click.play();
+				click.play().catch((e) => {});
 			}
 		});
 

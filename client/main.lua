@@ -19,8 +19,6 @@ voiceData = {
 radioData = {}
 callData = {}
 
-local currentOverride = {}
-
 RegisterNetEvent('pma-voice:updateRoutingBucket')
 AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
     voiceData.routingBucket = routingBucket
@@ -49,11 +47,11 @@ function playerTargets(...)
     end
 end
 
-function playMicClicks(channel, value)
+function playMicClicks(clickType)
 	if Cfg.micClicks then
 		SendNUIMessage({
-			sound = (value and "audio_on" or "audio_off"),
-			volume = (value and (volume) or 0.05)
+			sound = (clickType and "audio_on" or "audio_off"),
+			volume = (clickType and (volume) or 0.05)
 		})
 	end
 end

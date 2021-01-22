@@ -15,7 +15,7 @@ AddEventHandler('pma-voice:setTalkingOnRadio', function(tgt, enabled)
         toggleVoice(tgt, enabled)
         radioData[tgt] = enabled
         playerTargets(radioData, callData)
-        playMicClicks(voiceData.radio, enabled)
+        playMicClicks(enabled)
     end
 end)
 
@@ -78,7 +78,7 @@ RegisterCommand('+radiotalk', function()
         if voiceData.radio > 0 then
             TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
             Cfg.radioPressed = true
-            playMicClicks(voiceData.radio, true)
+            playMicClicks(true)
             Citizen.CreateThread(function()
                 TriggerEvent("pma-voice:radioActive", true)
                 while Cfg.radioPressed do
@@ -96,7 +96,7 @@ RegisterCommand('-radiotalk', function()
     if voiceData.radio > 0 or Cfg.radioEnabled then
         Cfg.radioPressed = false
         TriggerEvent("pma-voice:radioActive", false)
-        playMicClicks(voiceData.radio, false)
+        playMicClicks(false)
         TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
     end
 end, false)
