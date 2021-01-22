@@ -1,16 +1,13 @@
+-- micro optimize
+local defaultTable = defaultTable
+
 function removePlayerFromCall(source, currentChannel)
     callData[currentChannel] = callData[currentChannel] or {}
     for player, _ in pairs(callData[currentChannel]) do
         TriggerClientEvent('pma-voice:removePlayerFromCall', player, source)
     end
 	callData[currentChannel][source] = nil
-	voiceData[source] = voiceData[source] or {
-		radio = 0,
-		call = 0,
-		lastRadio = 0,
-		lastCall = 0,
-		routingBucket = 0
-	}
+	voiceData[source] = voiceData[source] or defaultTable()
     voiceData[source].call = 0
 end
 
@@ -22,13 +19,7 @@ function addPlayerToCall(source, channel)
         TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
     end
 	callData[channel][source] = false
-	voiceData[source] = voiceData[source] or {
-		radio = 0,
-		call = 0,
-		lastRadio = 0,
-		lastCall = 0,
-		routingBucket = 0
-	}
+	voiceData[source] = voiceData[source] or defaultTable()
     voiceData[source].call = channel
     TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
 end
@@ -39,13 +30,7 @@ function setPlayerCall(source, callChannel)
 		-- changed
 		TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
 	end
-	voiceData[source] = voiceData[source] or {
-		radio = 0,
-		call = 0,
-		lastRadio = 0,
-		lastCall = 0,
-		routingBucket = 0
-	}
+	voiceData[source] = voiceData[source] or defaultTable()
     local plyVoice = voiceData[source]
     local callChannel = tonumber(callChannel)
 
@@ -68,13 +53,7 @@ end)
 RegisterNetEvent('pma-voice:setTalkingOnCall')
 AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
 	local source = source
-	voiceData[source] = voiceData[source] or {
-		radio = 0,
-		call = 0,
-		lastRadio = 0,
-		lastCall = 0,
-		routingBucket = 0
-	}
+	voiceData[source] = voiceData[source] or defaultTable()
     local plyVoice = voiceData[source]
     local callTbl = callData[plyVoice.call]
     if callTbl then

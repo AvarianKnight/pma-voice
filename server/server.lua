@@ -2,15 +2,22 @@ voiceData = {}
 radioData = {}
 callData = {}
 
-RegisterNetEvent('pma-voice:registerVoiceInfo')
-AddEventHandler('pma-voice:registerVoiceInfo', function()
-    voiceData[source] = {
+function defaultTable()
+	return {
 		radio = 0,
 		call = 0,
 		lastRadio = 0,
 		lastCall = 0,
 		routingBucket = 0
 	}
+end
+
+-- micro optimize, local function calls are quite a bit faster.
+local defaultTable = defaultTable
+
+RegisterNetEvent('pma-voice:registerVoiceInfo')
+AddEventHandler('pma-voice:registerVoiceInfo', function()
+	voiceData[source] = defaultTable()
 	TriggerClientEvent('pma-voice:setRoutingBucket', source, 0)
 end)
 
@@ -24,13 +31,7 @@ function updateRoutingBucket(source, routingBucket)
 	else
 		route = GetPlayerRoutingBucket(source)
 	end
-	voiceData[source] = voiceData[source] or {
-		radio = 0,
-		call = 0,
-		lastRadio = 0,
-		lastCall = 0,
-		routingBucket = 0
-	}
+	voiceData[source] = voiceData[source] or defaultTable()
     voiceData[source].routingBucket = route
     TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
 end
