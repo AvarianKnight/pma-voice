@@ -6,8 +6,8 @@ function removePlayerFromCall(source, currentChannel)
     for player, _ in pairs(callData[currentChannel]) do
         TriggerClientEvent('pma-voice:removePlayerFromCall', player, source)
     end
-	callData[currentChannel][source] = nil
-	voiceData[source] = voiceData[source] or defaultTable()
+    callData[currentChannel][source] = nil
+    voiceData[source] = voiceData[source] or defaultTable()
     voiceData[source].call = 0
 end
 
@@ -18,19 +18,19 @@ function addPlayerToCall(source, channel)
     for player, _ in pairs(callData[channel]) do
         TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
     end
-	callData[channel][source] = false
-	voiceData[source] = voiceData[source] or defaultTable()
+    callData[channel][source] = false
+    voiceData[source] = voiceData[source] or defaultTable()
     voiceData[source].call = channel
     TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
 end
 
 function setPlayerCall(source, callChannel)
-	if GetInvokingResource() then
-		-- got set in a export, need to update the client to tell them that their radio
-		-- changed
-		TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
-	end
-	voiceData[source] = voiceData[source] or defaultTable()
+    if GetInvokingResource() then
+        -- got set in a export, need to update the client to tell them that their radio
+        -- changed
+        TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
+    end
+    voiceData[source] = voiceData[source] or defaultTable()
     local plyVoice = voiceData[source]
     local callChannel = tonumber(callChannel)
 
@@ -52,13 +52,13 @@ end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall')
 AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
-	local source = source
-	voiceData[source] = voiceData[source] or defaultTable()
+    local source = source
+    voiceData[source] = voiceData[source] or defaultTable()
     local plyVoice = voiceData[source]
     local callTbl = callData[plyVoice.call]
     if callTbl then
         for player, _ in pairs(callTbl) do
-			TriggerClientEvent('pma-voice:setTalkingOnCall', player, source, talking)
+            TriggerClientEvent('pma-voice:setTalkingOnCall', player, source, talking)
         end
     end
 end)

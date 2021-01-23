@@ -1,12 +1,12 @@
 Cfg = {
-    voiceModes = {
+	voiceModes = {
 		{3.0, "Whisper"}, -- Whisper speech distance in gta distance units
-    	{7.0, "Normal"}, -- Normal speech distance in gta distance units
-    	{15.0, "Shouting"} -- Shout speech distance in gta distance units
-    },
-    radioEnabled = true, -- Enable or disable using the radio
-    micClicks = true, -- Are clicks enabled or not
-    radioPressed = false,
+		{7.0, "Normal"}, -- Normal speech distance in gta distance units
+		{15.0, "Shouting"} -- Shout speech distance in gta distance units
+	},
+	radioEnabled = true, -- Enable or disable using the radio
+	micClicks = true, -- Are clicks enabled or not
+	radioPressed = false
 }
 
 function debug(message)

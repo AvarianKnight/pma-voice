@@ -32,24 +32,24 @@ function updateRoutingBucket(source, routingBucket)
 		route = GetPlayerRoutingBucket(source)
 	end
 	voiceData[source] = voiceData[source] or defaultTable()
-    voiceData[source].routingBucket = route
-    TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
+	voiceData[source].routingBucket = route
+	TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
 end
 exports('updateRoutingBucket', updateRoutingBucket)
 
 AddEventHandler("playerDropped", function()
-    local source = source
-    if voiceData[source] then
-        local plyData = voiceData[source]
+	local source = source
+	if voiceData[source] then
+		local plyData = voiceData[source]
 
-        if plyData.radio ~= 0 then
-            removePlayerFromRadio(source, plyData.radio)
-        end
+		if plyData.radio ~= 0 then
+			removePlayerFromRadio(source, plyData.radio)
+		end
 
-        if plyData.call ~= 0 then
-            removePlayerFromCall(source, plyData.call)
-        end
+		if plyData.call ~= 0 then
+			removePlayerFromCall(source, plyData.call)
+		end
 
-        voiceData[source] = nil
-    end
+		voiceData[source] = nil
+	end
 end)
