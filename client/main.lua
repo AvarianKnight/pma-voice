@@ -4,6 +4,12 @@ local volume = 0.3
 local intialized = false
 local voiceTarget = 1
 
+-- radio mix
+local radioEffectId = CreateAudioSubmix('Radio')
+SetAudioSubmixEffectRadioFx(radioEffectId, 0)
+SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
+AddAudioSubmixOutput(radioEffectId, 0)
+
 -- this is used for my hud, if you don't want it you can delete it 
 AddEventHandler('pma-voice:settingsCallback', function(cb)
 	cb(Cfg)
@@ -31,10 +37,17 @@ RegisterCommand('vol', function(source, args)
 	end
 end)
 
-function toggleVoice(tgtId, enabled)
+function toggleVoice(tgtId, enabled, effectType)
+	if enabled and effectType then
+		if effectType == 'radio' then
+			MumbleSetSubmixForServerId(tgtId, radioEffectId)
+		end
+	elseif not enabled then
+		MumbleSetSubmixForServerId(tgtId, -1)
+	end
+
 	MumbleSetVolumeOverrideByServerId(tgtId, enabled and volume or -1.0)
 end
-
 function playerTargets(...)
 	local targets = {...}
 

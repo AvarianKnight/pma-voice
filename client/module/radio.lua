@@ -3,7 +3,7 @@ AddEventHandler('pma-voice:syncRadioData', function(radioTable)
 	radioData = radioTable
 	for tgt, enabled in pairs(radioTable) do
 		if tgt ~= playerServerId then
-			toggleVoice(tgt, enabled)
+			toggleVoice(tgt, enabled, 'radio')
 		end
 	end
 	playerTargets(radioData, callData)
@@ -12,7 +12,7 @@ end)
 RegisterNetEvent('pma-voice:setTalkingOnRadio')
 AddEventHandler('pma-voice:setTalkingOnRadio', function(tgt, enabled)
 	if tgt ~= playerServerId then
-		toggleVoice(tgt, enabled)
+		toggleVoice(tgt, enabled, 'radio')
 		radioData[tgt] = enabled
 		playerTargets(radioData, callData)
 		playMicClicks(enabled)
