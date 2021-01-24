@@ -15,6 +15,13 @@ end
 -- micro optimize, local function calls are quite a bit faster.
 local defaultTable = defaultTable
 
+-- temp fix before an actual fix is added
+CreateThread(function()
+    for i = 1, 1024 do
+        MumbleCreateChannel(i)
+    end
+end)
+
 RegisterNetEvent('pma-voice:registerVoiceInfo')
 AddEventHandler('pma-voice:registerVoiceInfo', function()
 	voiceData[source] = defaultTable()
