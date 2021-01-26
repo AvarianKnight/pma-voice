@@ -4,18 +4,6 @@ local volume = 0.3
 local intialized = false
 local voiceTarget = 1
 
--- radio mix
-local radioEffectId = CreateAudioSubmix('Radio')
-SetAudioSubmixEffectRadioFx(radioEffectId, 0)
-SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
-AddAudioSubmixOutput(radioEffectId, 0)
-
--- this is used for my hud, if you don't want it you can delete it 
-AddEventHandler('pma-voice:settingsCallback', function(cb)
-	cb(Cfg)
-end)
-
-playerServerId = GetPlayerServerId(PlayerId())
 voiceData = {
 	mode = 2,
 	radio = 0,
@@ -24,6 +12,12 @@ voiceData = {
 }
 radioData = {}
 callData = {}
+
+AddEventHandler('pma-voice:settingsCallback', function(cb)
+	cb(Cfg)
+end)
+
+playerServerId = GetPlayerServerId(PlayerId())
 
 RegisterNetEvent('pma-voice:updateRoutingBucket')
 AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
@@ -37,13 +31,29 @@ RegisterCommand('vol', function(source, args)
 	end
 end)
 
-function toggleVoice(tgtId, enabled, effectType)
-	if enabled and effectType then
-		if effectType == 'radio' then
-			MumbleSetSubmixForServerId(tgtId, radioEffectId)
+
+-- radio submix
+local radioEffectId = CreateAudioSubmix('Radio')
+SetAudioSubmixEffectRadioFx(radioEffectId, 0)
+SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
+AddAudioSubmixOutput(radioEffectId, 0)
+
+local submixFunctions = {
+	['radio'] = function(tgtId)
+		MumbleSetSubmixForServerId(tgtId, radioEffectId)
+	end,
+	['phone'] = function(tgtId)
+
+	end
+}
+
+function toggleVoice(tgtId, enabled, submixType)
+	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+		if enabled and submixType then
+			submixFunctions[submixType](tgtId)
+		elseif not enabled then
+			MumbleSetSubmixForServerId(tgtId, -1)
 		end
-	elseif not enabled then
-		MumbleSetSubmixForServerId(tgtId, -1)
 	end
 
 	MumbleSetVolumeOverrideByServerId(tgtId, enabled and volume or -1.0)
