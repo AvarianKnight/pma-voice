@@ -3,6 +3,8 @@ A voice system designed around the use if FiveM's interal mumble voip server.
 
 # Compatability Notice:
 
+This script requires you to be on 2666 or newer as it uses Lua 5.4.
+
 ### This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
 ### Please do not override NetworkSetTalkerProximity in any of your other scripts as it can break pma-voice.
 
