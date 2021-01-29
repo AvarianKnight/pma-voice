@@ -26,6 +26,7 @@ function addPlayerToRadio(source, channel)
 end
 
 function setPlayerRadio(source, radioChannel)
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	if GetInvokingResource() then
 		-- got set in a export, need to update the client to tell them that their radio
 		-- changed
@@ -53,6 +54,7 @@ end)
 
 RegisterNetEvent('pma-voice:setTalkingOnRadio')
 AddEventHandler('pma-voice:setTalkingOnRadio', function(talking)
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData[source] = voiceData[source] or defaultTable()
 	local plyVoice = voiceData[source]
 	local radioTbl = radioData[plyVoice.radio]

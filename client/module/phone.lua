@@ -59,6 +59,7 @@ AddEventHandler('pma-voice:removePlayerFromCall', function(plySource)
 end)
 
 function setCallChannel(channel)
+	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
 	TriggerServerEvent('pma-voice:setPlayerCall', channel)
 	voiceData.call = channel
 	if GetConvarInt('voice_enableUi', 1) == 1 then
@@ -82,6 +83,7 @@ end)
 
 RegisterNetEvent('pma-voice:clSetPlayerCall')
 AddEventHandler('pma-voice:clSetPlayerCall', function(callChannel)
+	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
 	voiceData.call = callChannel
 	createPhoneThread()
 end)

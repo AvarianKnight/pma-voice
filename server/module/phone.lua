@@ -25,6 +25,7 @@ function addPlayerToCall(source, channel)
 end
 
 function setPlayerCall(source, callChannel)
+	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
     if GetInvokingResource() then
         -- got set in a export, need to update the client to tell them that their radio
         -- changed
@@ -52,6 +53,7 @@ end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall')
 AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
+	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
     local source = source
     voiceData[source] = voiceData[source] or defaultTable()
     local plyVoice = voiceData[source]

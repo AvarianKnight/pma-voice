@@ -43,6 +43,7 @@ AddEventHandler('pma-voice:removePlayerFromRadio', function(plySource)
 end)
 
 function setRadioChannel(channel)
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
 	voiceData.radio = channel
 	if GetConvarInt('voice_enableUi', 1) == 1 then
@@ -64,6 +65,7 @@ exports('addPlayerToRadio', function(radio)
 end)
 
 RegisterCommand('+radiotalk', function()
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	-- since this is a shared resource (between my server and the public), probably don't want to try and use our export :P
 	-- use fallback in this case.
 	if GetResourceState("pma-ambulance") ~= "missing" then
@@ -104,5 +106,6 @@ RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice
 
 RegisterNetEvent('pma-voice:clSetPlayerRadio')
 AddEventHandler('pma-voice:clSetPlayerRadio', function(radioChannel)
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData.radio = radioChannel
 end)

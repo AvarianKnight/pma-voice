@@ -58,6 +58,7 @@ function toggleVoice(tgtId, enabled, submixType)
 
 	MumbleSetVolumeOverrideByServerId(tgtId, enabled and volume or -1.0)
 end
+
 function playerTargets(...)
 	local targets = {...}
 
@@ -81,6 +82,7 @@ end
 
 local playerMuted = false
 RegisterCommand('+cycleproximity', function()
+	if GetConvarInt('voice_enableProximity', 1) ~= 1 then return end
 	if not playerMuted then
 		local voiceMode = voiceData.mode
 		local newMode = voiceMode + 1
