@@ -125,7 +125,7 @@ exports('setVoiceProperty', setVoiceProperty)
 
 local function getGridZone()
 	local plyPos = GetEntityCoords(PlayerPedId(), false)
-	return 31 + (voiceData.routingBucket * 5) + math.ceil((plyPos.x + plyPos.y) / (128 * 2))
+	return 31 + (voiceData.routingBucket * 5) + math.ceil((plyPos.x + plyPos.y) / (GetConvarInt('voice_zoneRadius', 128) * 2))
 end
 
 local function updateZone()

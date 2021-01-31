@@ -39,6 +39,7 @@ The ints are used like a boolean to 0 would be false, 1 true.
 
 | ConVar                  | Default | Description                                                   | Parameter(s) |
 |-------------------------|---------|---------------------------------------------------------------|--------------|
+| voice_zoneRadius             |   128   | Sets the zone radius size, on bigger servers you might need to set this lower. | int          |
 | voice_enableUi               |    1    | Enable the built in user interface                            | int          |
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
 | voice_enableRadios           |    1    | Enables the radio sub-modules                                 | int          |
