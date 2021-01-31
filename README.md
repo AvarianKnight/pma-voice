@@ -1,5 +1,5 @@
 # pma-voice
-A voice system designed around the use if FiveM's interal mumble voip server.
+A voice system designed around the use if FiveM's internal mumble server.
 
 ## Support
 
@@ -7,10 +7,10 @@ A voice system designed around the use if FiveM's interal mumble voip server.
 
 ### NOTE: It is expected for players to be on the latest recommended version (which you can find [here for Windows](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and [here for Linux](https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/).
 
-# Compatability Notice:
+# Compatibility Notice:
 
 ### This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
-### Please do not override NetworkSetTalkerProximity in any of your other scripts as it can break pma-voice.
+### Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` and `NetworkSetVoiceActive` in any of your other scripts as it can break pma-voice.
 
 # Credits
 
@@ -19,10 +19,10 @@ A voice system designed around the use if FiveM's interal mumble voip server.
 
 # FiveM Config
 
-### NOTE: Only use one of the Audio options (don't enable Native Audio & 3d Audio), its also recommended to always use voice_useSendingRangeOnly.
+### NOTE: Only use one of the Audio options (don't enable 3d Audio & Native Audio at the same time), its also recommended to always use voice_useSendingRangeOnly.
 ### You only need to add the convar **if** you're changing the value.
 
-All of the configs here are set using `setr [config-option] [boolean]`
+All of the configs here are set using `setr [voice_configOption] [boolean]`
 
 | ConVar                     | Default | Description                                                   | Parameter(s) |
 |----------------------------|---------|---------------------------------------------------------------|--------------|
@@ -82,4 +82,4 @@ Supported from mumble-voip
 |----------------------|--------------------------------------|--------------|
 | setPlayerRadio       | Sets the players radio channel       | int, int     |
 | setPlayerCall        | Sets the players call channel        | int, int     |
-| updateRoutingBucket  | Updates the players routing bucket   | int          |
+| updateRoutingBucket  | Updates the players routing bucket, if provided a secondary option it will set & update the players routing bucket.   | int, int (opt) |
