@@ -7,7 +7,7 @@ function removePlayerFromCall(source, currentChannel)
         TriggerClientEvent('pma-voice:removePlayerFromCall', player, source)
     end
     callData[currentChannel][source] = nil
-    voiceData[source] = voiceData[source] or defaultTable()
+    voiceData[source] = voiceData[source] or defaultTable(source)
     voiceData[source].call = 0
 end
 
@@ -19,7 +19,7 @@ function addPlayerToCall(source, channel)
         TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
     end
     callData[channel][source] = false
-    voiceData[source] = voiceData[source] or defaultTable()
+    voiceData[source] = voiceData[source] or defaultTable(source)
     voiceData[source].call = channel
     TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
 end
@@ -31,7 +31,7 @@ function setPlayerCall(source, callChannel)
         -- changed
         TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
     end
-    voiceData[source] = voiceData[source] or defaultTable()
+    voiceData[source] = voiceData[source] or defaultTable(source)
     local plyVoice = voiceData[source]
     local callChannel = tonumber(callChannel)
 
@@ -55,7 +55,7 @@ RegisterNetEvent('pma-voice:setTalkingOnCall')
 AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
 	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
     local source = source
-    voiceData[source] = voiceData[source] or defaultTable()
+    voiceData[source] = voiceData[source] or defaultTable(source)
     local plyVoice = voiceData[source]
     local callTbl = callData[plyVoice.call]
     if callTbl then

@@ -1,8 +1,10 @@
+GlobalData.plyChannels = {}
 voiceData = {}
 radioData = {}
 callData = {}
 
-function defaultTable()
+function defaultTable(source)
+	GlobalData.plyChannels[source] = 0
 	return {
 		radio = 0,
 		call = 0,
@@ -24,7 +26,7 @@ end)
 
 RegisterNetEvent('playerJoined', function()
 	if not voiceData[source] then
-		voiceData[source] = defaultTable()
+		voiceData[source] = defaultTable(source)
 		TriggerClientEvent('pma-voice:setRoutingBucket', source, 0)
 	end
 end)
@@ -39,7 +41,7 @@ function updateRoutingBucket(source, routingBucket)
 	else
 		route = GetPlayerRoutingBucket(source)
 	end
-	voiceData[source] = voiceData[source] or defaultTable()
+	voiceData[source] = voiceData[source] or defaultTable(source)
 	voiceData[source].routingBucket = route
 	TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
 end
@@ -53,6 +55,7 @@ AddEventHandler("playerDropped", function()
 		if plyData.radio ~= 0 then
 			removePlayerFromRadio(source, plyData.radio)
 		end
+		GlobalData.plyChannels[source] = nil
 
 		if plyData.call ~= 0 then
 			removePlayerFromCall(source, plyData.call)

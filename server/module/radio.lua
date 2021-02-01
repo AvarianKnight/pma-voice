@@ -7,7 +7,7 @@ function removePlayerFromRadio(source, currentChannel)
 		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source)
 	end
 	radioData[currentChannel][source] = nil
-	voiceData[source] = voiceData[source] or defaultTable()
+	voiceData[source] = voiceData[source] or defaultTable(source)
 	voiceData[source].radio = 0
 end
 
@@ -18,7 +18,7 @@ function addPlayerToRadio(source, channel)
 	for player, _ in pairs(radioData[channel]) do
 		TriggerClientEvent('pma-voice:addPlayerToRadio', player, source)
 	end
-	voiceData[source] = voiceData[source] or defaultTable()
+	voiceData[source] = voiceData[source] or defaultTable(source)
 
 	voiceData[source].radio = channel
 	radioData[channel][source] = false
@@ -32,9 +32,10 @@ function setPlayerRadio(source, radioChannel)
 		-- changed
 		TriggerClientEvent('pma-voice:clSetPlayerRadio', source, radioChannel)
 	end
-	voiceData[source] = voiceData[source] or defaultTable()
+	voiceData[source] = voiceData[source] or defaultTable(source)
 	local plyVoice = voiceData[source]
 	local radioChannel = tonumber(radioChannel)
+	GlobalData.plyChannels[source] = radioChannel
 
 	if radioChannel ~= 0 and plyVoice.radio == 0 then
 		addPlayerToRadio(source, radioChannel)
@@ -55,7 +56,7 @@ end)
 RegisterNetEvent('pma-voice:setTalkingOnRadio')
 AddEventHandler('pma-voice:setTalkingOnRadio', function(talking)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
-	voiceData[source] = voiceData[source] or defaultTable()
+	voiceData[source] = voiceData[source] or defaultTable(source)
 	local plyVoice = voiceData[source]
 	local radioTbl = radioData[plyVoice.radio]
 	if radioTbl then
