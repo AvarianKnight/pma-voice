@@ -49,7 +49,7 @@ function setRadioChannel(channel)
 	if GetConvarInt('voice_enableUi', 1) == 1 then
 		SendNUIMessage({
 			radioChannel = channel,
-			radioEnabled = Cfg.radioEnabled
+			radioEnabled = voiceData.radioEnabled
 		})
 	end
 end
@@ -76,14 +76,14 @@ RegisterCommand('+radiotalk', function()
 		return false
 	end
 
-	if not Cfg.radioPressed and Cfg.radioEnabled then
+	if not voiceData.radioPressed and voiceData.radioEnabled then
 		if voiceData.radio > 0 then
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
-			Cfg.radioPressed = true
+			voiceData.radioPressed = true
 			playMicClicks(true)
 			Citizen.CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
-				while Cfg.radioPressed do
+				while voiceData.radioPressed do
 					Wait(0)
 					SetControlNormal(0, 249, 1.0)
 					SetControlNormal(1, 249, 1.0)
@@ -95,8 +95,8 @@ RegisterCommand('+radiotalk', function()
 end, false)
 
 RegisterCommand('-radiotalk', function()
-	if voiceData.radio > 0 or Cfg.radioEnabled then
-		Cfg.radioPressed = false
+	if voiceData.radio > 0 or voiceData.radioEnabled then
+		voiceData.radioPressed = false
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)

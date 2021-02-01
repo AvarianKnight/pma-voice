@@ -3,8 +3,11 @@ local currentGrid = 0
 local volume = 0.3
 local intialized = false
 local voiceTarget = 1
+playerServerId = GetPlayerServerId(PlayerId())
 
 voiceData = {
+	radioEnabled = false,
+	radioPressed = false,
 	mode = 2,
 	radio = 0,
 	call = 0,
@@ -13,24 +16,24 @@ voiceData = {
 radioData = {}
 callData = {}
 
+-- TODO: Convert the last Cfg to a Convar, while still keeping it simple.
 AddEventHandler('pma-voice:settingsCallback', function(cb)
 	cb(Cfg)
 end)
 
-playerServerId = GetPlayerServerId(PlayerId())
 
 RegisterNetEvent('pma-voice:updateRoutingBucket')
 AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
 	voiceData.routingBucket = routingBucket
 end)
 
+-- TODO: Better implementation of this?
 RegisterCommand('vol', function(source, args)
 	local vol = tonumber(args[1])
 	if vol then
 		volume = vol / 100
 	end
 end)
-
 
 -- radio submix
 local radioEffectId = CreateAudioSubmix('Radio')
@@ -43,7 +46,7 @@ local submixFunctions = {
 		MumbleSetSubmixForServerId(tgtId, radioEffectId)
 	end,
 	['phone'] = function(tgtId)
-
+		return 'not implemented'
 	end
 }
 
@@ -72,7 +75,9 @@ function playerTargets(...)
 end
 
 function playMicClicks(clickType)
-	if Cfg.micClicks then
+	local micClicks = GetResourceKvpInt('pma-voice_micClicks')
+	-- have to explicitly check for nil or else 
+	if micClicks == 1 then
 		SendNUIMessage({
 			sound = (clickType and "audio_on" or "audio_off"),
 			volume = (clickType and (volume) or 0.05)
@@ -83,19 +88,19 @@ end
 local playerMuted = false
 RegisterCommand('+cycleproximity', function()
 	if GetConvarInt('voice_enableProximity', 1) ~= 1 then return end
-	if not playerMuted then
-		local voiceMode = voiceData.mode
-		local newMode = voiceMode + 1
+	if playerMuted then return end
 
-		voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
-		MumbleSetAudioInputDistance(Cfg.voiceModes[voiceMode][1] + 0.0)
-		voiceData.mode = voiceMode
-		-- make sure we update the UI to the latest voice mode
-		SendNUIMessage({
-			voiceMode = voiceMode - 1
-		})
-		TriggerEvent('pma-voice:setTalkingMode', voiceMode)
-	end
+	local voiceMode = voiceData.mode
+	local newMode = voiceMode + 1
+
+	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
+	MumbleSetAudioInputDistance(Cfg.voiceModes[voiceMode][1] + 0.0)
+	voiceData.mode = voiceMode
+	-- make sure we update the UI to the latest voice mode
+	SendNUIMessage({
+		voiceMode = voiceMode - 1
+	})
+	TriggerEvent('pma-voice:setTalkingMode', voiceMode)
 end, false)
 RegisterCommand('-cycleproximity', function()
 end)
@@ -113,12 +118,12 @@ end)
 
 function setVoiceProperty(type, value)
 	if type == "radioEnabled" then
-		Cfg.radioEnabled = value
+		voiceData.radioEnabled = value
 		SendNUIMessage({
 			radioEnabled = value
 		})
 	elseif type == "micClicks" then
-		Cfg.micClicks = value
+		SetResourceKvpInt('pma-voice_micClicks', value)
 	end
 end
 exports('setVoiceProperty', setVoiceProperty)
@@ -128,9 +133,9 @@ local function getGridZone()
 	return 31 + (voiceData.routingBucket * 5) + math.ceil((plyPos.x + plyPos.y) / (GetConvarInt('voice_zoneRadius', 128) * 2))
 end
 
-local function updateZone()
+local function updateZone(forced)
 	local newGrid = getGridZone()
-	if newGrid ~= currentGrid then
+	if newGrid ~= currentGrid or forced then
 		debug(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(voiceTarget)
@@ -142,19 +147,31 @@ local function updateZone()
 	end
 end
 
+-- 'cache' their external stuff so if it changes in runtime we update.
+local externalAddress = GetConvar('voice_externalAddress', '')
+local externalPort = GetConvar('voice_externalPort', '')
+
 Citizen.CreateThread(function()
 	while not intialized do
 		Wait(100)
 	end
 	while true do
+		-- wait for reconnection, sending to the void does nothing
+		while not MumbleIsConnected() do
+			currentGrid = -1 -- reset the grid to something out of bounds so it will resync their zone on disconnect.
+			Wait(100)
+		end
 		updateZone()
 		if GetConvarInt('voice_enableUi', 1) == 1 then
 			SendNUIMessage({
-				usingRadio = Cfg.radioPressed,
+				usingRadio = voiceData.radioPressed,
 				talking = NetworkIsPlayerTalking(PlayerId()) == 1
 			})
 		end
-		if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
+		-- only set this is its changed previously, as we dont want to set the address every frame.
+		if GetConvar('voice_externalAddress', '') ~= externalAddress and GetConvar('voice_externalPort', '') ~= externalPort then
+			externalAddress = GetConvar('voice_externalAddress', '')
+			externalPort = GetConvar('voice_externalPort', '')
 			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
 		end
 		Wait(0)
@@ -163,8 +180,7 @@ end)
 
 RegisterCommand('vsync', function()
 	local newGrid = getGridZone()
-	debug(('Forcing zone from %s to %s and adding nearby grids (vsync).'):format(currentGrid, newGrid))
-	currentGrid = newGrid
+	debug(('[pma-voice] [vsync] Forcing zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
 	if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
 		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
 		while not MumbleIsConnected() do
@@ -172,9 +188,8 @@ RegisterCommand('vsync', function()
 		end
 	end
 	MumbleClearVoiceTargetPlayers(voiceTarget)
-	MumbleClearVoiceTargetChannels(voiceTarget)
-	NetworkSetVoiceChannel(currentGrid)
-	MumbleAddVoiceTargetChannel(voiceTarget, currentGrid)
+	-- force a zone update.
+	updateZone(true)
 end)
 
 AddEventHandler('onClientResourceStart', function(resource)
@@ -182,14 +197,14 @@ AddEventHandler('onClientResourceStart', function(resource)
 		return
 	end
 
-	while not NetworkIsSessionStarted() do
-		Wait(10)
+	-- register default
+	local micClicks = GetResourceKvpInt('pma-voice_micClicks')
+	if micClicks == nil then
+		SetResourceKvpInt('pma-voice_micClicks', 1)
 	end
 
-	TriggerServerEvent('pma-voice:registerVoiceInfo')
-
 	-- sets how far the player can talk
-	MumbleSetAudioInputDistance(3.0)
+	MumbleSetAudioInputDistance(Cfg.voiceModes[voiceData.mode][1] + 0.0)
 
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
@@ -198,10 +213,10 @@ AddEventHandler('onClientResourceStart', function(resource)
 		Wait(250)
 	end
 
+
 	MumbleSetVoiceTarget(0)
 	MumbleClearVoiceTarget(voiceTarget)
 	MumbleSetVoiceTarget(voiceTarget)
-	MumbleSetAudioInputDistance(Cfg.voiceModes[voiceData.mode][1] + 0.0)
 
 	updateZone()
 
@@ -220,5 +235,5 @@ AddEventHandler('onClientResourceStart', function(resource)
 end)
 
 RegisterCommand("grid", function()
-	print(currentGrid)
+	print(('[pma-voice] Players current grid is %s'):format(currentGrid))
 end)

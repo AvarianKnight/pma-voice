@@ -22,10 +22,11 @@ CreateThread(function()
     end
 end)
 
-RegisterNetEvent('pma-voice:registerVoiceInfo')
-AddEventHandler('pma-voice:registerVoiceInfo', function()
-	voiceData[source] = defaultTable()
-	TriggerClientEvent('pma-voice:setRoutingBucket', source, 0)
+RegisterNetEvent('playerJoined', function()
+	if not voiceData[source] then
+		voiceData[source] = defaultTable()
+		TriggerClientEvent('pma-voice:setRoutingBucket', source, 0)
+	end
 end)
 
 function updateRoutingBucket(source, routingBucket)
