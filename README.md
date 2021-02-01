@@ -12,6 +12,7 @@ Please report any issues you have in the GitHub [Issues](https://github.com/Avar
 # Compatibility Notice:
 
 This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
+
 Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` and `NetworkSetVoiceActive` in any of your other scripts as it can break pma-voice.
 
 # Credits
