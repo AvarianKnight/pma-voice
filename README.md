@@ -15,7 +15,7 @@ A voice system designed around the use if FiveM's internal mumble server.
 # Credits
 
 - @Frazzle for mumble-voip (for which the concept came from)
-- @picotm for pVoice (where the grid concept came from)
+- @pichotm for pVoice (where the grid concept came from)
 
 # FiveM Config
 
