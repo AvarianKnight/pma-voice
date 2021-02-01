@@ -5,14 +5,14 @@ A voice system designed around the use if FiveM's internal mumble server.
 
 ## Support
 
-### Please report any issues you have in the GitHub [Issues](https://github.com/AvarianKnight/pma-voice/issues)
+Please report any issues you have in the GitHub [Issues](https://github.com/AvarianKnight/pma-voice/issues)
 
 ### NOTE: It is expected for players to be on the latest recommended version (which you can find [here for Windows](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and [here for Linux](https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/).
 
 # Compatibility Notice:
 
-### This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
-### Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` and `NetworkSetVoiceActive` in any of your other scripts as it can break pma-voice.
+This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
+Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` and `NetworkSetVoiceActive` in any of your other scripts as it can break pma-voice.
 
 # Credits
 
@@ -22,7 +22,8 @@ A voice system designed around the use if FiveM's internal mumble server.
 # FiveM Config
 
 ### NOTE: Only use one of the Audio options (don't enable 3d Audio & Native Audio at the same time), its also recommended to always use voice_useSendingRangeOnly.
-### You only need to add the convar **if** you're changing the value.
+
+You only need to add the convar **if** you're changing the value.
 
 All of the configs here are set using `setr [voice_configOption] [boolean]`
 
