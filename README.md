@@ -7,7 +7,7 @@ A voice system designed around the use if FiveM's internal mumble server.
 
 Please report any issues you have in the GitHub [Issues](https://github.com/AvarianKnight/pma-voice/issues)
 
-### NOTE: It is expected for players to be on the latest recommended version (which you can find [here for Windows](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and [here for Linux](https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/).
+### NOTE: It is expected for servers to be on the latest recommended version, which you can find [here for Windows](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and [here for Linux](https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/).
 
 # Compatibility Notice:
 
