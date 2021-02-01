@@ -1,7 +1,7 @@
+### Disclaimer: Code in the main repo is considered to be 'dev', please use the [Latest Release](https://github.com/AvarianKnight/pma-voice/releases) for a stable version.
+
 # pma-voice
 A voice system designed around the use if FiveM's internal mumble server.
-
-### Disclaimer: Code in the main repo is considered to be 'dev', please use the [Latest Release](https://github.com/AvarianKnight/pma-voice/releases) for a stable version.
 
 ## Support
 
