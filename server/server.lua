@@ -1,10 +1,10 @@
-GlobalData.plyChannels = {}
+GlobalState.plyChannels = {}
 voiceData = {}
 radioData = {}
 callData = {}
 
 function defaultTable(source)
-	GlobalData.plyChannels[source] = 0
+	GlobalState.plyChannels[source] = 0
 	return {
 		radio = 0,
 		call = 0,
@@ -55,7 +55,7 @@ AddEventHandler("playerDropped", function()
 		if plyData.radio ~= 0 then
 			removePlayerFromRadio(source, plyData.radio)
 		end
-		GlobalData.plyChannels[source] = nil
+		GlobalState.plyChannels[source] = nil
 
 		if plyData.call ~= 0 then
 			removePlayerFromCall(source, plyData.call)
