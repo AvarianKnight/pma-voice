@@ -121,7 +121,7 @@ function setVoiceProperty(type, value)
 			radioEnabled = value
 		})
 	elseif type == "micClicks" then
-		SetResourceKvp('pma-voice_enableMicClicks', value)
+		SetResourceKvp('pma-voice_enableMicClicks', tostring(value))
 	end
 end
 exports('setVoiceProperty', setVoiceProperty)
@@ -196,8 +196,8 @@ AddEventHandler('onClientResourceStart', function(resource)
 	end
 
 	local micClicks = GetResourceKvpString('pma-voice_enableMicClicks')
-	if micClicks == nil then
-		SetResourceKvp('pma-voice_enableMicClicks', true)
+	if not micClicks then
+		SetResourceKvp('pma-voice_enableMicClicks', tostring(true))
 	end
 
 	-- sets how far the player can talk
