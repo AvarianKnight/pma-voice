@@ -75,14 +75,12 @@ function playerTargets(...)
 end
 
 function playMicClicks(clickType)
-	local micClicks = GetResourceKvpInt('pma-voice_micClicks')
-	-- have to explicitly check for nil or else 
-	if micClicks == 1 then
-		SendNUIMessage({
-			sound = (clickType and "audio_on" or "audio_off"),
-			volume = (clickType and (volume) or 0.05)
-		})
-	end
+	local micClicks = GetResourceKvpString('pma-voice_enableMicClicks')
+	if micClicks ~= 'true' then return end
+	SendNUIMessage({
+		sound = (clickType and "audio_on" or "audio_off"),
+		volume = (clickType and (volume) or 0.05)
+	})
 end
 
 local playerMuted = false
@@ -123,7 +121,7 @@ function setVoiceProperty(type, value)
 			radioEnabled = value
 		})
 	elseif type == "micClicks" then
-		SetResourceKvpInt('pma-voice_micClicks', value)
+		SetResourceKvp('pma-voice_enableMicClicks', value)
 	end
 end
 exports('setVoiceProperty', setVoiceProperty)
@@ -197,10 +195,9 @@ AddEventHandler('onClientResourceStart', function(resource)
 		return
 	end
 
-	-- register default
-	local micClicks = GetResourceKvpInt('pma-voice_micClicks')
+	local micClicks = GetResourceKvpString('pma-voice_enableMicClicks')
 	if micClicks == nil then
-		SetResourceKvpInt('pma-voice_micClicks', 1)
+		SetResourceKvp('pma-voice_enableMicClicks', true)
 	end
 
 	-- sets how far the player can talk
