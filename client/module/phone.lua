@@ -1,3 +1,5 @@
+---function createPhoneThread
+---creates a phone thread to listen for key presses
 local function createPhoneThread()
 	Citizen.CreateThread(function()
 		local changed = false

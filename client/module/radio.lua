@@ -1,5 +1,7 @@
-RegisterNetEvent('pma-voice:syncRadioData')
-AddEventHandler('pma-voice:syncRadioData', function(radioTable)
+--- event syncRadioData
+--- syncs the current players on the radio to the client
+---@param radioTable table the table of the current players on the radio
+function syncRadioData(radioTable)
 	radioData = radioTable
 	for tgt, enabled in pairs(radioTable) do
 		if tgt ~= playerServerId then
@@ -7,26 +9,36 @@ AddEventHandler('pma-voice:syncRadioData', function(radioTable)
 		end
 	end
 	playerTargets(radioData, callData)
-end)
+end
+RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 
-RegisterNetEvent('pma-voice:setTalkingOnRadio')
-AddEventHandler('pma-voice:setTalkingOnRadio', function(tgt, enabled)
-	if tgt ~= playerServerId then
-		toggleVoice(tgt, enabled, 'radio')
-		radioData[tgt] = enabled
+--- event setTalkingOnRadio
+--- sets the players talking status, triggered when a player starts/stops talking.
+---@param plySource number the players server id.
+---@param enabled boolean whether the player is talking or not.
+function setTalkingOnRadio(plySource, enabled)
+	if plySource ~= playerServerId then
+		toggleVoice(plySource, enabled, 'radio')
+		radioData[plySource] = enabled
 		playerTargets(radioData, callData)
 		playMicClicks(enabled)
 	end
-end)
+end
+RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 
-RegisterNetEvent('pma-voice:addPlayerToRadio')
-AddEventHandler('pma-voice:addPlayerToRadio', function(plySource)
+--- event addPlayerToRadio
+--- adds a player onto the radio.
+---@param plySource number the players server id to add to the radio.
+function addPlayerToRadio(plySource)
 	radioData[plySource] = false
 	playerTargets(radioData, callData)
-end)
+end
+RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 
-RegisterNetEvent('pma-voice:removePlayerFromRadio')
-AddEventHandler('pma-voice:removePlayerFromRadio', function(plySource)
+--- event removePlayerFromRadio
+--- removes the player (or self) from the radio
+---@param plySource number the players server id to remove from the radio.
+function removePlayerFromRadio(plySource)
 	if plySource == playerServerId then
 		for tgt, enabled in pairs(radioData) do
 			if tgt ~= playerServerId then
@@ -40,8 +52,12 @@ AddEventHandler('pma-voice:removePlayerFromRadio', function(plySource)
 		toggleVoice(plySource, false)
 		playerTargets(radioData, callData)
 	end
-end)
+end
+RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
 
+--- function setRadioChannel
+--- sets the local players current radio channel and updates the server
+---@param channel number the channel to set the player to, or 0 to remove them.
 function setRadioChannel(channel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
@@ -53,10 +69,21 @@ function setRadioChannel(channel)
 		})
 	end
 end
+
+--- exports setRadioChannel
+--- sets the local players current radio channel and updates the server
+---@param channel number the channel to set the player to, or 0 to remove them.
 exports('setRadioChannel', setRadioChannel)
+
+--- exports removePlayerFromRadio
+--- sets the local players current radio channel and updates the server
 exports('removePlayerFromRadio', function()
 	setRadioChannel(0)
 end)
+
+--- exports addPlayerToRadio
+--- sets the local players current radio channel and updates the server
+---@param radio number the channel to set the player to, or 0 to remove them.
 exports('addPlayerToRadio', function(radio)
 	local radio = tonumber(radio)
 	if radio then
@@ -104,8 +131,11 @@ RegisterCommand('-radiotalk', function()
 end, false)
 RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
 
-RegisterNetEvent('pma-voice:clSetPlayerRadio')
-AddEventHandler('pma-voice:clSetPlayerRadio', function(radioChannel)
+--- event syncRadio
+--- syncs the players radio, only happens if the radio was set server side.
+---@param radioChannel number the radio channel to set the player to.
+function syncRadio(radioChannel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData.radio = radioChannel
-end)
+end
+RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)
