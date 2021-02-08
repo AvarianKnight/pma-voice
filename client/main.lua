@@ -28,7 +28,7 @@ AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
 end)
 
 -- TODO: Better implementation of this?
-RegisterCommand('vol', function(source, args)
+RegisterCommand('vol', function(_, args)
 	local vol = tonumber(args[1])
 	if vol then
 		volume = vol / 100
@@ -42,26 +42,35 @@ SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
 AddAudioSubmixOutput(radioEffectId, 0)
 
 local submixFunctions = {
-	['radio'] = function(tgtId)
-		MumbleSetSubmixForServerId(tgtId, radioEffectId)
+	['radio'] = function(plySource)
+		MumbleSetSubmixForServerId(plySource, radioEffectId)
 	end,
-	['phone'] = function(tgtId)
+	['phone'] = function(plySource)
 		return 'not implemented'
 	end
 }
 
-function toggleVoice(tgtId, enabled, submixType)
+--- function toggleVoice
+--- Toggles the players voice
+---@param plySource number the players server id to override the volume for
+---@param enabled boolean if the players voice is getting activated or deactivated
+---@param submixType string what submix to use for the players voice, currently only supports 'radio'
+function toggleVoice(plySource, enabled, submixType)
 	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
 		if enabled and submixType then
-			submixFunctions[submixType](tgtId)
-		elseif not enabled then
-			MumbleSetSubmixForServerId(tgtId, -1)
+			submixFunctions[submixType](plySource)
+		else
+			MumbleSetSubmixForServerId(plySource, -1)
 		end
 	end
 
-	MumbleSetVolumeOverrideByServerId(tgtId, enabled and volume or -1.0)
+	MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
 end
 
+--- function playerTargets
+---Adds players voices to the local players listen channels allowing
+---Them to communicate at long range, ignoring proximity range.
+---@param any table* expects multiple tables to be sent over
 function playerTargets(...)
 	local targets = {...}
 
@@ -74,6 +83,9 @@ function playerTargets(...)
 	end
 end
 
+--- function playMicClicks
+---plays the mic click if the player has them enabled.
+---@param clickType boolean whether to play the 'on' or 'off' click. 
 function playMicClicks(clickType)
 	local micClicks = GetResourceKvpString('pma-voice_enableMicClicks')
 	if micClicks ~= 'true' then return end
@@ -104,6 +116,7 @@ RegisterCommand('-cycleproximity', function()
 end)
 RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 
+---toggles the mute on the local player, you can implement this event into your admin menu to mute players.
 RegisterNetEvent('pma-voice:mutePlayer')
 AddEventHandler('pma-voice:mutePlayer', function()
 	playerMuted = not playerMuted
@@ -114,6 +127,10 @@ AddEventHandler('pma-voice:mutePlayer', function()
 	end
 end)
 
+--- function setVoiceProperty
+--- sets the specified voice property
+---@param type string what voice property you want to change (only takes 'radioEnabled' and 'micClicks')
+---@param value any the value to set the type to.
 function setVoiceProperty(type, value)
 	if type == "radioEnabled" then
 		voiceData.radioEnabled = value
@@ -126,11 +143,17 @@ function setVoiceProperty(type, value)
 end
 exports('setVoiceProperty', setVoiceProperty)
 
+--- function getGridZone
+--- calculate the players grid
+---@return number returns the players current grid.
 local function getGridZone()
 	local plyPos = GetEntityCoords(PlayerPedId(), false)
 	return 31 + (voiceData.routingBucket * 5) + math.ceil((plyPos.x + plyPos.y) / (GetConvarInt('voice_zoneRadius', 128) * 2))
 end
 
+--- function updateZone
+--- updates the players current grid, if they're in a different grid.
+---@param forced boolean whether or not to force a grid refresh. default: false
 local function updateZone(forced)
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
@@ -154,7 +177,7 @@ Citizen.CreateThread(function()
 		Wait(100)
 	end
 	while true do
-		-- wait for reconnection, sending to the void does nothing
+		-- wait for reconnection, trying to set your voice channel when theres nothing to set it to is useless.
 		while not MumbleIsConnected() do
 			currentGrid = -1 -- reset the grid to something out of bounds so it will resync their zone on disconnect.
 			Wait(100)
@@ -176,6 +199,9 @@ Citizen.CreateThread(function()
 	end
 end)
 
+
+--- forces the player to resync with the mumble server
+--- sets their server address (if there is one) and forces their grid to update
 RegisterCommand('vsync', function()
 	local newGrid = getGridZone()
 	debug(('[pma-voice] [vsync] Forcing zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
