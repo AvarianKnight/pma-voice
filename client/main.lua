@@ -1,6 +1,9 @@
 local Cfg = Cfg
 local currentGrid = 0
 local volume = 0.3
+if GetConvar('voice_useNativeAudio', 'false') == 'true' and GetConvarInt('voice_enableRadioSubmix', 0) == 1  then
+	volume = 0.6
+end
 local intialized = false
 local voiceTarget = 1
 playerServerId = GetPlayerServerId(PlayerId())
