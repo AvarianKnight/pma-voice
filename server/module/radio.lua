@@ -35,7 +35,6 @@ function setPlayerRadio(source, radioChannel)
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	local plyVoice = voiceData[source]
 	local radioChannel = tonumber(radioChannel)
-	GlobalState.plyChannels[source] = radioChannel
 
 	if radioChannel ~= 0 and plyVoice.radio == 0 then
 		addPlayerToRadio(source, radioChannel)

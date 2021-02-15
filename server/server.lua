@@ -1,10 +1,8 @@
-GlobalState.plyChannels = {}
 voiceData = {}
 radioData = {}
 callData = {}
 
 function defaultTable(source)
-	GlobalState.plyChannels[source] = 0
 	return {
 		radio = 0,
 		call = 0,
@@ -55,12 +53,25 @@ AddEventHandler("playerDropped", function()
 		if plyData.radio ~= 0 then
 			removePlayerFromRadio(source, plyData.radio)
 		end
-		GlobalState.plyChannels[source] = nil
 
 		if plyData.call ~= 0 then
 			removePlayerFromCall(source, plyData.call)
 		end
 
 		voiceData[source] = nil
+	end
+end)
+
+AddEventHandler('onResourceStart', function(resource)
+	if resource ~= GetCurrentResourceName() then return end
+	if GetConvar('onesync') == 'on' then
+		local players = GetPlayers()
+		for i = 1, #players do
+			local ply = players[i]
+			if not voiceData[ply] then
+				voiceData[ply] = defaultTable(ply)
+				TriggerClientEvent('pma-voice:setRoutingBucket', ply, GetPlayerRoutingBucket(ply))
+			end
+		end
 	end
 end)

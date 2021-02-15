@@ -2,7 +2,7 @@ local Cfg = Cfg
 local currentGrid = 0
 local volume = 0.3
 if GetConvar('voice_useNativeAudio', 'false') == 'true' and GetConvarInt('voice_enableRadioSubmix', 0) == 1  then
-	volume = 0.6
+	volume = 0.5
 end
 local intialized = false
 local voiceTarget = 1
@@ -164,6 +164,7 @@ local function updateZone(forced)
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(voiceTarget)
 		NetworkSetVoiceChannel(currentGrid)
+		LocalPlayer.state:set('channel', currentGrid, true)
 		-- add nearby grids to voice targets
 		for nearbyGrids = currentGrid - 3, currentGrid + 3 do
 			MumbleAddVoiceTargetChannel(voiceTarget, nearbyGrids)
