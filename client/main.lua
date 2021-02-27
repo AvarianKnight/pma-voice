@@ -70,6 +70,7 @@ function toggleVoice(plySource, enabled, submixType)
 	MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
 end
 
+local currentlyTalking = {}
 --- function playerTargets
 ---Adds players voices to the local players listen channels allowing
 ---Them to communicate at long range, ignoring proximity range.
@@ -77,11 +78,15 @@ end
 function playerTargets(...)
 	local targets = {...}
 
+	currentlyTalking = {}
 	MumbleClearVoiceTargetPlayers(voiceTarget)
 
 	for i = 1, #targets do
 		for id, _ in pairs(targets[i]) do
-			MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
+			if not currentlyTalking[id] then
+				currentlyTalking[id] = true
+				MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
+			end
 		end
 	end
 end
