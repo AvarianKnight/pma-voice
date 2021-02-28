@@ -87,6 +87,7 @@ function playerTargets(...)
 				currentlyTalking[id] = true
 				MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
 			end
+			MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
 		end
 	end
 end
@@ -181,6 +182,9 @@ end
 local externalAddress = GetConvar('voice_externalAddress', '')
 local externalPort = GetConvar('voice_externalPort', '')
 
+local lastTalkingStatus = false
+local lastRadioStatus = false
+
 Citizen.CreateThread(function()
 	while not intialized do
 		Wait(100)
@@ -193,10 +197,14 @@ Citizen.CreateThread(function()
 		end
 		updateZone()
 		if GetConvarInt('voice_enableUi', 1) == 1 then
-			SendNUIMessage({
-				usingRadio = voiceData.radioPressed,
-				talking = NetworkIsPlayerTalking(PlayerId()) == 1
-			})
+			if lastRadioStatus ~= voiceData.radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
+				lastRadioStatus = voiceData.radioPressed
+				lastTalkingStatus = NetworkIsPlayerTalking(PlayerId()) == 1
+				SendNUIMessage({
+					usingRadio = voiceData.radioPressed,
+					talking = NetworkIsPlayerTalking(PlayerId()) == 1
+				})
+			end
 		end
 		-- only set this is its changed previously, as we dont want to set the address every frame.
 		if GetConvar('voice_externalAddress', '') ~= externalAddress and GetConvar('voice_externalPort', '') ~= externalPort then
