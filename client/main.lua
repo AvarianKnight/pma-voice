@@ -6,6 +6,7 @@ if GetConvar('voice_useNativeAudio', 'false') == 'true' and GetConvarInt('voice_
 end
 local intialized = false
 local voiceTarget = 1
+local micClicks = false
 playerServerId = GetPlayerServerId(PlayerId())
 
 voiceData = {
@@ -44,12 +45,19 @@ SetAudioSubmixEffectRadioFx(radioEffectId, 0)
 SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
 AddAudioSubmixOutput(radioEffectId, 0)
 
+local phoneEffectId = CreateAudioSubmix('Phone')
+SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
+SetAudioSubmixEffectParamInt(phoneEffectId, 1, GetHashKey('default'), 1)
+SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 20.2)
+SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('o_freq_lo'), 700.4)
+AddAudioSubmixOutput(phoneEffectId, 1)
+
 local submixFunctions = {
 	['radio'] = function(plySource)
 		MumbleSetSubmixForServerId(plySource, radioEffectId)
 	end,
 	['phone'] = function(plySource)
-		return 'not implemented'
+		MumbleSetSubmixForServerId(plySource, phoneEffectId)
 	end
 }
 
@@ -66,7 +74,6 @@ function toggleVoice(plySource, enabled, submixType)
 			MumbleSetSubmixForServerId(plySource, -1)
 		end
 	end
-
 	MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
 end
 
@@ -83,11 +90,14 @@ function playerTargets(...)
 
 	for i = 1, #targets do
 		for id, _ in pairs(targets[i]) do
+			if id == playerServerId or currentlyTalking[id] then
+				goto skip_loop
+			end
 			if not currentlyTalking[id] then
 				currentlyTalking[id] = true
 				MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
 			end
-			MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
+			::skip_loop::
 		end
 	end
 end
@@ -96,7 +106,6 @@ end
 ---plays the mic click if the player has them enabled.
 ---@param clickType boolean whether to play the 'on' or 'off' click. 
 function playMicClicks(clickType)
-	local micClicks = GetResourceKvpString('pma-voice_enableMicClicks')
 	if micClicks ~= 'true' then return end
 	SendNUIMessage({
 		sound = (clickType and "audio_on" or "audio_off"),
@@ -147,7 +156,9 @@ function setVoiceProperty(type, value)
 			radioEnabled = value
 		})
 	elseif type == "micClicks" then
-		SetResourceKvp('pma-voice_enableMicClicks', tostring(value))
+		local val = tostring(value)
+		micClicks = val
+		SetResourceKvp('pma-voice_enableMicClicks', val)
 	end
 end
 exports('setVoiceProperty', setVoiceProperty)
@@ -238,9 +249,11 @@ AddEventHandler('onClientResourceStart', function(resource)
 		return
 	end
 
-	local micClicks = GetResourceKvpString('pma-voice_enableMicClicks')
-	if not micClicks then
+	local micClicksKvp = GetResourceKvpString('pma-voice_enableMicClicks')
+	if not micClicksKvp then
 		SetResourceKvp('pma-voice_enableMicClicks', tostring(true))
+	else
+		micClicks = micClicksKvp
 	end
 
 	-- sets how far the player can talk

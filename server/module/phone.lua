@@ -60,7 +60,9 @@ AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
     local callTbl = callData[plyVoice.call]
     if callTbl then
         for player, _ in pairs(callTbl) do
-            TriggerClientEvent('pma-voice:setTalkingOnCall', player, source, talking)
+            if player ~= source then
+                TriggerClientEvent('pma-voice:setTalkingOnCall', player, source, talking)
+            end
         end
     end
 end)
