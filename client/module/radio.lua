@@ -96,7 +96,7 @@ RegisterCommand('+radiotalk', function()
 	-- since this is a shared resource (between my server and the public), probably don't want to try and use our export :P
 	-- use fallback in this case.
 	if GetResourceState("pma-ambulance") ~= "missing" then
-		if exports["pma-ambulance"]:isPlayerDead() then
+		if LocalPlayer.state.isDead then
 			return false
 		end
 	elseif IsPlayerDead(PlayerId()) then

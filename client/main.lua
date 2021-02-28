@@ -39,6 +39,16 @@ RegisterCommand('vol', function(_, args)
 	end
 end)
 
+
+-- default submix incase people want to fiddle with it.
+-- freq_low = 389.0
+-- freq_hi = 3248.0
+-- fudge = 0.0
+-- rm_mod_freq = 0.0
+-- rm_mix = 0.16
+-- o_freq_lo = 348.0
+-- 0_freq_hi = 4900.0
+
 -- radio submix
 local radioEffectId = CreateAudioSubmix('Radio')
 SetAudioSubmixEffectRadioFx(radioEffectId, 0)
@@ -48,8 +58,8 @@ AddAudioSubmixOutput(radioEffectId, 0)
 local phoneEffectId = CreateAudioSubmix('Phone')
 SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
 SetAudioSubmixEffectParamInt(phoneEffectId, 1, GetHashKey('default'), 1)
-SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 20.2)
-SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('o_freq_lo'), 700.4)
+SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 700.0)
+SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_hi'), 15000.0)
 AddAudioSubmixOutput(phoneEffectId, 1)
 
 local submixFunctions = {
