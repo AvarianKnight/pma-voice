@@ -1,5 +1,3 @@
-It's usually considered a good idea to change the resource name from pma-voice -> (server initials)-voice, as the keybinds will stick between servers.
-
 ### Disclaimer: Code in the main repo is considered to be 'dev', please use the [Latest Release](https://github.com/AvarianKnight/pma-voice/releases) for a stable version.
 
 # pma-voice
