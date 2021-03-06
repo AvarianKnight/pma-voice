@@ -42,6 +42,8 @@ All of the config is done via ConVars in order to streamline the process.
 
 The ints are used like a boolean to 0 would be false, 1 true.
 
+### NOTE: voice_zoneRadius expects a multiple of 4.
+
 | ConVar                  | Default | Description                                                   | Parameter(s) |
 |-------------------------|---------|---------------------------------------------------------------|--------------|
 | voice_zoneRadius             |   128   | Sets the zone radius size, on bigger servers you might need to set this lower. | int          |
