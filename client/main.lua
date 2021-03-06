@@ -178,7 +178,15 @@ exports('setVoiceProperty', setVoiceProperty)
 ---@return number returns the players current grid.
 local function getGridZone()
 	local plyPos = GetEntityCoords(PlayerPedId(), false)
-	return 31 + (voiceData.routingBucket * 5) + math.ceil((plyPos.x + plyPos.y) / (GetConvarInt('voice_zoneRadius', 128) * 2))
+	local zoneRadius = GetConvarInt('voice_zoneRadius', 128) * 2
+	local zoneOffset = (256 / zoneRadius)
+	-- this code might be hard to follow
+	return (
+		--[[ 31 is the initial offses]]
+		math.floor( 31 * ( --[[ offset from the original zone should return a multiple]] zoneOffset) + 
+	--[[ returns -6 * zoneOffset so we want to offset it ]]
+	(zoneOffset * 6) - 6 )) 
+	+ (--[[ Offset routing bucket by 5 (we listen to closest 5 channels) + 5 (routing starts at 0)]](voiceData.routingBucket * 5) + 5) + math.ceil((plyPos.x + plyPos.y) / (zoneRadius))
 end
 
 --- function updateZone
