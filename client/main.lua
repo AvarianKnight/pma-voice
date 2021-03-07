@@ -178,7 +178,7 @@ exports('setVoiceProperty', setVoiceProperty)
 ---@return number returns the players current grid.
 local function getGridZone()
 	local plyPos = GetEntityCoords(PlayerPedId(), false)
-	local zoneRadius = GetConvarInt('voice_zoneRadius', 128) * 2
+	local zoneRadius = GetConvarInt('voice_zoneRadius', 16) * 2
 	local zoneOffset = (256 / zoneRadius)
 	-- this code might be hard to follow
 	return (
