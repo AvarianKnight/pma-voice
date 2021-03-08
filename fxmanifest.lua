@@ -1,6 +1,6 @@
-game { 'gta5' }
+game {'gta5'}
 
-fx_version 'adamant'
+fx_version 'cerulean'
 author 'AvarianKnight'
 description 'VOIP built using FiveM\'s built in mumble.'
 
