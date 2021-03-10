@@ -101,3 +101,5 @@ Supported from mumble-voip / toko-voip
 | updateRoutingBucket  | Updates the players routing bucket, if provided a secondary option it will set & update the players routing bucket.   | int, int (opt) |
 
 ##### Getters
+
+Not currently implemented, more getters will be added in the future.
