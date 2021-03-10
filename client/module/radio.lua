@@ -74,6 +74,8 @@ end
 --- sets the local players current radio channel and updates the server
 ---@param channel number the channel to set the player to, or 0 to remove them.
 exports('setRadioChannel', setRadioChannel)
+-- mumble-voip compatability
+exports('SetRadioChannel', setRadioChannel)
 
 --- exports removePlayerFromRadio
 --- sets the local players current radio channel and updates the server

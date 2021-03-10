@@ -69,6 +69,8 @@ function setCallChannel(channel)
 end
 
 exports('setCallChannel', setCallChannel)
+exports('SetCallChannel', setCallChannel)
+
 exports('addPlayerToCall', function(call)
 	local call = tonumber(call)
 	if call then

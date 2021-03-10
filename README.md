@@ -13,7 +13,7 @@ Please report any issues you have in the GitHub [Issues](https://github.com/Avar
 
 This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
 
-Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` and `NetworkSetVoiceActive` in any of your other scripts as it can break pma-voice.
+Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` or `NetworkSetVoiceActive` in any of your other scripts as there have been cases where it breaks pma-voice.
 
 # Credits
 
@@ -73,14 +73,18 @@ This would only allow the superadmin group to mute players.
  
 | Export              | Description               | Parameter(s) |
 |---------------------|---------------------------|--------------|
-| setVoiceProperty    | Set config options        | string       |
+| setVoiceProperty    | Set config options        | string, any  |
 | setRadioChannel     | Set radio channel         | int          |
 | setCallChannel      | Set call channel          | int          |
 
-Supported from mumble-voip
+Supported from mumble-voip / toko-voip
 
 | Export                | Description              | Parameter(s) |
 |-----------------------|--------------------------|--------------|
+| SetMumbleProperty     | Set config options       | string, any  |
+| SetTokoProperty       | Set config options       | string, any  |
+| SetRadioChannel       | Set radio channel        | int          |
+| SetCallChannel        | Set call channel          | int          |
 | addPlayerToRadio      | Set radio channel        | int          |
 | removePlayerFromRadio | Remove player from radio |              |
 | addPlayerToCall       | Set call channel         | int          |
@@ -95,3 +99,5 @@ Supported from mumble-voip
 | setPlayerRadio       | Sets the players radio channel       | int, int     |
 | setPlayerCall        | Sets the players call channel        | int, int     |
 | updateRoutingBucket  | Updates the players routing bucket, if provided a secondary option it will set & update the players routing bucket.   | int, int (opt) |
+
+##### Getters

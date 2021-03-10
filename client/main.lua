@@ -164,6 +164,9 @@ function setVoiceProperty(type, value)
 	end
 end
 exports('setVoiceProperty', setVoiceProperty)
+-- compatability
+exports('SetMumbleProperty', setVoiceProperty)
+exports('SetTokoProperty', setVoiceProperty)
 
 --- function getGridZone
 --- calculate the players grid
