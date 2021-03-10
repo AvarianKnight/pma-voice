@@ -26,5 +26,9 @@ files {
 ui_page 'ui/index.html'
 
 provides {
-	'mumble-voip'
+	'mumble-voip',
+    -- why does it use so many different names
+    'tokovoip',
+    'toko-voip',
+    'tokovoip_script'
 }
