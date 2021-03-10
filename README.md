@@ -57,6 +57,13 @@ The ints are used like a boolean to 0 would be false, 1 true.
 | voice_externalPort           |   none  | The external port to use                                      | string       |
 | voice_debugMode              |   0     | Enables the debug prints (currently doesn't really do anything, need to add more debugs) | string       |
 
+### Aces
+pma-voice comes with a built in /mute command, in order to allow your staff to use it you will have to grand them the ace!
+
+Example:
+`add_ace group.superadmin command.mute allow;`
+
+This would only allow the superadmin group to mute players.
 
 ### Exports
 

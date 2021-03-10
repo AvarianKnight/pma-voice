@@ -1,4 +1,6 @@
 Cfg = {}
+-- possibly GetConvar('voice_modes', '0.5;2.0;5.0')
+-- possibly GetConvar('voice_modeNames', 'Whisper;Normal;Shouting') and seperate them on runtime?
 if GetConvar('voice_useNativeAudio', 'false') == 'true' then
 	Cfg.voiceModes = {
 		{0.5, "Whisper"}, -- Whisper speech distance in gta distance units

@@ -91,17 +91,22 @@ exports('addPlayerToRadio', function(radio)
 	end
 end)
 
-RegisterCommand('+radiotalk', function()
-	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
-	-- since this is a shared resource (between my server and the public), probably don't want to try and use our export :P
-	-- use fallback in this case.
+--- check if the player is dead
+--- seperating this so if people use different methods they can customize
+--- it to their need as this will likely never be changed.
+function isDead()
 	if GetResourceState("pma-ambulance") ~= "missing" then
 		if LocalPlayer.state.isDead then
-			return false
+			return true
 		end
 	elseif IsPlayerDead(PlayerId()) then
-		return false
+		return true
 	end
+end
+
+RegisterCommand('+radiotalk', function()
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
+	if isDead() then return end
 
 	if not voiceData.radioPressed and voiceData.radioEnabled then
 		if voiceData.radio > 0 then

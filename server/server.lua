@@ -7,13 +7,9 @@ function defaultTable(source)
 		radio = 0,
 		call = 0,
 		lastRadio = 0,
-		lastCall = 0,
-		routingBucket = 0
+		lastCall = 0
 	}
 end
-
--- micro optimize, local function calls are quite a bit faster.
-local defaultTable = defaultTable
 
 -- temp fix before an actual fix is added
 CreateThread(function()
@@ -25,23 +21,23 @@ end)
 RegisterNetEvent('playerJoined', function()
 	if not voiceData[source] then
 		voiceData[source] = defaultTable(source)
-		TriggerClientEvent('pma-voice:setRoutingBucket', source, 0)
+		Player(source).state:set('routingBucket', 0, true)
 	end
 end)
 
+--- update/sets the players routing bucket
+---@param source number the player to update/set
+---@param routingBucket number the routing bucket to set them to
 function updateRoutingBucket(source, routingBucket)
-	local route = 0
+	local route
 	-- make it optional to provide the routing bucket just incase 
 	-- people use another resource to manage their routing buckets.
 	if routingBucket then
 		SetPlayerRoutingBucket(source, routingBucket)
-		route = routingBucket
 	else
 		route = GetPlayerRoutingBucket(source)
 	end
-	voiceData[source] = voiceData[source] or defaultTable(source)
-	voiceData[source].routingBucket = route
-	TriggerClientEvent('pma-voice:updateRoutingBucket', source, route)
+	Player(source).state:set('routingBucket', route or routingBucket, true)
 end
 exports('updateRoutingBucket', updateRoutingBucket)
 
@@ -70,8 +66,17 @@ AddEventHandler('onResourceStart', function(resource)
 			local ply = players[i]
 			if not voiceData[ply] then
 				voiceData[ply] = defaultTable(ply)
-				TriggerClientEvent('pma-voice:setRoutingBucket', ply, GetPlayerRoutingBucket(ply))
+				Player(ply).state:set('routingBucket', GetPlayerRoutingBucket(ply), true)
 			end
 		end
 	end
 end)
+
+RegisterCommand('mute', function(source, args)
+	local mutePly = tonumber(args[1])
+	if mutePly then
+		if voiceData[mutePly] then
+			TriggerClientEvent('pma-voice:mutePlayer', mutePly)
+		end
+	end
+end, true)

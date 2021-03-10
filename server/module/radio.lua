@@ -1,6 +1,6 @@
--- micro optimize
-local defaultTable = defaultTable
-
+--- removes a player from the specified channel
+---@param source number the player to remove
+---@param currentChannel number the current channel to remove them from
 function removePlayerFromRadio(source, currentChannel)
 	radioData[currentChannel] = radioData[currentChannel] or {}
 	for player, _ in pairs(radioData[currentChannel]) do
@@ -11,6 +11,9 @@ function removePlayerFromRadio(source, currentChannel)
 	voiceData[source].radio = 0
 end
 
+--- adds a player to the specified radion channel
+---@param source number the player to add to the channel
+---@param channel number the channel to set them to
 function addPlayerToRadio(source, channel)
 	-- check if the channel exists, if it does set the varaible to it
 	-- if not create it (basically if not radiodata make radiodata)
@@ -25,6 +28,10 @@ function addPlayerToRadio(source, channel)
 	TriggerClientEvent('pma-voice:syncRadioData', source, radioData[channel])
 end
 
+-- TODO: Implement this in a way that allows players to be on multiple channels
+--- sets the players current radio channel
+---@param source number the player to set the channel of
+---@param radioChannel number the radio channel to set them to (or 0 to remove them from radios)
 function setPlayerRadio(source, radioChannel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	if GetInvokingResource() then
@@ -47,20 +54,24 @@ function setPlayerRadio(source, radioChannel)
 end
 exports('setPlayerRadio', setPlayerRadio)
 
-RegisterNetEvent('pma-voice:setPlayerRadio')
-AddEventHandler('pma-voice:setPlayerRadio', function(radioChannel)
+RegisterNetEvent('pma-voice:setPlayerRadio', function(radioChannel)
 	setPlayerRadio(source, radioChannel)
 end)
 
-RegisterNetEvent('pma-voice:setTalkingOnRadio')
-AddEventHandler('pma-voice:setTalkingOnRadio', function(talking)
+--- syncs the player talking across all radio members
+---@param talking boolean sets if the palyer is talking.
+function setTalkingOnRadio(talking)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	local plyVoice = voiceData[source]
 	local radioTbl = radioData[plyVoice.radio]
 	if radioTbl then
 		for player, _ in pairs(radioTbl) do
-			TriggerClientEvent('pma-voice:setTalkingOnRadio', player, source, talking)
+			if player ~= source then
+				TriggerClientEvent('pma-voice:setTalkingOnRadio', player, source, talking)
+			end
 		end
 	end
-end)
+end
+RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
+

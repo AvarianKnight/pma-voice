@@ -9,13 +9,11 @@ lua54 'yes'
 shared_script 'shared.lua'
 
 client_scripts {
-	'client/main.lua',
-    'client/module/*.lua',
+    'client/**/*.lua',
 }
 
 server_scripts {
-    'server/server.lua',
-    'server/module/*.lua'
+    'server/**/*.lua'
 }
 
 files {

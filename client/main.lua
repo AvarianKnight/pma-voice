@@ -6,16 +6,16 @@ if GetConvar('voice_useNativeAudio', 'false') == 'true' and GetConvarInt('voice_
 end
 local intialized = false
 local voiceTarget = 1
-local micClicks = false
+local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 
+-- is there really a reason to next these under a table?
 voiceData = {
 	radioEnabled = false,
 	radioPressed = false,
 	mode = 2,
 	radio = 0,
-	call = 0,
-	routingBucket = 0
+	call = 0
 }
 radioData = {}
 callData = {}
@@ -23,12 +23,6 @@ callData = {}
 -- TODO: Convert the last Cfg to a Convar, while still keeping it simple.
 AddEventHandler('pma-voice:settingsCallback', function(cb)
 	cb(Cfg)
-end)
-
-
-RegisterNetEvent('pma-voice:updateRoutingBucket')
-AddEventHandler('pma-voice:updateRoutingBucket', function(routingBucket)
-	voiceData.routingBucket = routingBucket
 end)
 
 -- TODO: Better implementation of this?
@@ -91,7 +85,7 @@ local currentlyTalking = {}
 --- function playerTargets
 ---Adds players voices to the local players listen channels allowing
 ---Them to communicate at long range, ignoring proximity range.
----@param any table* expects multiple tables to be sent over
+---@param targets table expects multiple tables to be sent over
 function playerTargets(...)
 	local targets = {...}
 
@@ -144,9 +138,7 @@ RegisterCommand('-cycleproximity', function()
 end)
 RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 
----toggles the mute on the local player, you can implement this event into your admin menu to mute players.
-RegisterNetEvent('pma-voice:mutePlayer')
-AddEventHandler('pma-voice:mutePlayer', function()
+RegisterNetEvent('pma-voice:mutePlayer', function()
 	playerMuted = not playerMuted
 	if playerMuted then
 		MumbleSetAudioInputDistance(0.1)
@@ -186,7 +178,7 @@ local function getGridZone()
 		math.floor( 31 * ( --[[ offset from the original zone should return a multiple]] zoneOffset) + 
 	--[[ returns -6 * zoneOffset so we want to offset it ]]
 	(zoneOffset * 6) - 6 )) 
-	+ (--[[ Offset routing bucket by 5 (we listen to closest 5 channels) + 5 (routing starts at 0)]](voiceData.routingBucket * 5) + 5) + math.ceil((plyPos.x + plyPos.y) / (zoneRadius))
+	+ (--[[ Offset routing bucket by 5 (we listen to closest 5 channels) + 5 (routing starts at 0)]]((LocalPlayer.state.routingBucket or 0) * 5) + 5) + math.ceil((plyPos.x + plyPos.y) / (zoneRadius))
 end
 
 --- function updateZone
@@ -207,17 +199,20 @@ local function updateZone(forced)
 	end
 end
 
--- 'cache' their external stuff so if it changes in runtime we update.
+-- cache their external servers so if it changes in runtime we can reconnect the client.
 local externalAddress = GetConvar('voice_externalAddress', '')
 local externalPort = GetConvar('voice_externalPort', '')
 
+-- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
 local lastRadioStatus = false
-
 Citizen.CreateThread(function()
 	while not intialized do
 		Wait(100)
 	end
+	TriggerEvent('chat:addSuggestion', '/mute', 'Mutes the player with the specified id', {
+		{ name = "player id", help = "the player to toggle mute" }
+	})
 	while true do
 		-- wait for reconnection, trying to set your voice channel when theres nothing to set it to is useless.
 		while not MumbleIsConnected() do
@@ -230,8 +225,8 @@ Citizen.CreateThread(function()
 				lastRadioStatus = voiceData.radioPressed
 				lastTalkingStatus = NetworkIsPlayerTalking(PlayerId()) == 1
 				SendNUIMessage({
-					usingRadio = voiceData.radioPressed,
-					talking = NetworkIsPlayerTalking(PlayerId()) == 1
+					usingRadio = lastRadioStatus,
+					talking = lastTalkingStatus
 				})
 			end
 		end
@@ -250,13 +245,17 @@ end)
 --- sets their server address (if there is one) and forces their grid to update
 RegisterCommand('vsync', function()
 	local newGrid = getGridZone()
-	debug(('[pma-voice] [vsync] Forcing zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
+	print(('[vsync] Forcing zone from %s to %s and resetting voice targets.'):format(currentGrid, newGrid))
 	if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
 		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
 		while not MumbleIsConnected() do
 			Wait(250)
 		end
 	end
+	-- reset the players voice targets
+	MumbleSetVoiceTarget(0)
+	MumbleClearVoiceTarget(voiceTarget)
+	MumbleSetVoiceTarget(voiceTarget)
 	MumbleClearVoiceTargetPlayers(voiceTarget)
 	-- force a zone update.
 	updateZone(true)
@@ -266,6 +265,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 	if resource ~= GetCurrentResourceName() then
 		return
 	end
+	print('Starting script initialization')
 
 	local micClicksKvp = GetResourceKvpString('pma-voice_enableMicClicks')
 	if not micClicksKvp then
@@ -291,7 +291,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 
 	updateZone()
 
-	print('[pma-voice] Intitalized voices.')
+	print('Script initialization finished.')
 	intialized = true
 
 	-- not waiting right here (in testing) let to some cases of the UI 
@@ -306,5 +306,5 @@ AddEventHandler('onClientResourceStart', function(resource)
 end)
 
 RegisterCommand("grid", function()
-	print(('[pma-voice] Players current grid is %s'):format(currentGrid))
+	print(('Players current grid is %s'):format(currentGrid))
 end)

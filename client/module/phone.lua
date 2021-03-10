@@ -17,8 +17,7 @@ local function createPhoneThread()
 	end)
 end
 
-RegisterNetEvent('pma-voice:syncCallData')
-AddEventHandler('pma-voice:syncCallData', function(callTable, channel)
+RegisterNetEvent('pma-voice:syncCallData', function(callTable, channel)
 	callData = callTable
 	for tgt, enabled in pairs(callTable) do
 		if tgt ~= playerServerId then
@@ -28,8 +27,7 @@ AddEventHandler('pma-voice:syncCallData', function(callTable, channel)
 	playerTargets(radioData, callData)
 end)
 
-RegisterNetEvent('pma-voice:setTalkingOnCall')
-AddEventHandler('pma-voice:setTalkingOnCall', function(tgt, enabled)
+RegisterNetEvent('pma-voice:setTalkingOnCall', function(tgt, enabled)
 	if tgt ~= playerServerId then
 		callData[tgt] = enabled
 		playerTargets(radioData, callData)
@@ -37,14 +35,12 @@ AddEventHandler('pma-voice:setTalkingOnCall', function(tgt, enabled)
 	end
 end)
 
-RegisterNetEvent('pma-voice:addPlayerToCall')
-AddEventHandler('pma-voice:addPlayerToCall', function(plySource)
+RegisterNetEvent('pma-voice:addPlayerToCall', function(plySource)
 	callData[plySource] = false
 	playerTargets(radioData, callData)
 end)
 
-RegisterNetEvent('pma-voice:removePlayerFromCall')
-AddEventHandler('pma-voice:removePlayerFromCall', function(plySource)
+RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
 	if plySource == playerServerId then
 		for tgt, enabled in pairs(callData) do
 			if tgt ~= playerServerId then
@@ -83,8 +79,7 @@ exports('removePlayerFromCall', function()
 	setCallChannel(0)
 end)
 
-RegisterNetEvent('pma-voice:clSetPlayerCall')
-AddEventHandler('pma-voice:clSetPlayerCall', function(callChannel)
+RegisterNetEvent('pma-voice:clSetPlayerCall', function(callChannel)
 	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
 	voiceData.call = callChannel
 	createPhoneThread()

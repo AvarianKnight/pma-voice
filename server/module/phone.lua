@@ -1,6 +1,6 @@
--- micro optimize
-local defaultTable = defaultTable
-
+--- removes a player from the call for everyone in the call.
+---@param source number the player to remove from the call
+---@param currentChannel number the call channel to remove them from
 function removePlayerFromCall(source, currentChannel)
     callData[currentChannel] = callData[currentChannel] or {}
     for player, _ in pairs(callData[currentChannel]) do
@@ -11,12 +11,18 @@ function removePlayerFromCall(source, currentChannel)
     voiceData[source].call = 0
 end
 
+--- adds a player to a call
+---@param source number the player to add to the call 
+---@param channel number the call channel to add them to
 function addPlayerToCall(source, channel)
     -- check if the channel exists, if it does set the varaible to it
     -- if not create it (basically if not callData make callData)
     callData[channel] = callData[channel] or {}
     for player, _ in pairs(callData[channel]) do
-        TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
+        -- don't need to send to the source because they're about to get sync'd!
+        if player ~= source then
+            TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
+        end
     end
     callData[channel][source] = false
     voiceData[source] = voiceData[source] or defaultTable(source)
@@ -24,6 +30,9 @@ function addPlayerToCall(source, channel)
     TriggerClientEvent('pma-voice:syncCallData', source, callData[channel])
 end
 
+--- set the players call channel
+---@param source number the player to set the call off
+---@param callChannel number the channel to set the player to (or 0 to remove them from any call channel)
 function setPlayerCall(source, callChannel)
 	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
     if GetInvokingResource() then
@@ -46,13 +55,12 @@ function setPlayerCall(source, callChannel)
 end
 exports('setPlayerCall', setPlayerCall)
 
-RegisterNetEvent('pma-voice:setPlayerCall')
-AddEventHandler('pma-voice:setPlayerCall', function(callChannel)
+RegisterNetEvent('pma-voice:setPlayerCall', function(callChannel)
     setPlayerCall(source, callChannel)
 end)
 
-RegisterNetEvent('pma-voice:setTalkingOnCall')
-AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
+
+function setTalkingOnCall(talking)
 	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
     local source = source
     voiceData[source] = voiceData[source] or defaultTable(source)
@@ -65,4 +73,5 @@ AddEventHandler('pma-voice:setTalkingOnCall', function(talking)
             end
         end
     end
-end)
+end
+RegisterNetEvent('pma-voice:setTalkingOnCall', setTalkingOnCall)
