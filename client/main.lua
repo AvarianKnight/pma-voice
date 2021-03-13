@@ -1,3 +1,4 @@
+collectgarbage('generational')
 local Cfg = Cfg
 local currentGrid = 0
 local volume = 0.3
