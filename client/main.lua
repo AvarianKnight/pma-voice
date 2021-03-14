@@ -312,3 +312,11 @@ end)
 RegisterCommand("grid", function()
 	print(('Players current grid is %s'):format(currentGrid))
 end)
+
+AddEventHandler('mumbleConnected', function(mumbleServer, reconnecting)
+	print(('Successfully connected to mumble server, should reconnect on disconnect: %s'):format(reconnecting))
+end)
+
+AddEventHandler('mumbleDisconnected', function(mumbleServer)
+	print(('Disconnected from mumble server'):format(mumbleServer or 'undefined'))
+end)
