@@ -203,9 +203,9 @@ local function updateZone(forced)
 	end
 end
 
--- cache their external servers so if it changes in runtime we can reconnect the client.
-local externalAddress = GetConvar('voice_externalAddress', '')
-local externalPort = GetConvar('voice_externalPort', '')
+-- don't cache their external servers until it's been set once by the script
+local externalAddress = ''
+local externalPort = 0
 
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
@@ -235,10 +235,10 @@ Citizen.CreateThread(function()
 			end
 		end
 		-- only set this is its changed previously, as we dont want to set the address every frame.
-		if GetConvar('voice_externalAddress', '') ~= externalAddress and GetConvar('voice_externalPort', '') ~= externalPort then
+		if GetConvar('voice_externalAddress', '') ~= externalAddress and GetConvarInt('voice_externalPort', 0) ~= externalPort then
 			externalAddress = GetConvar('voice_externalAddress', '')
-			externalPort = GetConvar('voice_externalPort', '')
-			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
+			externalPort = GetConvarInt('voice_externalPort', 0)
+			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
 		end
 		Wait(0)
 	end
@@ -250,8 +250,8 @@ end)
 RegisterCommand('vsync', function()
 	local newGrid = getGridZone()
 	print(('[vsync] Forcing zone from %s to %s and resetting voice targets.'):format(currentGrid, newGrid))
-	if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
-		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
+	if GetConvar('voice_externalAddress', '') ~= '' and GetConvarInt('voice_externalPort', 0) ~= 0 then
+		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
 		while not MumbleIsConnected() do
 			Wait(250)
 		end
