@@ -31,7 +31,7 @@ All of the configs here are set using `setr [voice_configOption] [boolean]`
 | ConVar                     | Default | Description                                                   | Parameter(s) |
 |----------------------------|---------|---------------------------------------------------------------|--------------|
 | voice_useNativeAudio       |  false  | Uses the games native audio, will add 3d sound, echo, reverb, and more. Required for submixs   | boolean      |
-| voice_use3dAudio           |  false  | Uses 3d audio, will base voices dependent where the player(s) are. | boolean      |
+| voice_use3dAudio           |  false  | DEPRECATED: Use `voice_useNativeAudio` instead. Uses 3d audio, will base voices dependent where the player(s) are. | boolean      |
 | voice_use2dAudio           |  false  | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity. | boolean      |
 | voice_useSendingRangeOnly  |  false  | Only allows you to hear people within your hear/send range, prevents people from connecting to your mumble server and trolling. | boolean      |
 
