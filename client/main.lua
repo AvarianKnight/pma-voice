@@ -5,7 +5,6 @@ local volume = 0.3
 if GetConvar('voice_useNativeAudio', 'false') == 'true' and GetConvarInt('voice_enableRadioSubmix', 0) == 1  then
 	volume = 0.5
 end
-local intialized = false
 local voiceTarget = 1
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
@@ -33,6 +32,17 @@ RegisterCommand('vol', function(_, args)
 		volume = vol / 100
 	end
 end)
+
+---connects to the external address & port as specified by convars
+---@param shouldWait boolean if we should wait for the server to be connected
+function connectToMumble(shouldWait)
+	MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
+	if shouldWait then
+		while not MumbleIsConnected() do
+			Wait(250)
+		end
+	end
+end
 
 
 -- default submix incase people want to fiddle with it.
@@ -205,40 +215,37 @@ end
 
 -- cache their external servers so if it changes in runtime we can reconnect the client.
 local externalAddress = GetConvar('voice_externalAddress', '')
-local externalPort = GetConvar('voice_externalPort', '')
+local externalPort = GetConvarInt('voice_externalPort', 0)
 
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
 local lastRadioStatus = false
 Citizen.CreateThread(function()
-	while not intialized do
-		Wait(100)
-	end
 	TriggerEvent('chat:addSuggestion', '/mute', 'Mutes the player with the specified id', {
 		{ name = "player id", help = "the player to toggle mute" }
 	})
 	while true do
-		-- wait for reconnection, trying to set your voice channel when theres nothing to set it to is useless.
-		while not MumbleIsConnected() do
+		if MumbleIsConnected() then
+			updateZone()
+			if GetConvarInt('voice_enableUi', 1) == 1 then
+				if lastRadioStatus ~= voiceData.radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
+					lastRadioStatus = voiceData.radioPressed
+					lastTalkingStatus = NetworkIsPlayerTalking(PlayerId()) == 1
+					SendNUIMessage({
+						usingRadio = lastRadioStatus,
+						talking = lastTalkingStatus
+					})
+				end
+			end
+		else
 			currentGrid = -1 -- reset the grid to something out of bounds so it will resync their zone on disconnect.
 			Wait(100)
 		end
-		updateZone()
-		if GetConvarInt('voice_enableUi', 1) == 1 then
-			if lastRadioStatus ~= voiceData.radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
-				lastRadioStatus = voiceData.radioPressed
-				lastTalkingStatus = NetworkIsPlayerTalking(PlayerId()) == 1
-				SendNUIMessage({
-					usingRadio = lastRadioStatus,
-					talking = lastTalkingStatus
-				})
-			end
-		end
 		-- only set this is its changed previously, as we dont want to set the address every frame.
-		if GetConvar('voice_externalAddress', '') ~= externalAddress and GetConvar('voice_externalPort', '') ~= externalPort then
+		if GetConvar('voice_externalAddress', '') ~= externalAddress or GetConvarInt('voice_externalPort', 0) ~= externalPort then
 			externalAddress = GetConvar('voice_externalAddress', '')
-			externalPort = GetConvar('voice_externalPort', '')
-			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
+			externalPort = GetConvarInt('voice_externalPort', 0)
+			connectToMumble(false)
 		end
 		Wait(0)
 	end
@@ -250,17 +257,16 @@ end)
 RegisterCommand('vsync', function()
 	local newGrid = getGridZone()
 	print(('[vsync] Forcing zone from %s to %s and resetting voice targets.'):format(currentGrid, newGrid))
-	if GetConvar('voice_externalAddress', '') ~= '' and GetConvar('voice_externalPort', '') ~= '' then
-		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvar('voice_externalPort', ''))
-		while not MumbleIsConnected() do
-			Wait(250)
-		end
+	if GetConvar('voice_externalAddress', '') ~= '' and GetConvarInt('voice_externalPort', 0) then
+		connectToMumble(true)
 	end
 	-- reset the players voice targets
 	MumbleSetVoiceTarget(0)
 	MumbleClearVoiceTarget(voiceTarget)
 	MumbleSetVoiceTarget(voiceTarget)
 	MumbleClearVoiceTargetPlayers(voiceTarget)
+	NetworkSetVoiceChannel(currentGrid + 100)
+	NetworkSetVoiceChannel(currentGrid)
 	-- force a zone update.
 	updateZone(true)
 end)
@@ -284,10 +290,9 @@ AddEventHandler('onClientResourceStart', function(resource)
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
 
-	while not MumbleIsConnected() do
-		Wait(250)
+	if GetConvar('voice_externalAddress', '') ~= '' and GetConvarInt('voice_externalPort', 0) then
+		connectToMumble(true)
 	end
-
 
 	MumbleSetVoiceTarget(0)
 	MumbleClearVoiceTarget(voiceTarget)
@@ -296,7 +301,6 @@ AddEventHandler('onClientResourceStart', function(resource)
 	updateZone()
 
 	print('Script initialization finished.')
-	intialized = true
 
 	-- not waiting right here (in testing) let to some cases of the UI 
 	-- just not working at all.
