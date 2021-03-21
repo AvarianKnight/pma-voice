@@ -8,7 +8,6 @@ function syncRadioData(radioTable)
 			toggleVoice(tgt, enabled, 'radio')
 		end
 	end
-	playerTargets(radioData, callData)
 end
 RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 
@@ -17,12 +16,9 @@ RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 ---@param plySource number the players server id.
 ---@param enabled boolean whether the player is talking or not.
 function setTalkingOnRadio(plySource, enabled)
-	if plySource ~= playerServerId then
-		toggleVoice(plySource, enabled, 'radio')
-		radioData[plySource] = enabled
-		playerTargets(radioData, callData)
-		playMicClicks(enabled)
-	end
+	radioData[plySource] = enabled
+	toggleVoice(plySource, enabled, 'radio')
+	playMicClicks(enabled)
 end
 RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 
@@ -31,7 +27,9 @@ RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 ---@param plySource number the players server id to add to the radio.
 function addPlayerToRadio(plySource)
 	radioData[plySource] = false
-	playerTargets(radioData, callData)
+	if voiceData.radioPressed then
+		playerTargets(radioData, callData)
+	end
 end
 RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 
@@ -46,11 +44,15 @@ function removePlayerFromRadio(plySource)
 			end
 		end
 		radioData = {}
-		playerTargets(radioData, callData)
+		-- only update the call data if they're talking
+		playerTargets(radioData, NetworkIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		radioData[plySource] = nil
 		toggleVoice(plySource, false)
-		playerTargets(radioData, callData)
+		-- update our targets if we were talking
+		if voiceData.radioPressed then
+			playerTargets(radioData, NetworkIsPlayerTalking(PlayerId()) and callData or {})
+		end
 	end
 end
 RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
@@ -115,6 +117,7 @@ RegisterCommand('+radiotalk', function()
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			voiceData.radioPressed = true
 			playMicClicks(true)
+			playerTargets(radioData, callData)
 			Citizen.CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
 				while voiceData.radioPressed do
@@ -133,6 +136,7 @@ RegisterCommand('-radiotalk', function()
 		voiceData.radioPressed = false
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
+		MumbleClearVoiceTargetPlayers(1)
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
 	end
 end, false)

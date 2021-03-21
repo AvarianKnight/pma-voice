@@ -5,11 +5,14 @@ local function createPhoneThread()
 		local changed = false
 		while voiceData.call ~= 0 do
 			-- check if they're pressing voice keybinds
-			if NetworkIsPlayerTalking(PlayerId()) and not changed then
+			local isTalking <const> = NetworkIsPlayerTalking(PlayerId())
+			if isTalking and not changed then
 				changed = true
+				playerTargets(radioData, callData)
 				TriggerServerEvent('pma-voice:setTalkingOnCall', true)
-			elseif changed and NetworkIsPlayerTalking(PlayerId()) ~= 1 then
+			elseif changed and isTalking ~= 1 then
 				changed = false
+				MumbleClearVoiceTargetPlayers(1)
 				TriggerServerEvent('pma-voice:setTalkingOnCall', false)
 			end
 			Wait(0)
@@ -24,20 +27,20 @@ RegisterNetEvent('pma-voice:syncCallData', function(callTable, channel)
 			toggleVoice(tgt, enabled, 'phone')
 		end
 	end
-	playerTargets(radioData, callData)
 end)
 
 RegisterNetEvent('pma-voice:setTalkingOnCall', function(tgt, enabled)
 	if tgt ~= playerServerId then
 		callData[tgt] = enabled
-		playerTargets(radioData, callData)
 		toggleVoice(tgt, enabled, 'phone')
 	end
 end)
 
 RegisterNetEvent('pma-voice:addPlayerToCall', function(plySource)
 	callData[plySource] = false
-	playerTargets(radioData, callData)
+	if NetworkIsPlayerTalking(PlayerId()) then
+		playerTargets(voiceData.radioPressed and radioData or {}, callData)
+	end
 end)
 
 RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
@@ -48,11 +51,15 @@ RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
 			end
 		end
 		callData = {}
-		playerTargets(radioData, callData)
+		-- only reset the radio talking data if the we (the player) has the radio button pressed
+		playerTargets(voiceData.radioPressed and radioData or {}, callData)
 	else
 		callData[plySource] = nil
 		toggleVoice(plySource, false, 'phone')
-		playerTargets(radioData, callData)
+		-- only update player targets if we're talking.
+		if NetworkIsPlayerTalking(PlayerId()) then
+			playerTargets(voiceData.radioPressed and radioData or {}, callData)
+		end
 	end
 end)
 
@@ -70,13 +77,13 @@ end
 
 exports('setCallChannel', setCallChannel)
 exports('SetCallChannel', setCallChannel)
-
 exports('addPlayerToCall', function(call)
 	local call = tonumber(call)
 	if call then
 		setCallChannel(call)
 	end
 end)
+
 exports('removePlayerFromCall', function()
 	setCallChannel(0)
 end)

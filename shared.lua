@@ -3,7 +3,7 @@ Cfg = {}
 -- possibly GetConvar('voice_modeNames', 'Whisper;Normal;Shouting') and seperate them on runtime?
 if GetConvar('voice_useNativeAudio', 'false') == 'true' then
 	Cfg.voiceModes = {
-		{0.5, "Whisper"}, -- Whisper speech distance in gta distance units
+		{0.75, "Whisper"}, -- Whisper speech distance in gta distance units
 		{2.0, "Normal"}, -- Normal speech distance in gta distance units
 		{5.0, "Shouting"} -- Shout speech distance in gta distance units
 	}
