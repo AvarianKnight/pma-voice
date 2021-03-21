@@ -3,6 +3,10 @@
 ---@param radioTable table the table of the current players on the radio
 function syncRadioData(radioTable)
 	radioData = radioTable
+	debug(('Syncing radio table.'))
+	if GetConvarInt('voice_debugMode', 0) == 1 then
+		tPrint(radioData)
+	end
 	for tgt, enabled in pairs(radioTable) do
 		if tgt ~= playerServerId then
 			toggleVoice(tgt, enabled, 'radio')
@@ -16,6 +20,7 @@ RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 ---@param plySource number the players server id.
 ---@param enabled boolean whether the player is talking or not.
 function setTalkingOnRadio(plySource, enabled)
+	debug(('%s has %s talking on the radio'):format(plySource, enabled and 'started' or 'stopped'))
 	radioData[plySource] = enabled
 	toggleVoice(plySource, enabled, 'radio')
 	playMicClicks(enabled)
@@ -26,9 +31,10 @@ RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 --- adds a player onto the radio.
 ---@param plySource number the players server id to add to the radio.
 function addPlayerToRadio(plySource)
+	debug(('%s has joined the radio'):format(plySource))
 	radioData[plySource] = false
 	if voiceData.radioPressed then
-		playerTargets(radioData, callData)
+		playerTargets(radioData, NetworkIsPlayerTalking(PlayerId()) and callData or {})
 	end
 end
 RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
@@ -38,6 +44,7 @@ RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 ---@param plySource number the players server id to remove from the radio.
 function removePlayerFromRadio(plySource)
 	if plySource == playerServerId then
+		debug(('We have left the radio channel'))
 		for tgt, enabled in pairs(radioData) do
 			if tgt ~= playerServerId then
 				toggleVoice(tgt, false)
@@ -51,7 +58,10 @@ function removePlayerFromRadio(plySource)
 		toggleVoice(plySource, false)
 		-- update our targets if we were talking
 		if voiceData.radioPressed then
+			debug(('We were talking when %s left, resetting targets.'):format(plySource))
 			playerTargets(radioData, NetworkIsPlayerTalking(PlayerId()) and callData or {})
+		else
+			debug(('%s has left the radio'):format(plySource))
 		end
 	end
 end
@@ -62,6 +72,7 @@ RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
 ---@param channel number the channel to set the player to, or 0 to remove them.
 function setRadioChannel(channel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
+	debug(('Setting radio channel to %s'):format(channel))
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
 	voiceData.radio = channel
 	if GetConvarInt('voice_enableUi', 1) == 1 then
@@ -114,10 +125,10 @@ RegisterCommand('+radiotalk', function()
 
 	if not voiceData.radioPressed and voiceData.radioEnabled then
 		if voiceData.radio > 0 then
+			playerTargets(radioData, NetworkIsPlayerTalking(PlayerId()) and callData or {})
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			voiceData.radioPressed = true
 			playMicClicks(true)
-			playerTargets(radioData, callData)
 			Citizen.CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
 				while voiceData.radioPressed do
@@ -134,9 +145,9 @@ end, false)
 RegisterCommand('-radiotalk', function()
 	if voiceData.radio > 0 or voiceData.radioEnabled then
 		voiceData.radioPressed = false
+		MumbleClearVoiceTargetPlayers(1)
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
-		MumbleClearVoiceTargetPlayers(1)
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
 	end
 end, false)
@@ -148,5 +159,6 @@ RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice
 function syncRadio(radioChannel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData.radio = radioChannel
+	debug(('Radio set server side, syncing radio to channel %s'):format(radioChannel))
 end
 RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)

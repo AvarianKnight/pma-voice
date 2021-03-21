@@ -16,6 +16,24 @@ else
 end
 function debug(message)
 	if GetConvarInt('voice_debugMode', 0) == 1 then
-		print(('[pma-voice:debug] %s'):format(message))
+		print(('%s'):format(message))
+	end
+end
+
+function tPrint(tbl, indent)
+	indent = indent or 0
+	for k, v in pairs(tbl) do
+		local tblType = type(v)
+		formatting = string.rep("  ", indent) .. k .. ": "
+		if tblType == "table" then
+			print(formatting)
+			tPrint(v, indent + 1)
+		elseif tblType == 'boolean' then
+			print(formatting .. tostring(v))
+		elseif tblType == "function" then
+			print(formatting .. tostring(v))
+		else
+			print(formatting .. v)
+		end
 	end
 end
