@@ -14,11 +14,20 @@ else
 		{15.0, "Shouting"} -- Shout speech distance in gta distance units
 	}
 end
-function debug(message)
-	if GetConvarInt('voice_debugMode', 0) == 1 then
-		print(('%s'):format(message))
-	end
-end
+
+debug = {
+	['log'] = function(message)
+		if GetConvarInt('voice_debugMode', 0) >= 1 then
+			print(('%s'):format(message))
+		end	
+	end,
+	['verbose'] = function(message)
+		if GetConvarInt('voice_debugMode', 0) >= 4 then
+			print(('[verbose] %s'):format(message))
+		end	
+	end,
+}
+
 
 function tPrint(tbl, indent)
 	indent = indent or 0
