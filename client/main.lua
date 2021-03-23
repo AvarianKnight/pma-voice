@@ -76,18 +76,15 @@ end
 ---@param targets table expects multiple tables to be sent over
 function playerTargets(...)
 	local targets = {...}
-	local addedPlayers = {}
-
-	MumbleClearVoiceTarget(1)
-    MumbleClearVoiceTargetPlayers(1)
-    MumbleSetVoiceTarget(0)
-    MumbleSetVoiceTarget(1)
-	currentGrid = 0
+	local addedPlayers = {
+		[playerServerId] = true
+	}
 
 	for i = 1, #targets do
 		for id, _ in pairs(targets[i]) do
-			if id == playerServerId or addedPlayers[id] then
-				debug.verbose(('[main] %s is already target (or self) don\'t re-add'):format(id))
+			-- we don't want to log ourself, or listen to ourself
+			if addedPlayers[id] and id ~= playerServerId then
+				debug.verbose(('[main] %s is already target don\'t re-add'):format(id))
 				goto skip_loop
 			end
 			if not addedPlayers[id] then

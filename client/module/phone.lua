@@ -46,7 +46,6 @@ RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
 				toggleVoice(tgt, false, 'phone')
 			end
 		end
-		callChannel = 0
 		callData = {}
 		playerTargets(radioPressed and radioData or {}, callData)
 	else

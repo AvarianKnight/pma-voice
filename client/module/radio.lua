@@ -54,7 +54,6 @@ function removePlayerFromRadio(plySource)
 			end
 		end
 		radioData = {}
-		radioChannel = 0
 		playerTargets({}, NetworkIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		radioData[plySource] = nil
