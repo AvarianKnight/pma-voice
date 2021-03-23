@@ -10,9 +10,7 @@ radioData = {}
 callData = {}
 
 -- TODO: Convert the last Cfg to a Convar, while still keeping it simple.
-AddEventHandler('pma-voice:settingsCallback', function(cb)
-	cb(Cfg)
-end)
+AddEventHandler('pma-voice:settingsCallback', function(cb) cb(Cfg) end)
 
 -- TODO: Better implementation of this?
 RegisterCommand('vol', function(_, args)
@@ -21,7 +19,6 @@ RegisterCommand('vol', function(_, args)
 		volume = vol / 100
 	end
 end)
-
 
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
@@ -218,7 +215,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		Wait(0)
+		Wait(50)
 	end
 end)
 
