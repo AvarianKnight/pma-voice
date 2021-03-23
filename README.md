@@ -54,6 +54,7 @@ The ints are used like a boolean to 0 would be false, 1 true.
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity                | string       |
 | voice_defaultRadio           |   LALT  | The default key to use the radio                              | string       |
 | voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
+| voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Won't update during runtime, new joins will have the new value, players that already joined will not.* | string       |
 | voice_externalPort           |   0     | The external port to use                                      | int          |
 | voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
 

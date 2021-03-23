@@ -1,6 +1,7 @@
 local Cfg = Cfg
 local currentGrid = 0
-local volume = 0.3
+-- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
+local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
