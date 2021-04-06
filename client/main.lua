@@ -120,6 +120,7 @@ RegisterCommand('+cycleproximity', function()
 	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
 	MumbleSetAudioInputDistance(Cfg.voiceModes[voiceMode][1] + 0.0)
 	mode = voiceMode
+	LocalPlayer.state:set('proximity', Cfg.voiceModes[voiceMode][1], true)
 	-- make sure we update the UI to the latest voice mode
 	SendNUIMessage({
 		voiceMode = voiceMode - 1
@@ -133,8 +134,10 @@ RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('
 RegisterNetEvent('pma-voice:mutePlayer', function()
 	playerMuted = not playerMuted
 	if playerMuted then
+		LocalPlayer.state:set('proximity', 0.1, true)
 		MumbleSetAudioInputDistance(0.1)
 	else
+		LocalPlayer.state:set('proximity', Cfg.voiceModes[mode][1], true)
 		MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1])
 	end
 end)
@@ -273,6 +276,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 
 	-- sets how far the player can talk
 	MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1] + 0.0)
+	LocalPlayer.state:set('proximity', Cfg.voiceModes[mode][1] + 0.0, true)
 
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
