@@ -15,10 +15,13 @@ else
 	}
 end
 
-debug = {
-	['log'] = function(message)
+logger = {
+	['log'] = function(message, ...)
+		print((message):format(...))
+	end,
+	['info'] = function(message)
 		if GetConvarInt('voice_debugMode', 0) >= 1 then
-			print(('%s'):format(message))
+			print(('[info] %s'):format(message))
 		end	
 	end,
 	['verbose'] = function(message)

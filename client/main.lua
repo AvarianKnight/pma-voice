@@ -60,7 +60,7 @@ local submixFunctions = {
 ---@param enabled boolean if the players voice is getting activated or deactivated
 ---@param submixType string what submix to use for the players voice, currently only supports 'radio'
 function toggleVoice(plySource, enabled, submixType)
-	debug.verbose(('[main] Updating %s to talking: %s with submix %s'):format(plySource, enabled, submixType))
+	logger.verbose(('[main] Updating %s to talking: %s with submix %s'):format(plySource, enabled, submixType))
 	MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
 	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
 		if enabled and submixType then
@@ -85,11 +85,11 @@ function playerTargets(...)
 		for id, _ in pairs(targets[i]) do
 			-- we don't want to log ourself, or listen to ourself
 			if addedPlayers[id] and id ~= playerServerId then
-				debug.verbose(('[main] %s is already target don\'t re-add'):format(id))
+				logger.verbose(('[main] %s is already target don\'t re-add'):format(id))
 				goto skip_loop
 			end
 			if not addedPlayers[id] then
-				debug.verbose(('[main] Adding %s as a voice target'):format(id))
+				logger.verbose(('[main] Adding %s as a voice target'):format(id))
 				addedPlayers[id] = true
 				MumbleAddVoiceTargetPlayerByServerId(1, id)
 			end
@@ -185,7 +185,7 @@ end
 local function updateZone(forced)
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
-        debug.log(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
+        logger.info(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(1)
 		NetworkSetVoiceChannel(currentGrid)
@@ -221,7 +221,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		Wait(50)
+		Wait(100)
 	end
 end)
 
@@ -307,4 +307,12 @@ end)
 
 RegisterCommand("grid", function()
 	print(('Players current grid is %s'):format(currentGrid))
+end)
+
+AddEventHandler('mumbleConnected', function(address, shouldReconnect)
+	logger.log('Connected to mumble server with address of %s, should reconnect on disconnect is set to %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, shouldReconnect)
+end)
+
+AddEventHandler('mumbleDisconnected', function(address)
+	logger.log('Disconnected from mumble server with address of %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address)
 end)
