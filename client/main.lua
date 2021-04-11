@@ -225,10 +225,9 @@ Citizen.CreateThread(function()
 	end
 end)
 
-
 -- cache their external servers so if it changes in runtime we can reconnect the client.
-local externalAddress = GetConvar('voice_externalAddress', '')
-local externalPort = GetConvarInt('voice_externalPort', 0)
+local externalAddress = ''
+local externalPort = 0
 CreateThread(function()
 	while true do
 		Wait(500)
