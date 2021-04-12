@@ -42,19 +42,22 @@ All of the config is done via ConVars in order to streamline the process.
 
 The ints are used like a boolean to 0 would be false, 1 true.
 
+All of the configs here are set using `setr [voice_configOption] [int]` OR `setr [voice_configOption] "[string]"`
+
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
 | voice_zoneRadius             |   16   | Sets the zone radius size, expects a multiple of 4             | int          |
-| voice_enableUi               |    1    | Enable the built in user interface                            | int          |
+| voice_enableUi               |    1    | Enables the built in user interface                            | int          |
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
 | voice_enableRadios           |    1    | Enables the radio sub-modules                                 | int          |
 | voice_enablePhones           |    1    | Enables the phone sub-modules                                 | int          |
-| voice_enableRadioSubmix      |    0    | Enable the radio submix which adds a radio style to the voice | int          |
+| voice_enableRadioSubmix      |    0    | Enables the radio submix which adds a radio style to the voice | int          |
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity                | string       |
 | voice_defaultRadio           |   LALT  | The default key to use the radio                              | string       |
 | voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
 | voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | string       |
 | voice_externalPort           |   0     | The external port to use                                      | int          |
+| voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
 
 ### Aces
@@ -76,6 +79,7 @@ This would only allow the superadmin group to mute players.
 | setVoiceProperty    | Set config options        | string, any  |
 | setRadioChannel     | Set radio channel         | int          |
 | setCallChannel      | Set call channel          | int          |
+| setVolume           | Set volume for player     | int          |
 
 Supported from mumble-voip / toko-voip
 
@@ -84,11 +88,12 @@ Supported from mumble-voip / toko-voip
 | SetMumbleProperty     | Set config options       | string, any  |
 | SetTokoProperty       | Set config options       | string, any  |
 | SetRadioChannel       | Set radio channel        | int          |
-| SetCallChannel        | Set call channel          | int          |
+| SetCallChannel        | Set call channel         | int          |
 | addPlayerToRadio      | Set radio channel        | int          |
 | removePlayerFromRadio | Remove player from radio |              |
 | addPlayerToCall       | Set call channel         | int          |
 | removePlayerFromCall  | Remove player from call  |              |
+| setRadioVolume        | Set volume for player    | int          |
 
 #### Server
 
