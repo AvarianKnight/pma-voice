@@ -22,6 +22,16 @@ RegisterCommand('vol', function(_, args)
 	end
 end)
 
+--- function setVolume
+--- Toggles the players volume
+---@param vol number between 0 and 100
+function setVolume(vol)
+	local vol = tonumber(vol)
+	if vol then
+		volume = vol / 100
+	end
+end
+exports("setVolume", setVolume)
 
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
