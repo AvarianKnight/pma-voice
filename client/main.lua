@@ -34,6 +34,10 @@ exports("setVolume", setVolume)
 -- compatibility
 exports("setRadioVolume", setVolume)
 
+exports("GetRadioVolume", function()
+	return volume
+end)
+
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
 -- freq_hi = 3248.0
