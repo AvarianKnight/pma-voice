@@ -16,7 +16,7 @@ end)
 
 -- TODO: Better implementation of this?
 RegisterCommand('vol', function(_, args)
-	if args[1] ~= nil then
+	if args[1] then
 		setVolume(args[1])
 	end
 end)
