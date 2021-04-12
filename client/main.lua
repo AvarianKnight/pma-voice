@@ -16,9 +16,8 @@ end)
 
 -- TODO: Better implementation of this?
 RegisterCommand('vol', function(_, args)
-	local vol = tonumber(args[1])
-	if vol then
-		volume = vol / 100
+	if args[1] ~= nil then
+		setVolume(args[1])
 	end
 end)
 
@@ -32,6 +31,8 @@ function setVolume(vol)
 	end
 end
 exports("setVolume", setVolume)
+-- compatibility
+exports("setRadioVolume", setVolume)
 
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
@@ -169,7 +170,7 @@ function setVoiceProperty(type, value)
 	end
 end
 exports('setVoiceProperty', setVoiceProperty)
--- compatability
+-- compatibility
 exports('SetMumbleProperty', setVoiceProperty)
 exports('SetTokoProperty', setVoiceProperty)
 
