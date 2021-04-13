@@ -32,3 +32,6 @@ provides {
     'toko-voip',
     'tokovoip_script'
 }
+
+export 'getRadioVolume'
+export 'setRadioVolume'

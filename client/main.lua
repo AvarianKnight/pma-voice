@@ -2,6 +2,7 @@ local Cfg = Cfg
 local currentGrid = 0
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
+local radioVolume = volume
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
@@ -58,12 +59,25 @@ AddAudioSubmixOutput(phoneEffectId, 1)
 
 local submixFunctions = {
 	['radio'] = function(plySource)
+		MumbleSetVolumeOverrideByServerId(plySource, radioVolume)
 		MumbleSetSubmixForServerId(plySource, radioEffectId)
 	end,
 	['phone'] = function(plySource)
 		MumbleSetSubmixForServerId(plySource, phoneEffectId)
 	end
 }
+
+-- function getRadioVolume (can be used as export)
+-- returns radioVolume as float
+function getRadioVolume()
+    return radioVolume
+end
+
+-- function setRadioVolume (can be used as export)
+-- sets radioVolume as float
+function setRadioVolume(value)
+    radioVolume = value
+end
 
 --- function toggleVoice
 --- Toggles the players voice
