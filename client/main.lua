@@ -59,7 +59,7 @@ AddAudioSubmixOutput(phoneEffectId, 1)
 
 local submixFunctions = {
 	['radio'] = function(plySource)
-		MumbleSetVolumeOverrideByServerId(plySource, radioVolume)
+		MumbleSetVolumeOverrideByServerId(plySource, radioVolume or volume)
 		MumbleSetSubmixForServerId(plySource, radioEffectId)
 	end,
 	['phone'] = function(plySource)
