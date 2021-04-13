@@ -34,7 +34,7 @@ exports("setVolume", setVolume)
 -- compatibility
 exports("setRadioVolume", setVolume)
 
-exports("GetRadioVolume", function()
+exports("getVolume", function()
 	return volume
 end)
 
