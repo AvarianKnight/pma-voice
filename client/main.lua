@@ -4,7 +4,8 @@ local currentGrid = 0
 local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
-radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
+radioEnabled = GetConvarInt('voice_enableRadios', 1)
+radioPressed, mode, radioChannel, callChannel = false, 2, 0, 0
 
 radioData = {}
 callData = {}
