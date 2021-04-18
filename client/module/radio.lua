@@ -151,7 +151,7 @@ RegisterCommand('+radiotalk', function()
 end, false)
 
 RegisterCommand('-radiotalk', function()
-	if radioChannel > 0 or radioEnabled then
+	if radioChannel > 0 or radioEnabled and radioPressed then
 		radioPressed = false
 		MumbleClearVoiceTargetPlayers(1)
 		playerTargets(NetworkIsPlayerTalking(PlayerId()) and callData or {})

@@ -65,6 +65,8 @@ local submixFunctions = {
 	end
 }
 
+-- used to prevent a race condition if they talk again afterwards, which would lead to their voice going to default.
+local disableSubmixReset = {}
 --- function toggleVoice
 --- Toggles the players voice
 ---@param plySource number the players server id to override the volume for
@@ -72,13 +74,27 @@ local submixFunctions = {
 ---@param submixType string what submix to use for the players voice, currently only supports 'radio'
 function toggleVoice(plySource, enabled, submixType)
 	logger.verbose(('[main] Updating %s to talking: %s with submix %s'):format(plySource, enabled, submixType))
-	MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
-	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
-		if enabled and submixType then
-			submixFunctions[submixType](plySource)
-		else
-			MumbleSetSubmixForServerId(plySource, -1)
+	if enabled then
+		MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
+		if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+			if submixType then
+				disableSubmixReset[plySource] = true
+				submixFunctions[submixType](plySource)
+			else
+				MumbleSetSubmixForServerId(plySource, -1)
+			end
 		end
+	else
+		if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+			-- garbage collect it
+			disableSubmixReset[plySource] = nil
+			SetTimeout(250, function()
+				if not disableSubmixReset[plySource] then
+					MumbleSetSubmixForServerId(plySource, -1)
+				end
+			end)
+		end
+		MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
 	end
 end
 

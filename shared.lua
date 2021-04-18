@@ -2,9 +2,10 @@ Cfg = {}
 -- possibly GetConvar('voice_modes', '0.5;2.0;5.0')
 -- possibly GetConvar('voice_modeNames', 'Whisper;Normal;Shouting') and seperate them on runtime?
 if GetConvar('voice_useNativeAudio', 'false') == 'true' then
+	-- native audio distance seems to be larger then regular gta units
 	Cfg.voiceModes = {
-		{0.75, "Whisper"}, -- Whisper speech distance in gta distance units
-		{2.0, "Normal"}, -- Normal speech distance in gta distance units
+		{1.0, "Whisper"}, -- Whisper speech distance in gta distance units
+		{2.3, "Normal"}, -- Normal speech distance in gta distance units
 		{5.0, "Shouting"} -- Shout speech distance in gta distance units
 	}
 else
