@@ -2,6 +2,10 @@ local Cfg = Cfg
 local currentGrid = 0
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
+local volumes = {
+	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
+	['call'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
+}
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
@@ -23,16 +27,34 @@ end)
 
 --- function setVolume
 --- Toggles the players volume
----@param vol number between 0 and 100
-function setVolume(vol)
-	local vol = tonumber(vol)
-	if vol then
-		volume = vol / 100
+---@param volume number between 0 and 100
+---@param volumeType string the volume type (currently radio & call) to set the volume of (opt)
+function setVolume(volume, volumeType)
+	local volume = tonumber(volume)
+	local checkType = type(volume)
+	if checkType ~= 'number' then
+		return error(('setVolume expected type number, got %s'):format(checkType))
+	end
+	if volumeType then
+		local volumeTbl = volumes[volumeType]
+		if volumeTbl then
+
+		else
+			error(('setVolume got a invalid volume type %s'):format(volumeType))
+		end
+	else
+		for types, vol in pairs(volumes) do
+			vol = volume
+		end
 	end
 end
-exports("setVolume", setVolume)
--- compatibility
-exports("setRadioVolume", setVolume)
+exports('setVolume', setVolume)
+exports("setRadioVolume", function(vol)
+	setVolume(vol, 'radio')
+end)
+exports("setCallVolume", function(vol)
+	setVolume(vol, 'call')
+end)
 
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
@@ -71,15 +93,16 @@ local disableSubmixReset = {}
 --- Toggles the players voice
 ---@param plySource number the players server id to override the volume for
 ---@param enabled boolean if the players voice is getting activated or deactivated
----@param submixType string what submix to use for the players voice, currently only supports 'radio'
-function toggleVoice(plySource, enabled, submixType)
-	logger.verbose(('[main] Updating %s to talking: %s with submix %s'):format(plySource, enabled, submixType))
+---@param moduleType string the volume & submix to use for the voice.
+function toggleVoice(plySource, enabled, moduleType)
+	logger.verbose(('[main] Updating %s to talking: %s with submix %s'):format(plySource, enabled, moduleType))
 	if enabled then
-		MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
+		print(volumes[moduleType])
+		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType] or -1.0)
 		if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
-			if submixType then
+			if moduleType then
 				disableSubmixReset[plySource] = true
-				submixFunctions[submixType](plySource)
+				submixFunctions[moduleType](plySource)
 			else
 				MumbleSetSubmixForServerId(plySource, -1)
 			end

@@ -74,12 +74,14 @@ This would only allow the superadmin group to mute players.
 
 ##### Setters
  
-| Export              | Description               | Parameter(s) |
-|---------------------|---------------------------|--------------|
-| setVoiceProperty    | Set config options        | string, any  |
-| setRadioChannel     | Set radio channel         | int          |
-| setCallChannel      | Set call channel          | int          |
-| setVolume           | Set volume for player     | int          |
+| Export              | Description                 | Parameter(s) |
+|---------------------|-----------------------------|--------------|
+| setVoiceProperty    | Set config options          | string, any  |
+| setRadioChannel     | Set radio channel           | int          |
+| setCallChannel      | Set call channel            | int          |
+| setRadioVolume      | Set radio volume for player | int          |
+| setCallVolume       | Set call volume for player  | int          |
+| setVolume           | Sets the specified strings volume (currently 'radio' and 'call'), not providing a argument sets both.   | int, string (opt) |
 
 Supported from mumble-voip / toko-voip
 
@@ -93,7 +95,6 @@ Supported from mumble-voip / toko-voip
 | removePlayerFromRadio | Remove player from radio |              |
 | addPlayerToCall       | Set call channel         | int          |
 | removePlayerFromCall  | Remove player from call  |              |
-| setRadioVolume        | Set volume for player    | int          |
 
 #### Server
 

@@ -50,7 +50,7 @@ function removePlayerFromRadio(plySource)
 		logger.info(('[radio] Left radio %s, cleaning up.'):format(radioChannel))
 		for tgt, enabled in pairs(radioData) do
 			if tgt ~= playerServerId then
-				toggleVoice(tgt, false)
+				toggleVoice(tgt, false, 'radio')
 			end
 		end
 		radioData = {}
