@@ -80,3 +80,11 @@ RegisterCommand('mute', function(source, args)
 		end
 	end
 end, true)
+
+if GetConvarInt('voice_externalDisallowJoin', 0) == 1 then
+	AddEventHandler('playerConnecting', function(playerName, kickReason, deferral)
+		deferral.defer()
+		Wait(0)
+		deferral.done('This server is not accepting connections.')
+	end)
+end
