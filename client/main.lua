@@ -30,9 +30,23 @@ function setVolume(vol)
 		volume = vol / 100
 	end
 end
+
+function getVoiceData()
+	voicedata = {
+		mode = mode,
+		radioActive = radioEnabled,
+		radioPressed = radioPressed,
+		radioChannel = radioChannel,
+		callChannel = callChannel,
+		volume = volume
+	}
+	return voicedata
+end
+
 exports("setVolume", setVolume)
 -- compatibility
 exports("setRadioVolume", setVolume)
+exports("getVoiceData", getVoiceData)
 
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
