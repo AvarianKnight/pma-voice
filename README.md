@@ -55,7 +55,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity                | string       |
 | voice_defaultRadio           |   LALT  | The default key to use the radio                              | string       |
 | voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
-| voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | string       |
+| voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not, because they will have saved their previous configuration.* | string       |
 | voice_externalPort           |   0     | The external port to use                                      | int          |
 | voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_externalDisallowJoin   |   0     | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server. | int          |

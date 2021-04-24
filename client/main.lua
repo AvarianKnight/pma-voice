@@ -1,7 +1,7 @@
 local Cfg = Cfg
 local currentGrid = 0
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
-local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
+local volumel = tonumber(GetConvar('voice_defaultVolume', '0.3')) -- Volume for proximity voice chat if I am not wrong
 local volumes = {
 	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
 	['call'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
@@ -21,31 +21,56 @@ end)
 -- TODO: Better implementation of this?
 RegisterCommand('vol', function(_, args)
 	if args[1] then
-		setVolume(args[1])
+		setVolume(args[1], args[2])
 	end
+end)
+
+RegisterCommand('volcheck', function(_, args)
+	TriggerEvent('chat:addMessage', {
+		color = { 255, 0, 0},
+		multiline = true,
+		args = {"Voice: ", "Proximity volume: "..math.floor(volumel * 100)..'%'}
+	  })
+	  TriggerEvent('chat:addMessage', {
+		color = { 255, 0, 0},
+		multiline = true,
+		args = {"Voice: ", "Call volume: "..math.floor(volumes.call * 100)..'%'}
+	  })
+	  TriggerEvent('chat:addMessage', {
+		color = { 255, 0, 0},
+		multiline = true,
+		args = {"Voice: ", "Radio volume: "..math.floor(volumes.radio * 100)..'%'}
+	  })
 end)
 
 --- function setVolume
 --- Toggles the players volume
 ---@param volume number between 0 and 100
 ---@param volumeType string the volume type (currently radio & call) to set the volume of (opt)
-function setVolume(volume, volumeType)
-	local volume = tonumber(volume)
-	local checkType = type(volume)
+function setVolume(vol, volumeType)
+	vol = tonumber(vol)
+	local checkType = vol and type(vol) or 'not number'
 	if checkType ~= 'number' then
 		return error(('setVolume expected type number, got %s'):format(checkType))
 	end
-	if volumeType then
+	vol = vol / 100
+	if volumeType and volumeType ~= 'proximity' then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
+			if volumeType == 'radio' then
+				volumes.radio = vol
+				SetResourceKvp("pmaVoiceRadio", vol)
+			elseif volumeType == 'call' then
+				volumes.call = vol
+				SetResourceKvp("pmaVoiceCall", vol)
+			end
 
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
 	else
-		for types, vol in pairs(volumes) do
-			vol = volume
-		end
+		volumel = vol
+		SetResourceKvp('pmaVoiceMain', volumel)
 	end
 end
 exports('setVolume', setVolume)
@@ -117,7 +142,7 @@ function toggleVoice(plySource, enabled, moduleType)
 				end
 			end)
 		end
-		MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
+		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumel or -1.0)
 	end
 end
 
@@ -254,6 +279,12 @@ Citizen.CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/mute', 'Mutes the player with the specified id', {
 		{ name = "player id", help = "the player to toggle mute" }
 	})
+
+	TriggerEvent('chat:addSuggestion', '/vol', 'Sets volume for audio output', {
+		{ name = "volume", help = "The volume 0 - 100"},
+		{ name = "type", help = "The type of the output: radio / call / proximity (or leave empty) for proximity chat"},
+	})
+	TriggerEvent('chat:addSuggestion', '/volcheck', 'Shows current configuration of the volume', {})
 	while true do
 		-- wait for reconnection, trying to set your voice channel when theres nothing to set it to is useless.
 		while not MumbleIsConnected() do
@@ -315,6 +346,18 @@ AddEventHandler('onClientResourceStart', function(resource)
 		return
 	end
 	print('Starting script initialization')
+
+
+	-- Load the volumes here from kvp resource
+	if GetResourceKvpString("pmaVoiceMain") and type(tonumber(GetResourceKvpString("pmaVoiceMain"))) == 'number' then
+		volumel = tonumber(GetResourceKvpString("pmaVoiceMain"))
+	end
+	if GetResourceKvpString("pmaVoiceRadio") and type(tonumber(GetResourceKvpString("pmaVoiceRadio"))) == 'number' then
+		volumes.radio = tonumber(GetResourceKvpString("pmaVoiceRadio"))
+	end
+	if GetResourceKvpString("pmaVoiceCall") and type(tonumber(GetResourceKvpString("pmaVoiceCall"))) == 'number' then
+		volumes.call = tonumber(GetResourceKvpString("pmaVoiceCall"))
+	end
 
 	local micClicksKvp = GetResourceKvpString('pma-voice_enableMicClicks')
 	if not micClicksKvp then
