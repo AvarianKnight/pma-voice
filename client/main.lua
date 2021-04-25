@@ -4,7 +4,7 @@ local currentGrid = 0
 local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
 local volumes = {
 	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
-	['call'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
+	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
 }
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
@@ -97,8 +97,7 @@ local disableSubmixReset = {}
 function toggleVoice(plySource, enabled, moduleType)
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	if enabled then
-		print(volumes[moduleType])
-		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType] or -1.0)
+		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
 			if moduleType then
 				disableSubmixReset[plySource] = true
@@ -117,7 +116,7 @@ function toggleVoice(plySource, enabled, moduleType)
 				end
 			end)
 		end
-		MumbleSetVolumeOverrideByServerId(plySource, enabled and volume or -1.0)
+		MumbleSetVolumeOverrideByServerId(plySource, -1.0)
 	end
 end
 
@@ -213,6 +212,9 @@ exports('setVoiceProperty', setVoiceProperty)
 exports('SetMumbleProperty', setVoiceProperty)
 exports('SetTokoProperty', setVoiceProperty)
 
+local currentRouting = 0
+local nextRoutingRefresh = GetGameTimer()
+
 --- function getGridZone
 --- calculate the players grid
 ---@return number returns the players current grid.
@@ -220,13 +222,18 @@ local function getGridZone()
 	local plyPos = GetEntityCoords(PlayerPedId(), false)
 	local zoneRadius = GetConvarInt('voice_zoneRadius', 16) * 2
 	local zoneOffset = (256 / zoneRadius)
+	if nextRoutingRefresh < GetGameTimer() then
+		-- Constant deserialization (every frame) is a bad idea, only update it every so often.
+		nextRoutingRefresh = GetGameTimer() + 500
+		currentRouting = LocalPlayer.state.routingBucket or 0
+	end
 	-- this code might be hard to follow
 	return (
 		--[[ 31 is the initial offses]]
 		math.floor( 31 * ( --[[ offset from the original zone should return a multiple]] zoneOffset) + 
 	--[[ returns -6 * zoneOffset so we want to offset it ]]
 	(zoneOffset * 6) - 6 )) 
-	+ (--[[ Offset routing bucket by 5 (we listen to closest 5 channels) + 5 (routing starts at 0)]]((LocalPlayer.state.routingBucket or 0) * 5) + 5) + math.ceil((plyPos.x + plyPos.y) / (zoneRadius))
+	+ (--[[ Offset routing bucket by 5 (we listen to closest 5 channels) + 5 (routing starts at 0)]]((currentRouting) * 5) + 5) + math.ceil((plyPos.x + plyPos.y) / (zoneRadius))
 end
 
 --- function updateZone
@@ -271,7 +278,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		Wait(100)
+		Wait(50)
 	end
 end)
 
