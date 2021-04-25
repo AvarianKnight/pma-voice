@@ -20,14 +20,14 @@ logger = {
 	['log'] = function(message, ...)
 		print((message):format(...))
 	end,
-	['info'] = function(message)
+	['info'] = function(message, ...)
 		if GetConvarInt('voice_debugMode', 0) >= 1 then
-			print(('[info] %s'):format(message))
+			print(('[info] ' .. message):format(...))
 		end	
 	end,
-	['verbose'] = function(message)
+	['verbose'] = function(message, ...)
 		if GetConvarInt('voice_debugMode', 0) >= 4 then
-			print(('[verbose] %s'):format(message))
+			print(('[verbose] ' .. message):format(...))
 		end	
 	end,
 }

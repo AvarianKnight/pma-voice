@@ -95,7 +95,7 @@ local disableSubmixReset = {}
 ---@param enabled boolean if the players voice is getting activated or deactivated
 ---@param moduleType string the volume & submix to use for the voice.
 function toggleVoice(plySource, enabled, moduleType)
-	logger.verbose(('[main] Updating %s to talking: %s with submix %s'):format(plySource, enabled, moduleType))
+	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	if enabled then
 		print(volumes[moduleType])
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType] or -1.0)
@@ -135,11 +135,11 @@ function playerTargets(...)
 		for id, _ in pairs(targets[i]) do
 			-- we don't want to log ourself, or listen to ourself
 			if addedPlayers[id] and id ~= playerServerId then
-				logger.verbose(('[main] %s is already target don\'t re-add'):format(id))
+				logger.verbose('[main] %s is already target don\'t re-add', id)
 				goto skip_loop
 			end
 			if not addedPlayers[id] then
-				logger.verbose(('[main] Adding %s as a voice target'):format(id))
+				logger.verbose('[main] Adding %s as a voice target', id)
 				addedPlayers[id] = true
 				MumbleAddVoiceTargetPlayerByServerId(1, id)
 			end
@@ -235,7 +235,7 @@ end
 local function updateZone(forced)
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
-        logger.info(('Updating zone from %s to %s and adding nearby grids.'):format(currentGrid, newGrid))
+        logger.info('Updating zone from %s to %s and adding nearby grids.', currentGrid, newGrid)
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(1)
 		NetworkSetVoiceChannel(currentGrid)
