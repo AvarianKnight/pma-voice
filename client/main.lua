@@ -1,11 +1,11 @@
 local Cfg = Cfg
 local currentGrid = 0
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
-local volume = tonumber(GetConvar('voice_defaultVolume', '0.3'))
 local volumes = {
 	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
 }
+local plyState = LocalPlayer.state
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
@@ -38,12 +38,14 @@ function setVolume(volume, volumeType)
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
+			plyState:set(volumeType, volume, GetConvarInt('voice_syncData', 0) == 1)
 			volumes[volumeType] = volume
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
 	else
 		for types, vol in pairs(volumes) do
+			plyState:set(volumeType, volume, GetConvarInt('voice_syncData', 0) == 1)
 			vol = volume
 		end
 	end
@@ -98,7 +100,7 @@ function toggleVoice(plySource, enabled, moduleType)
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	if enabled then
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
-		if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+		if GetConvarInt('voice_enableSubmix', 0) == 1 or GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
 			if moduleType then
 				disableSubmixReset[plySource] = true
 				submixFunctions[moduleType](plySource)
@@ -107,7 +109,7 @@ function toggleVoice(plySource, enabled, moduleType)
 			end
 		end
 	else
-		if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+		if GetConvarInt('voice_enableSubmix', 0) == 1 or GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
 			-- garbage collect it
 			disableSubmixReset[plySource] = nil
 			SetTimeout(250, function()
@@ -167,9 +169,14 @@ RegisterCommand('+cycleproximity', function()
 	local newMode = voiceMode + 1
 
 	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
-	MumbleSetAudioInputDistance(Cfg.voiceModes[voiceMode][1] + 0.0)
+	local voiceModeData = Cfg.voiceModes[voiceMode]
+	MumbleSetAudioInputDistance(cachedData[1] + 0.0)
 	mode = voiceMode
-	LocalPlayer.state:set('proximity', Cfg.voiceModes[voiceMode][1], true)
+	plyState:set('proximity', {
+		index = voiceMode,
+		distance =  voiceModeData[1],
+		mode = voiceModeData[2],
+	}, GetConvarInt('voice_syncData', 0) == 1)
 	-- make sure we update the UI to the latest voice mode
 	SendNUIMessage({
 		voiceMode = voiceMode - 1
@@ -182,11 +189,21 @@ RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('
 
 RegisterNetEvent('pma-voice:mutePlayer', function()
 	playerMuted = not playerMuted
+	
 	if playerMuted then
-		LocalPlayer.state:set('proximity', 0.1, true)
+		plyState:set('proximity', {
+			index = 0,
+			distance = 0.1,
+			mode = 'Muted',
+		}, GetConvarInt('voice_syncData', 0) == 1)
 		MumbleSetAudioInputDistance(0.1)
 	else
-		LocalPlayer.state:set('proximity', Cfg.voiceModes[mode][1], true)
+		local voiceModeData = Cfg.voiceModes[mode]
+		plyState:set('proximity', {
+			index = mode,
+			distance =  voiceModeData[1],
+			mode = voiceModeData[2],
+		}, GetConvarInt('voice_syncData', 0) == 1)
 		MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1])
 	end
 end)
@@ -246,7 +263,7 @@ local function updateZone(forced)
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(1)
 		NetworkSetVoiceChannel(currentGrid)
-		LocalPlayer.state:set('channel', currentGrid, true)
+		LocalPlayer.state:set('grid', currentGrid, true)
 		-- add nearby grids to voice targets
 		for nearbyGrids = currentGrid - 3, currentGrid + 3 do
 			MumbleAddVoiceTargetChannel(1, nearbyGrids)
@@ -330,9 +347,14 @@ AddEventHandler('onClientResourceStart', function(resource)
 		micClicks = micClicksKvp
 	end
 
+	local voiceModeData = Cfg.voiceModes[mode]
 	-- sets how far the player can talk
-	MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1] + 0.0)
-	LocalPlayer.state:set('proximity', Cfg.voiceModes[mode][1] + 0.0, true)
+	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
+	plyState:set('proximity', {
+		index = mode,
+		distance =  voiceModeData[1],
+		mode = voiceModeData[2],
+	}, GetConvarInt('voice_syncData', 0) == 1)
 
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)

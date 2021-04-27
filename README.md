@@ -51,7 +51,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
 | voice_enableRadios           |    1    | Enables the radio sub-modules                                 | int          |
 | voice_enablePhones           |    1    | Enables the phone sub-modules                                 | int          |
-| voice_enableRadioSubmix      |    0    | Enables the radio submix which adds a radio style to the voice | int          |
+| voice_enableSubmix      |    0    | Enables the submix which adds a radio/phone style submix to their voice | int          |
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity                | string       |
 | voice_defaultRadio           |   LALT  | The default key to use the radio                              | string       |
 | voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
@@ -60,6 +60,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_externalDisallowJoin   |   0     | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server. | int          |
 | voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
+| voice_syncData              | int          | enables state bags to be sync'd server side & to other clients | int        |
 
 ### Aces
 pma-voice comes with a built in /mute command, in order to allow your staff to use it you will have to grand them the ace!
@@ -97,6 +98,20 @@ Supported from mumble-voip / toko-voip
 | SetRadioChannel       | Set radio channel        | int          |
 | SetCallChannel        | Set call channel         | int          |
 
+#### Getters
+
+All getters are done through player states, which requires you to use OneSync Infinity.
+
+You can get the Local Players state with `LocalPlayer.state['state bag here']`, if you want to be able to get the state bags on the server you will have to set `setr voice_syncData 1`, which will enable you to get the clients data on the server & on other clients.
+
+| State Bag     | Description                                                  | Return Type  |
+|---------------|--------------------------------------------------------------|--------------|
+| proximity     | Returns a table with the mode index, distance, and mode name | table        |
+| routingBucket | Returns the players current routing bucket                   | int          |
+| grid          | Returns the players current grid                             | int          |
+| radioChannel  | Returns the players current radio channel, or 0 for none     | int          |
+| callChannel   | Returns the players current call channel, or 0 for none      | int          |
+
 
 #### Server
 
@@ -110,4 +125,12 @@ Supported from mumble-voip / toko-voip
 
 ##### Getters
 
-Not currently implemented, more getters will be added in the future.
+Server side getters require the voice_syncData convar to be set to 1. You can access the state with `Player(source).state['state bag here']`
+
+| State Bag     | Description                                                  | Return Type  |
+|---------------|--------------------------------------------------------------|--------------|
+| proximity     | Returns a table with the mode index, distance, and mode name | table        |
+| routingBucket | Returns the players current routing bucket                   | int          |
+| grid          | Returns the players current grid                             | int          |
+| radioChannel  | Returns the players current radio channel, or 0 for none     | int          |
+| callChannel   | Returns the players current call channel, or 0 for none      | int          |

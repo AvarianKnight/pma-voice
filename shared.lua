@@ -25,6 +25,9 @@ logger = {
 			print(('[info] ' .. message):format(...))
 		end	
 	end,
+	['warn'] = function(message, ...)
+		print(('[^1WARNING^7] ' .. message):format(...))
+	end,
 	['verbose'] = function(message, ...)
 		if GetConvarInt('voice_debugMode', 0) >= 4 then
 			print(('[verbose] ' .. message):format(...))

@@ -16,6 +16,9 @@ CreateThread(function()
     for i = 1, 1024 do
         MumbleCreateChannel(i)
     end
+	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+		logger.warn('The convar \'voice_enableRadioSubmix\' is currently deprecated, please use \'voice_enableSubmix\' instead.')
+	end
 end)
 
 RegisterNetEvent('playerJoined', function()
