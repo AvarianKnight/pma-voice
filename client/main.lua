@@ -5,7 +5,7 @@ local volumes = {
 	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
 }
-local plyState = LocalPlayer.state
+plyState = LocalPlayer.state
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
