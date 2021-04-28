@@ -170,7 +170,7 @@ RegisterCommand('+cycleproximity', function()
 
 	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
 	local voiceModeData = Cfg.voiceModes[voiceMode]
-	MumbleSetAudioInputDistance(cachedData[1] + 0.0)
+	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
 	mode = voiceMode
 	plyState:set('proximity', {
 		index = voiceMode,
