@@ -55,7 +55,7 @@ exports("setRadioVolume", function(vol)
 	setVolume(vol, 'radio')
 end)
 exports("setCallVolume", function(vol)
-	setVolume(vol, 'call')
+	setVolume(vol, 'phone')
 end)
 
 -- default submix incase people want to fiddle with it.
