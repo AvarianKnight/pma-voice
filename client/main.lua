@@ -51,12 +51,20 @@ function setVolume(volume, volumeType)
 	end
 end
 exports('setVolume', setVolume)
-exports("setRadioVolume", function(vol)
+
+exports('setRadioVolume', function(vol)
 	setVolume(vol, 'radio')
+end)
+exports('getRadioVolume', function()
+	return volumes['radio']
 end)
 exports("setCallVolume", function(vol)
 	setVolume(vol, 'phone')
 end)
+exports('getCallVolume', function()
+	return volumes['phone']
+end)
+
 
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
