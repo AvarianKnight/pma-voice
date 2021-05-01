@@ -23,6 +23,7 @@ A clear and concise description of what you expected to happen.
 **Server Info:**
  - Server Version: [e.g. 3456]
 - Client Version: [e.g. production|canary]
+- Client Build: [e.g. b1604|b2060|b2189]
 
 **Additional context**
 Add any other context about the problem here.
