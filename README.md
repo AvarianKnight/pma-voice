@@ -60,7 +60,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_externalDisallowJoin   |   0     | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server. | int          |
 | voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
-| voice_syncData              | int          | enables state bags to be sync'd server side & to other clients | int        |
+| voice_syncData              | int          | enables state bags to be sync'd server side & to other clients, has to be enabled on startup | int        |
 
 ### Aces
 pma-voice comes with a built in /mute command, in order to allow your staff to use it you will have to grand them the ace!

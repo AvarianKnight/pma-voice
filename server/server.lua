@@ -24,7 +24,15 @@ end)
 RegisterNetEvent('playerJoined', function()
 	if not voiceData[source] then
 		voiceData[source] = defaultTable(source)
-		Player(source).state:set('routingBucket', 0, true)
+		local plyState = Player(source).state
+		plyState:set('routingBucket', 0, true)
+		if GetConvarInt('voice_syncData', 0) == 1 then
+			plyState:set('radio', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
+			plyState:set('phone', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
+			plyState:set('proximity', {}, true)
+			plyState:set('callChannel', 0, true)
+			plyState:set('radioChannel', 0, true)
+		end
 	end
 end)
 
