@@ -333,6 +333,7 @@ RegisterCommand('vsync', function()
 			Wait(250)
 		end
 	end
+	NetworkSetVoiceChannel(newGrid + 100)
 	-- reset the players voice targets
 	MumbleSetVoiceTarget(0)
 	MumbleClearVoiceTarget(1)
