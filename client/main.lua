@@ -45,8 +45,8 @@ function setVolume(volume, volumeType)
 		end
 	else
 		for types, vol in pairs(volumes) do
-			plyState:set(volumeType, volume, GetConvarInt('voice_syncData', 0) == 1)
 			vol = volume
+			plyState:set(types, volume, GetConvarInt('voice_syncData', 0) == 1)
 		end
 	end
 end
