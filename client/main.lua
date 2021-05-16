@@ -239,12 +239,25 @@ exports('SetTokoProperty', setVoiceProperty)
 
 local currentRouting = 0
 local nextRoutingRefresh = GetGameTimer()
+local overrideCoords = false
+
+--- function setOverrideCoords
+--- will have to be updated every so often if used for spectate.
+---@param coords vector3|boolean the coords to set override for, or false to reset
+function setOverrideCoords(coords)
+	local coordType = type(coords)
+	if coordType ~= 'vector3' and coordType ~= 'boolean' then
+		return logger.error('"setOverrideCoords" expects a vector3 or boolean, got %s', coordType)
+	end
+	overrideCoords = coords
+end
+exports('setOverrideCoords', setOverrideCoords)
 
 --- function getGridZone
 --- calculate the players grid
 ---@return number returns the players current grid.
 local function getGridZone()
-	local plyPos = GetEntityCoords(PlayerPedId(), false)
+	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
 	local zoneRadius = GetConvarInt('voice_zoneRadius', 16) * 2
 	local zoneOffset = (256 / zoneRadius)
 	if nextRoutingRefresh < GetGameTimer() then

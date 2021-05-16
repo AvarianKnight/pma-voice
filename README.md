@@ -88,6 +88,7 @@ This would only allow the superadmin group to mute players.
 | addPlayerToCall       | Set call channel         | int          |
 | removePlayerFromRadio | Remove player from radio |              |
 | removePlayerFromCall  | Remove player from call  |              |
+| setOverrideCoords  | Overrides the player coords, resets when set to false  | vector3, boolean |
 
 Supported from mumble-voip / toko-voip
 
