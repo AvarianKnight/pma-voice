@@ -16,8 +16,18 @@ CreateThread(function()
     for i = 1, 1024 do
         MumbleCreateChannel(i)
     end
+	Wait(5000)
 	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
 		logger.warn('The convar \'voice_enableRadioSubmix\' is currently deprecated, please use \'voice_enableSubmix\' instead.')
+	end
+	if GetConvar('voice_useNativeAudio', 'false') == 'false' and GetConvar('voice_use3dAudio', 'false') == 'false' and GetConvar('voice_use2dAudio', 'false') == 'false' then
+		SetConvarReplicated('voice_useNativeAudio', 'true')
+		if GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
+			SetConvarReplicated('voice_useSendingRangeOnly', 'true')
+		end
+		logger.warn('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
+	elseif GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
+		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
 end)
 
