@@ -280,7 +280,7 @@ end
 local function updateZone(forced)
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
-        logger.info('Updating zone from %s to %s and adding nearby grids.', currentGrid, newGrid)
+        logger.info('Updating zone from %s to %s and adding nearby grids, was forced: %s.', currentGrid, newGrid, forced)
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(1)
 		NetworkSetVoiceChannel(currentGrid)
@@ -316,7 +316,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		Wait(50)
+		Wait(GetConvarInt('voice_zoneRefreshRate', 50))
 	end
 end)
 
@@ -411,6 +411,7 @@ end)
 
 AddEventHandler('mumbleConnected', function(address, shouldReconnect)
 	logger.log('Connected to mumble server with address of %s, should reconnect on disconnect is set to %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, shouldReconnect)
+	updateZone(true)
 end)
 
 AddEventHandler('mumbleDisconnected', function(address)

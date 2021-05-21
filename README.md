@@ -44,23 +44,46 @@ The ints are used like a boolean to 0 would be false, 1 true.
 
 All of the configs here are set using `setr [voice_configOption] [int]` OR `setr [voice_configOption] "[string]"`
 
+#### Note: If a convar defaults to 1 (true) you don't have set it again unless you want to disable it.
+
+### General Voice Settings
+
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_zoneRadius             |   16   | Sets the zone radius size, expects a multiple of 4             | int          |
 | voice_enableUi               |    1    | Enables the built in user interface                            | int          |
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
+| voice_defaultCycle           |   F11   | The default key to cycle the players proximity                | string       |
+| voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | string       |
+
+
+### Phone & Radio
+
+| ConVar                  | Default | Description                                                        | Parameter(s) |
+|-------------------------|---------|--------------------------------------------------------------------|--------------|
 | voice_enableRadios           |    1    | Enables the radio sub-modules                                 | int          |
 | voice_enablePhones           |    1    | Enables the phone sub-modules                                 | int          |
 | voice_enableSubmix      |    0    | Enables the submix which adds a radio/phone style submix to their voice | int          |
-| voice_defaultCycle           |   F11   | The default key to cycle the players proximity                | string       |
-| voice_defaultRadio           |   LALT  | The default key to use the radio                              | string       |
-| voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
-| voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | string       |
-| voice_externalPort           |   0     | The external port to use                                      | int          |
 | voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
-| voice_externalDisallowJoin   |   0     | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server. | int          |
+| voice_defaultRadio           |   LALT  | The default key to use the radio                              | string       |
+
+### Grid & Sync
+
+| ConVar                  | Default | Description                                                        | Parameter(s) |
+|-------------------------|---------|--------------------------------------------------------------------|--------------|
+| voice_zoneRadius        |   16    | Sets the zone radius size, expects a multiple of 4                 | int          |
+| voice_zoneRefreshRate   |   50    | How often to refresh the grid, higher value leads to issues when in the same car | int     |
+| voice_syncData          | 0   | enables state bags to be sync'd server side & to other clients, has to be enabled on startup *NOTE: Requires OneSync (not legacy)* | int        |
+
+### External Server & Misc.
+| ConVar                  | Default | Description                                                        | Parameter(s) |
+|-------------------------|---------|--------------------------------------------------------------------|--------------|
+| voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
+| voice_externalPort           |   0     | The external port to use                                      | int          |
 | voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
-| voice_syncData              | int          | enables state bags to be sync'd server side & to other clients, has to be enabled on startup | int        |
+| voice_externalDisallowJoin   |   0     | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server. | int          |
+| voice_hideEndpoints     | 1   | Hides the mumble address in logs *NOTE: You should only care to hide this for a external server.* | int        |
+
+
 
 ### Aces
 pma-voice comes with a built in /mute command, in order to allow your staff to use it you will have to grand them the ace!
