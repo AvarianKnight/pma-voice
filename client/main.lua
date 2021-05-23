@@ -195,7 +195,7 @@ RegisterCommand('-cycleproximity', function()
 end)
 RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 
-RegisterNetEvent('pma-voice:mutePlayer', function()
+function toggleMute() 
 	playerMuted = not playerMuted
 	
 	if playerMuted then
@@ -214,7 +214,22 @@ RegisterNetEvent('pma-voice:mutePlayer', function()
 		}, GetConvarInt('voice_syncData', 0) == 1)
 		MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1])
 	end
-end)
+end
+exports('toggleMute', toggleMute)
+RegisterNetEvent('pma-voice:toggleMute', toggleMute)
+
+local mutedTbl = {}
+function toggleMutePlayer(source)
+	if mutedTbl[source] then
+		mutedTbl[source] = nil
+		MumbleSetVolumeOverrideByServerId(source, -1.0)
+	else
+		mutedTbl[source] = true
+		MumbleSetVolumeOverrideByServerId(source, 0.0000001)
+	end
+end
+exports('toggleMutePlayer', toggleMutePlayer)
+
 
 --- function setVoiceProperty
 --- sets the specified voice property
