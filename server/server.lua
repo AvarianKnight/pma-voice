@@ -114,7 +114,6 @@ end
 function getPlayersInRadioChannel(channel)
 	local returnChannel = radioData[channel]
 	if returnChannel then
-		tPrint(returnChannel)
 		return returnChannel
 	end
 	-- channel doesnt exist

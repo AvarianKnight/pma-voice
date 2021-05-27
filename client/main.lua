@@ -195,6 +195,7 @@ RegisterCommand('-cycleproximity', function()
 end)
 RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 
+--- Toggles the current player muted 
 function toggleMute() 
 	playerMuted = not playerMuted
 	
@@ -219,13 +220,15 @@ exports('toggleMute', toggleMute)
 RegisterNetEvent('pma-voice:toggleMute', toggleMute)
 
 local mutedTbl = {}
+--- toggles the targeted player muted
+---@param source number the player to mute
 function toggleMutePlayer(source)
 	if mutedTbl[source] then
 		mutedTbl[source] = nil
 		MumbleSetVolumeOverrideByServerId(source, -1.0)
 	else
 		mutedTbl[source] = true
-		MumbleSetVolumeOverrideByServerId(source, 0.0000001)
+		MumbleSetVolumeOverrideByServerId(source, 0.0)
 	end
 end
 exports('toggleMutePlayer', toggleMutePlayer)
@@ -426,9 +429,12 @@ end)
 
 AddEventHandler('mumbleConnected', function(address, shouldReconnect)
 	logger.log('Connected to mumble server with address of %s, should reconnect on disconnect is set to %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, shouldReconnect)
+	-- don't try to set channel instantly, we're still getting data.
+	Wait(1000)
 	updateZone(true)
 end)
 
 AddEventHandler('mumbleDisconnected', function(address)
 	logger.log('Disconnected from mumble server with address of %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address)
+	currentGrid = -1
 end)

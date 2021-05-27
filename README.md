@@ -113,6 +113,13 @@ This would only allow the superadmin group to mute players.
 | removePlayerFromCall  | Remove player from call  |              |
 | setOverrideCoords  | Overrides the player coords, resets when set to false  | vector3, boolean |
 
+##### Toggles
+| Export              | Description                                            | Parameter(s) |
+|---------------------|--------------------------------------------------------|--------------|
+| toggleMute          | Toggles the current client muted                       |              |
+| toggleMutePlayer    | Toggles the selected player muted for the local client | int          |
+
+
 Supported from mumble-voip / toko-voip
 
 | Export                | Description              | Parameter(s) |
@@ -162,6 +169,6 @@ Server side state getters require the voice_syncData convar to be set to 1. You 
 
 ###### Exports
 
-| Export                | Description              | Parameter(s) |
-|-----------------------|--------------------------|--------------|
+| Export                       | Description                                       | Parameter(s) |
+|------------------------------|---------------------------------------------------|------|
 | getPlayersInRadioChannel     | Gets the current players in a radio channel       | int  |
