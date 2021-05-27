@@ -109,3 +109,16 @@ if GetConvarInt('voice_externalDisallowJoin', 0) == 1 then
 		deferral.done('This server is not accepting connections.')
 	end)
 end
+
+
+function getPlayersInRadioChannel(channel)
+	local returnChannel = radioData[channel]
+	if returnChannel then
+		tPrint(returnChannel)
+		return returnChannel
+	end
+	-- channel doesnt exist
+	return {}
+end
+exports('getPlayersInRadioChannel', getPlayersInRadioChannel)
+exports('GetPlayersInRadioChannel', getPlayersInRadioChannel)

@@ -149,7 +149,8 @@ You can get the Local Players state with `LocalPlayer.state['state bag here']`, 
 
 ##### Getters
 
-Server side getters require the voice_syncData convar to be set to 1. You can access the state with `Player(source).state['state bag here']`
+###### State Bags
+Server side state getters require the voice_syncData convar to be set to 1. You can access the state with `Player(source).state['state bag here']`
 
 | State Bag     | Description                                                  | Return Type  |
 |---------------|--------------------------------------------------------------|--------------|
@@ -158,3 +159,9 @@ Server side getters require the voice_syncData convar to be set to 1. You can ac
 | grid          | Returns the players current grid                             | int          |
 | radioChannel  | Returns the players current radio channel, or 0 for none     | int          |
 | callChannel   | Returns the players current call channel, or 0 for none      | int          |
+
+###### Exports
+
+| Export                | Description              | Parameter(s) |
+|-----------------------|--------------------------|--------------|
+| getPlayersInRadioChannel     | Gets the current players in a radio channel       | int  |
