@@ -1,1 +1,185 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.ico"><title>voice-ui</title><link href="css/app.css" rel="preload" as="style"><link href="js/app.js" rel="preload" as="script"><link href="js/chunk-vendors.js" rel="preload" as="script"><link href="css/app.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but voice-ui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><script src="js/chunk-vendors.js"></script><script src="js/app.js"></script></body></html>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>mumble-voip</title>
+		
+		<style>
+			.info-container {
+				position: absolute;
+				bottom: 0%;
+				right: 0%;
+				text-align: right;
+				padding: 5px;
+				font-family: sans-serif;
+				font-weight: bold;
+				color: rgb(1, 176, 240);
+				font-size: 0.5vw;
+				text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+			}
+
+			.talking {
+				color: rgba(244, 196, 65, 255);
+			}
+
+			.watermark {
+				position: fixed;
+				top: 0%;
+				right: 0%;
+				text-align: right;
+				opacity: 0.4;
+				z-index: 99;
+				color: rgb(184, 185, 185);
+				font-family: Arial;
+				font-weight: normal;
+				font-size: 0.5vw;
+				opacity: 0.8;
+			}
+
+			.radio-list-container {
+				position: absolute;
+				top: 1%;
+				right: 0%;
+				text-align: right;
+				padding: 5px;
+				font-family: sans-serif;
+				font-weight: bold;
+				color: rgb(1, 176, 240);
+				font-size: 0.5vw;
+				text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+			}
+		</style>
+		<script type="text/javascript">
+			let speakerEnabled = true;
+			
+			window.addEventListener("message", function(event) {
+				var item = event.data;
+
+				if (item.sound && item.volume) {
+					let snd = document.getElementById(item.sound);
+					snd.load();
+					snd.volume = item.volume;
+					snd.play();
+				}
+
+				if (item.speakerOption != null) {
+					speakerEnabled = item.speakerOption;
+				}
+
+				if (item.mode) {					
+					let modeElem = document.getElementById("voip-mode");
+
+					modeElem.textContent = item.mode + (item.radioActive ? " on radio" : "");
+
+					if (item.talking != null) {
+						if (item.talking) {
+							modeElem.className = "talking"
+						} else {
+							modeElem.className = ""
+						}
+					}					
+				}
+
+				if (item.radio != null) {
+					let radioElem = document.getElementById("voip-radio");
+
+					if (item.radio > 0 || isNaN(item.radio)) {
+						radioElem.textContent = "[Radio] " + item.radio + (!isNaN(item.radio) ? " MHz" : "");					
+					} else {
+						radioElem.textContent = "";
+					}
+				}
+
+				if (item.call != null) {
+					let callElem = document.getElementById("voip-call");
+					
+					if (item.call > 0) {
+						if (speakerEnabled) {
+							callElem.textContent = "[Call] [" + (item.speaker ? "\uD83D\uDD0A" : "\uD83D\uDD08") + "] " + item.call;
+						} else {
+							callElem.textContent = "[Call] " + item.call;
+						}
+					} else {
+						callElem.textContent = "";
+					}
+				}
+
+				if (item.warningId != null) {
+					let warningElem = document.getElementById("voip-warning");
+
+					if (item.warningMsg != null) {
+						let warningItem = document.createElement("div");
+						let warningItemTitle = document.createElement("span");
+						let warningItemContent = document.createElement("span");
+
+						warningItem.id = item.warningId;
+						warningItemTitle.textContent = "[Warning] ";
+						warningItemTitle.className = "talking";
+						warningItemContent.textContent = item.warningMsg;
+
+						warningItem.appendChild(warningItemTitle);
+						warningItem.appendChild(warningItemContent);
+						warningElem.appendChild(warningItem);
+					} else {
+						let warningItem = document.getElementById(item.warningId);
+						warningElem.removeChild(warningItem);
+					}
+				}
+
+				if (item.radioId != null) {
+					let radioListElem = document.getElementById("voip-radio-list");
+
+					if (!radioListElem.firstChild) { //add radio list header
+						let listHeader = document.createElement("div");
+
+						listHeader.id = "voip-radio-list-header";
+						listHeader.textContent = "\uD83D\uDCE1Radio List";
+						listHeader.style.textDecorationLine = "underline";
+
+						radioListElem.appendChild(listHeader);
+					}
+
+					if (item.radioName != null) {
+						let listItem = document.createElement("div");
+
+						listItem.id = "voip-radio-list-item-" + item.radioId;
+						listItem.textContent = item.radioName + (item.self ? "\uD83D\uDD38" : "\uD83D\uDD39");
+
+						radioListElem.appendChild(listItem);
+					} else if (item.radioTalking != null) {
+						let listItem = document.getElementById("voip-radio-list-item-" + item.radioId)
+						
+						if (item.radioTalking) {
+							listItem.className = "talking"
+						} else {
+							listItem.className = ""
+						}
+					} else {
+						let listItem = document.getElementById("voip-radio-list-item-" + item.radioId)
+						radioListElem.removeChild(listItem);
+					}
+				}
+
+				if (item.clearRadioList) {
+					let radioListElem = document.getElementById("voip-radio-list");
+
+					while (radioListElem.firstChild) {
+						radioListElem.removeChild(radioListElem.firstChild);
+					}
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<audio id="audio_on" src="mic_click_on.ogg"></audio>
+		<audio id="audio_off" src="mic_click_off.ogg"></audio>
+
+		<div class="watermark">mumble-voip by Frazzle.</div>
+		<div class="radio-list-container" id="voip-radio-list"></div>
+		<div class="info-container">
+			<div>[Mumble] <span id="voip-mode">Initialising</span></div>
+			<div id="voip-radio"></div>
+			<div id="voip-call"></div>
+			<div id="voip-warning"></div>
+		</div>
+	</body>
+</html>

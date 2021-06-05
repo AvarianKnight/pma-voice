@@ -1,34 +1,30 @@
-game {'gta5'}
+fx_version "adamant"
+game "gta5"
 
-fx_version 'cerulean'
-author 'AvarianKnight'
-description 'VOIP built using FiveM\'s built in mumble.'
+name "mumble-voip"
+description "A tokovoip replacement that uses fivems mumble voip"
+author "Frazzle (frazzle9999@gmail.com)"
+version "1.3"
 
-lua54 'yes'
+ui_page "ui/index.html"
 
-shared_script 'shared.lua'
+files {
+	"ui/index.html",
+	"ui/mic_click_on.ogg",
+	"ui/mic_click_off.ogg",
+}
+
+shared_scripts {
+	"config.lua",
+	"grid.lua",
+}
 
 client_scripts {
-    'client/**/*.lua',
+	"client.lua",
 }
 
 server_scripts {
-    'server/**/*.lua'
+	"server.lua",
 }
 
-files {
-    'ui/*.ogg',
-    'ui/css/*.css',
-    'ui/js/*.js',
-    'ui/index.html',
-}
-
-ui_page 'ui/index.html'
-
-provides {
-	'mumble-voip',
-    -- why does it use so many different names
-    'tokovoip',
-    'toko-voip',
-    'tokovoip_script'
-}
+provide "tokovoip_script"
