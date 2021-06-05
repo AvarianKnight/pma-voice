@@ -1,34 +1,19 @@
-game {'gta5'}
+fx_version 'bodacious'
+games { 'gta5', 'rdr3' }
+rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
 
-fx_version 'cerulean'
-author 'AvarianKnight'
-description 'VOIP built using FiveM\'s built in mumble.'
+client_script "src/c_utils.lua"
+client_script "c_config.lua"
+client_script "src/c_main.lua"
+client_script "src/c_TokoVoip.lua"
 
-lua54 'yes'
+server_script "s_config.lua"
+server_script "src/s_main.lua"
+server_script "src/s_utils.lua"
 
-shared_script 'shared.lua'
+ui_page "nui/index.html"
 
-client_scripts {
-    'client/**/*.lua',
-}
-
-server_scripts {
-    'server/**/*.lua'
-}
-
-files {
-    'ui/*.ogg',
-    'ui/css/*.css',
-    'ui/js/*.js',
-    'ui/index.html',
-}
-
-ui_page 'ui/index.html'
-
-provides {
-	'mumble-voip',
-    -- why does it use so many different names
-    'tokovoip',
-    'toko-voip',
-    'tokovoip_script'
-}
+files({
+    "nui/index.html",
+    "nui/script.js",
+})

@@ -1,6 +1,10 @@
+On screen displays of TokoVOIP and copyrights must remain visible and readable.
+You are allowed however to change their position and design.
+For the rest, the following applies:
+
 MIT License
 
-Copyright (c) 2020 Dillon Skaggs
+Copyright (c) 2019 Itokoyamato
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
