@@ -271,26 +271,27 @@ function setOverrideCoords(coords)
 end
 exports('setOverrideCoords', setOverrideCoords)
 
+function getMaxSize(zoneRadius)
+	return math.floor(math.max(4500.0 + 8192.0, 0.0) / zoneRadius + math.max(8022.0 + 8192.0, 0.0) / zoneRadius)
+end
+
 --- function getGridZone
 --- calculate the players grid
 ---@return number returns the players current grid.
 local function getGridZone()
 	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
-	local zoneRadius = GetConvarInt('voice_zoneRadius', 16) * 2
-	local zoneOffset = (256 / zoneRadius)
+	local zoneRadius = GetConvarInt('voice_zoneRadius', 150)
 	if nextRoutingRefresh < GetGameTimer() then
 		-- Constant deserialization (every frame) is a bad idea, only update it every so often.
 		nextRoutingRefresh = GetGameTimer() + 500
 		currentRouting = LocalPlayer.state.routingBucket or 0
 	end
-	-- this code might be hard to follow
-	return (
-		--[[ 31 is the initial offses]]
-		math.floor( 31 * ( --[[ offset from the original zone should return a multiple]] zoneOffset) + 
-	--[[ returns -6 * zoneOffset so we want to offset it ]]
-	(zoneOffset * 6) - 6 )) 
-	+ (--[[ Offset routing bucket by 5 (we listen to closest 5 channels) + 5 (routing starts at 0)]]((currentRouting) * 5) + 5) + math.ceil((plyPos.x + plyPos.y) / (zoneRadius))
+	local sectorX = math.max(plyPos.x + 8192.0, 0.0) / zoneRadius
+	local sectorY = math.max(plyPos.y + 8192.0, 0.0) / zoneRadius
+	return (math.ceil(sectorX + sectorY) + (currentRouting * getMaxSize(zoneRadius)))
 end
+
+local lastGridChange = GetGameTimer()
 
 --- function updateZone
 --- updates the players current grid, if they're in a different grid.
@@ -298,7 +299,9 @@ end
 local function updateZone(forced)
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
-        logger.info('Updating zone from %s to %s and adding nearby grids, was forced: %s.', currentGrid, newGrid, forced)
+		logger.verbose('Time since last grid change: %s',  (GetGameTimer() - lastGridChange)/1000)
+		logger.info('Updating zone from %s to %s and adding nearby grids, was forced: %s', currentGrid, newGrid, forced)
+		lastGridChange = GetGameTimer()
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(1)
 		NetworkSetVoiceChannel(currentGrid)
