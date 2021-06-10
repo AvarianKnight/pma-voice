@@ -20,8 +20,10 @@ end)
 
 -- TODO: Better implementation of this?
 RegisterCommand('vol', function(_, args)
-	if args[1] then
-		setVolume(args[1])
+	if not args[1] then return end
+	local volume = tonumber(args[1])
+	if volume then
+		setVolume(volume / 100)
 	end
 end)
 
