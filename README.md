@@ -70,7 +70,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_zoneRadius        |   16    | Sets the zone radius size, expects a multiple of 4                 | int          |
+| voice_zoneRadius        |   150    | Sets the zone radius size, setting this under 100 is not recommended              | int          |
 | voice_zoneRefreshRate   |   50    | How often to refresh the grid, higher value leads to issues when in the same car | int     |
 | voice_syncData          | 0   | enables state bags to be sync'd server side & to other clients, has to be enabled on startup *NOTE: Requires OneSync (not legacy)* | int        |
 
