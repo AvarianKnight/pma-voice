@@ -2,8 +2,9 @@ local Cfg = Cfg
 local currentGrid = 0
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
-	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
-	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')),
+	-- people are setting this to 1 instead of 1.0 and expecting it to work.
+	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
+	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 }
 plyState = LocalPlayer.state
 local micClicks = true
