@@ -17,9 +17,11 @@ CreateThread(function()
         MumbleCreateChannel(i)
     end
 	Wait(5000)
-	if GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
-		logger.warn('The convar \'voice_enableRadioSubmix\' is currently deprecated, please use \'voice_enableSubmix\' instead.')
+	if GetConvarInt('voice_zoneRadius', 256) < 256 then
+		logger.warn('The convar \'voice_zoneRadius\' is less then 256 (currently %s, recommended is 256).', GetConvarInt('voice_zoneRadius', 256))
 	end
+
+	-- handle no convars being set
 	if GetConvar('voice_useNativeAudio', 'false') == 'false' and GetConvar('voice_use3dAudio', 'false') == 'false' and GetConvar('voice_use2dAudio', 'false') == 'false' then
 		SetConvarReplicated('voice_useNativeAudio', 'true')
 		if GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then

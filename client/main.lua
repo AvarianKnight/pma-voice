@@ -111,7 +111,7 @@ function toggleVoice(plySource, enabled, moduleType)
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	if enabled then
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
-		if GetConvarInt('voice_enableSubmix', 0) == 1 or GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+		if GetConvarInt('voice_enableSubmix', 0) == 1 then
 			if moduleType then
 				disableSubmixReset[plySource] = true
 				submixFunctions[moduleType](plySource)
@@ -120,7 +120,7 @@ function toggleVoice(plySource, enabled, moduleType)
 			end
 		end
 	else
-		if GetConvarInt('voice_enableSubmix', 0) == 1 or GetConvarInt('voice_enableRadioSubmix', 0) == 1 then
+		if GetConvarInt('voice_enableSubmix', 0) == 1 then
 			-- garbage collect it
 			disableSubmixReset[plySource] = nil
 			SetTimeout(250, function()
@@ -283,7 +283,7 @@ end
 ---@return number returns the players current grid.
 local function getGridZone()
 	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
-	local zoneRadius = GetConvarInt('voice_zoneRadius', 150)
+	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
 	if nextRoutingRefresh < GetGameTimer() then
 		-- Constant deserialization (every frame) is a bad idea, only update it every so often.
 		nextRoutingRefresh = GetGameTimer() + 500
@@ -340,7 +340,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		Wait(GetConvarInt('voice_zoneRefreshRate', 50))
+		Wait(GetConvarInt('voice_zoneRefreshRate', 200))
 	end
 end)
 
