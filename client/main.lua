@@ -300,6 +300,9 @@ local lastGridChange = GetGameTimer()
 --- updates the players current grid, if they're in a different grid.
 ---@param forced boolean whether or not to force a grid refresh. default: false
 local function updateZone(forced)
+	if currentRouting ~= 0 then
+		forced = true
+	end
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
 		logger.verbose('Time since last grid change: %s',  (GetGameTimer() - lastGridChange)/1000)
