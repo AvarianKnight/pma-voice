@@ -1,5 +1,7 @@
 local Cfg = Cfg
 local currentGrid = 0
+local nearbyGrids = {}
+local updatingGrid = false
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
 	-- people are setting this to 1 instead of 1.0 and expecting it to work.
@@ -300,19 +302,55 @@ local lastGridChange = GetGameTimer()
 --- updates the players current grid, if they're in a different grid.
 ---@param forced boolean whether or not to force a grid refresh. default: false
 local function updateZone(forced)
+	if updatingGrid then return end
+
 	local newGrid = getGridZone()
 	if newGrid ~= currentGrid or forced then
+		updatingGrid = true
+
 		logger.verbose('Time since last grid change: %s',  (GetGameTimer() - lastGridChange)/1000)
 		logger.info('Updating zone from %s to %s and adding nearby grids, was forced: %s', currentGrid, newGrid, forced)
 		lastGridChange = GetGameTimer()
 		currentGrid = newGrid
-		MumbleClearVoiceTargetChannels(1)
+		
 		NetworkSetVoiceChannel(currentGrid)
 		LocalPlayer.state:set('grid', currentGrid, true)
-		-- add nearby grids to voice targets
-		for nearbyGrids = currentGrid - 3, currentGrid + 3 do
-			MumbleAddVoiceTargetChannel(1, nearbyGrids)
-		end
+
+		Citizen.CreateThread(function()
+			while MumbleGetVoiceChannelFromServerId(playerServerId) ~= currentGrid do
+				Wait(0)
+			end
+
+			local recycledNearbyGrids = {}
+
+			-- Stop listening to not relevant grids
+			for _, previousNearbyGrid in pairs(nearbyGrids) do
+				local needsToBeRemoved = previousNearbyGrid < currentGrid - 3 or previousNearbyGrid > currentGrid + 3
+
+				if needsToBeRemoved then
+					MumbleRemoveVoiceChannelListen(previousNearbyGrid)
+				else
+					recycledNearbyGrids[previousNearbyGrid] = true
+				end
+			end
+	
+			MumbleClearVoiceTargetChannels(1)
+			
+			nearbyGrids = {}
+
+			MumbleAddVoiceTargetChannel(1, currentGrid)
+	
+			-- Listen to nearby grids
+			for nearbyGrid = currentGrid - 3, currentGrid + 3 do
+				table.insert(nearbyGrids, nearbyGrid)
+
+				if nearbyGrid ~= currentGrid and not recycledNearbyGrids[nearbyGrid] then
+					MumbleAddVoiceChannelListen(1, nearbyGrid)
+				end
+			end
+	
+			updatingGrid = false
+		end)
 	end
 end
 

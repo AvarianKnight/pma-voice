@@ -11,12 +11,7 @@ function defaultTable(source)
 	}
 end
 
--- temp fix before an actual fix is added
 CreateThread(function()
-    for i = 1, 1024 do
-        MumbleCreateChannel(i)
-    end
-	Wait(5000)
 	if GetConvarInt('voice_zoneRadius', 256) < 256 then
 		logger.warn('The convar \'voice_zoneRadius\' is less then 256 (currently %s, recommended is 256).', GetConvarInt('voice_zoneRadius', 256))
 	end
