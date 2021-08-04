@@ -37,6 +37,8 @@ All of the configs here are set using `setr [voice_configOption] [boolean]`
 
 # Config
 
+### PLEASE NOTE: Any keybind changes only affect new players, if you want to change your key bind go to Key Bindings -> FiveM -> Look for keybinds under 'pma-voice'.
+
 All of the config is done via ConVars in order to streamline the process.
 
 The ints are used like a boolean to 0 would be false, 1 true.
