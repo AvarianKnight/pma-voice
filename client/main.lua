@@ -433,8 +433,8 @@ RegisterCommand("grid", function()
 	print(('Players current grid is %s'):format(currentGrid))
 end)
 
-AddEventHandler('mumbleConnected', function(address, shouldReconnect)
-	logger.log('Connected to mumble server with address of %s, should reconnect on disconnect is set to %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, shouldReconnect)
+AddEventHandler('mumbleConnected', function(address, isReconnecting)
+	logger.log('Connected to mumble server with address of %s, is this a reconnect %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, isReconnecting)
 	-- don't try to set channel instantly, we're still getting data.
 	Wait(1000)
 	updateZone(true)
