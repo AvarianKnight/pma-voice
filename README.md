@@ -78,6 +78,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 ### External Server & Misc.
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
+| voice_allowSetIntent         |   1  | Whether or not to allow players to set their audio intents (you can see more [here](https://docs.fivem.net/natives/?_0x6383526B))  | int       |
 | voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
 | voice_externalPort           |   0     | The external port to use                                      | int          |
 | voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
@@ -113,6 +114,8 @@ This would only allow the superadmin group to mute players.
 | removePlayerFromRadio | Remove player from radio |              |
 | removePlayerFromCall  | Remove player from call  |              |
 | setOverrideCoords  | Overrides the player coords, resets when set to false  | vector3, boolean |
+| getGridZoneAtCoords | Gets the zone id at the specified coords | vector3 |
+| addListenerChannels | Adds channels for to listen to (using the grid system) | int|table|nil |
 
 ##### Toggles
 | Export              | Description                                            | Parameter(s) |

@@ -6,11 +6,11 @@ local volumes = {
 	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 }
+local voiceChannelListeners = {}
 plyState = LocalPlayer.state
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
-
 radioData = {}
 callData = {}
 
@@ -294,6 +294,20 @@ local function getGridZone()
 	return (math.ceil(sectorX + sectorY) + (currentRouting * getMaxSize(zoneRadius)))
 end
 
+--- function getGridZoneAtCoords
+--- gets the grid at the set coords
+--- @param coords vector3 the coords to get the grid at
+---@return number returns the grid that would be at the current coords
+local function getGridZoneAtCoords(coords)
+	local plyPos = coords
+	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
+
+	local sectorX = math.max(plyPos.x + 8192.0, 0.0) / zoneRadius
+	local sectorY = math.max(plyPos.y + 8192.0, 0.0) / zoneRadius
+	return (math.ceil(sectorX + sectorY) + (currentRouting * getMaxSize(zoneRadius)))
+end
+exports('getGridZoneAtCoords', getGridZoneAtCoords)
+
 local lastGridChange = GetGameTimer()
 
 --- function updateZone
@@ -313,8 +327,38 @@ local function updateZone(forced)
 		for nearbyGrids = currentGrid - 3, currentGrid + 3 do
 			MumbleAddVoiceTargetChannel(1, nearbyGrids)
 		end
+		for i = 1, #voiceChannelListeners do
+			MumbleAddVoiceTargetChannel(1, nearbyGrids)
+		end
 	end
 end
+
+--- function addListenerChannels
+--- adds the channels to the listener
+---@param channels table|number|nil the channels to add
+function addListenerChannels(channels)
+	if not channels then
+		voiceChannelListeners = {}
+	end
+	local channelType = type(channels)
+	if channelType == 'table' then
+		local channelLength = #channels
+		if channelLength == 0 then
+			error('addListenerChannels expects a numbered table, but was not passed one, if you were trying to clear listener channels please set this to nil')
+		end
+		for i = 1, #channels do
+			local channel = channels[i]
+			if type(channel) ~= 'number' then
+				error('addListenerChannels expects a numbered table, but was passed a table with a non-number channel')
+			end
+			voiceChannelListeners[#voiceChannelListeners+1] = channel
+		end
+	elseif channelType == "number" then
+		voiceChannelListeners[#voiceChannelListeners+1] = channels
+	end
+	updateZone(true)
+end
+exports('addListenerChannels', addListenerChannels)
 
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
@@ -431,6 +475,17 @@ end)
 
 RegisterCommand("grid", function()
 	print(('Players current grid is %s'):format(currentGrid))
+end)
+
+RegisterCommand('setvoiceintent', function(source, args)
+	if GetConvarInt('voice_allowSetIntent', 1) == 1 then
+		local intent = args[1]
+		if intent == 'speech' then
+			MumbleSetAudioInputIntent(`speech`)
+		elseif intent == 'music' then
+			MumbleSetAudioInputIntent(`music`)
+		end
+	end
 end)
 
 AddEventHandler('mumbleConnected', function(address, isReconnecting)
