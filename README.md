@@ -147,6 +147,14 @@ You can get the Local Players state with `LocalPlayer.state['state bag here']`, 
 | radioChannel  | Returns the players current radio channel, or 0 for none     | int          |
 | callChannel   | Returns the players current call channel, or 0 for none      | int          |
 
+#### Events
+
+These are events designed for third-party resource integration. These are emitted only to the current client.
+
+| Event                    | Description                                                  | Event Params   |
+|--------------------------|--------------------------------------------------------------|----------------|
+| pma-voice:setTalkingMode | Triggered on proximity mode change with the voice mode idx | voiceMode: int |
+
 
 #### Server
 
