@@ -31,6 +31,13 @@ CreateThread(function()
 	elseif GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
+
+	if oneSync == 'legacy' then
+        for i = 1, 5 do
+            logger.warn('This resource was only tested with OneSync, and will likely be issues on legacy and you will not get support for them.')
+            Wait(5000)
+        end
+    end
 end)
 
 RegisterNetEvent('playerJoined', function()
