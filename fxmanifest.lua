@@ -4,9 +4,10 @@ fx_version 'cerulean'
 author 'AvarianKnight'
 description 'VOIP built using FiveM\'s built in mumble.'
 
-dependencies {
-    '/onesync',
-}
+-- TODO: When Meta-dependencies are added to recommended (4404+) re-add this
+--dependencies {
+--    '/onesync',
+--}
 
 lua54 'yes'
 
