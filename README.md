@@ -1,5 +1,7 @@
 ### Disclaimer: Code in the main repo is considered to be 'dev', please use the [Latest Release](https://github.com/AvarianKnight/pma-voice/releases) for a stable version.
 
+### This resource is intended to be used with OneSync, if you use legacy you can possibly have issues and you _will not get support_.
+
 # pma-voice
 A voice system designed around the use if FiveM's internal mumble server.
 
