@@ -55,7 +55,7 @@ function removePlayerFromRadio(plySource)
 		end
 		radioData = {}
 		playerTargets(NetworkIsPlayerTalking(PlayerId()) and callData or {})
-		plyState:set('radioChannel', 0, GetConvarInt('voice_syncData', 0) == 1)
+		LocalPlayer.state:set('radioChannel', 0, GetConvarInt('voice_syncData', 0) == 1)
 	else
 		radioData[plySource] = nil
 		toggleVoice(plySource, false)
@@ -75,7 +75,7 @@ RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
 function setRadioChannel(channel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
-	plyState:set('radioChannel', channel, GetConvarInt('voice_syncData', 0) == 1)
+	LocalPlayer.state:set('radioChannel', channel, GetConvarInt('voice_syncData', 0) == 1)
 	radioChannel = channel
 	if GetConvarInt('voice_enableUi', 1) == 1 then
 		SendNUIMessage({
@@ -173,7 +173,7 @@ RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice
 function syncRadio(_radioChannel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	logger.info('[radio] radio set serverside update to radio %s', radioChannel)
-	plyState:set('radioChannel', _radioChannel, GetConvarInt('voice_syncData', 0) == 1)
+	LocalPlayer.state:set('radioChannel', _radioChannel, GetConvarInt('voice_syncData', 0) == 1)
 	radioChannel = _radioChannel
 end
 RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)

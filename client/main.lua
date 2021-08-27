@@ -7,7 +7,6 @@ local volumes = {
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 }
 local voiceChannelListeners = {}
-plyState = LocalPlayer.state
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
@@ -41,7 +40,7 @@ function setVolume(volume, volumeType)
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
-			plyState:set(volumeType, volume, GetConvarInt('voice_syncData', 0) == 1)
+			LocalPlayer.state:set(volumeType, volume, GetConvarInt('voice_syncData', 0) == 1)
 			volumes[volumeType] = volume
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
@@ -49,7 +48,7 @@ function setVolume(volume, volumeType)
 	else
 		for types, vol in pairs(volumes) do
 			volumes[types] = volume
-			plyState:set(types, volume, GetConvarInt('voice_syncData', 0) == 1)
+			LocalPlayer.state:set(types, volume, GetConvarInt('voice_syncData', 0) == 1)
 		end
 	end
 end
@@ -183,7 +182,7 @@ RegisterCommand('+cycleproximity', function()
 	local voiceModeData = Cfg.voiceModes[voiceMode]
 	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
 	mode = voiceMode
-	plyState:set('proximity', {
+	LocalPlayer.state:set('proximity', {
 		index = voiceMode,
 		distance =  voiceModeData[1],
 		mode = voiceModeData[2],
@@ -203,7 +202,7 @@ function toggleMute()
 	playerMuted = not playerMuted
 	
 	if playerMuted then
-		plyState:set('proximity', {
+		LocalPlayer.state:set('proximity', {
 			index = 0,
 			distance = 0.1,
 			mode = 'Muted',
@@ -211,7 +210,7 @@ function toggleMute()
 		MumbleSetAudioInputDistance(0.1)
 	else
 		local voiceModeData = Cfg.voiceModes[mode]
-		plyState:set('proximity', {
+		LocalPlayer.state:set('proximity', {
 			index = mode,
 			distance =  voiceModeData[1],
 			mode = voiceModeData[2],
@@ -440,7 +439,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 	local voiceModeData = Cfg.voiceModes[mode]
 	-- sets how far the player can talk
 	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
-	plyState:set('proximity', {
+	LocalPlayer.state:set('proximity', {
 		index = mode,
 		distance =  voiceModeData[1],
 		mode = voiceModeData[2],
