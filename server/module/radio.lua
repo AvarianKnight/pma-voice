@@ -1,3 +1,16 @@
+local radioChecks = {}
+
+AddEventHandler("onResourceStop", function(resource)
+	for channel, functionRef in pairs(radioChecks) do
+		local functionRef = functionRef.__cfx_functionReference
+		local functionResource = string.match(functionRef, resource)
+		if functionResource then
+			radioChecks[channel] = nil
+			logger.warn('Channel %s had its radio check removed because the resource that gave the checks stopped', channel)
+		end
+	end
+end)
+
 --- removes a player from the specified channel
 ---@param source number the player to remove
 ---@param radioChannel number the current channel to remove them from
@@ -12,10 +25,41 @@ function removePlayerFromRadio(source, radioChannel)
 	voiceData[source].radio = 0
 end
 
+--- checks if the player can join the channel specified
+--- @param source number the source of the player
+--- @param radioChannel number the channel they're trying to join
+--- @return boolean if the user can join the channel
+function canJoinChannel(source, radioChannel)
+	if radioChecks[radioChannel] then
+		return radioChecks[radioChannel](source)
+	end
+	return true
+end
+
+--- adds a check to the channel, function is expected to return a boolean of true or false
+---@param channel number the channel to add a check to
+---@param cb function the function to execute the check on
+function addChannelCheck(channel, cb)
+	local channelType = type(channel)
+	local cbType = type(cb)
+	if channelType ~= "number" then
+		error(("'channel' expected 'number' got '%s'"):format(channelType))
+	end
+	if cbType ~= 'table' or not cb.__cfx_functionReference then
+		error(("'cb' expected 'function' got '%s'"):format(cbType))
+	end
+	radioChecks[channel] = cb
+end
+exports('addChannelCheck', addChannelCheck)
+
 --- adds a player to the specified radion channel
 ---@param source number the player to add to the channel
 ---@param radioChannel number the channel to set them to
 function addPlayerToRadio(source, radioChannel)
+	if not canJoinChannel(source, radioChannel) then
+		-- remove the player from the radio client side
+		return TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source)
+	end
 	logger.info('[radio] Added %s to radio %s', source, radioChannel)
 
 	-- check if the channel exists, if it does set the varaible to it
@@ -45,7 +89,7 @@ function setPlayerRadio(source, radioChannel)
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	local plyVoice = voiceData[source]
 	local radioChannel = tonumber(radioChannel)
-	if not radioChannel then error(('radioChannel was not a number. Got: %s Expected: Number'):format(type(radioChannel))) return end
+	if not radioChannel then error(("'radioChannel' expected 'number', got: %s"):format(type(radioChannel))) return end
 	if radioChannel ~= 0 and plyVoice.radio == 0 then
 		addPlayerToRadio(source, radioChannel)
 	elseif radioChannel == 0 then
