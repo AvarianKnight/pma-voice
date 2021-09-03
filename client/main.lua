@@ -40,7 +40,7 @@ function setVolume(volume, volumeType)
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
-			LocalPlayer.state:set(volumeType, volume, GetConvarInt('voice_syncData', 0) == 1)
+			LocalPlayer.state:set(volumeType, volume, GetConvarInt('voice_syncData', 1) == 1)
 			volumes[volumeType] = volume
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
@@ -48,7 +48,7 @@ function setVolume(volume, volumeType)
 	else
 		for types, vol in pairs(volumes) do
 			volumes[types] = volume
-			LocalPlayer.state:set(types, volume, GetConvarInt('voice_syncData', 0) == 1)
+			LocalPlayer.state:set(types, volume, GetConvarInt('voice_syncData', 1) == 1)
 		end
 	end
 end
@@ -186,7 +186,7 @@ RegisterCommand('+cycleproximity', function()
 		index = voiceMode,
 		distance =  voiceModeData[1],
 		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 0) == 1)
+	}, GetConvarInt('voice_syncData', 1) == 1)
 	-- make sure we update the UI to the latest voice mode
 	SendNUIMessage({
 		voiceMode = voiceMode - 1
@@ -206,7 +206,7 @@ function toggleMute()
 			index = 0,
 			distance = 0.1,
 			mode = 'Muted',
-		}, GetConvarInt('voice_syncData', 0) == 1)
+		}, GetConvarInt('voice_syncData', 1) == 1)
 		MumbleSetAudioInputDistance(0.1)
 	else
 		local voiceModeData = Cfg.voiceModes[mode]
@@ -214,7 +214,7 @@ function toggleMute()
 			index = mode,
 			distance =  voiceModeData[1],
 			mode = voiceModeData[2],
-		}, GetConvarInt('voice_syncData', 0) == 1)
+		}, GetConvarInt('voice_syncData', 1) == 1)
 		MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1])
 	end
 end
@@ -400,7 +400,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 		index = mode,
 		distance =  voiceModeData[1],
 		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 0) == 1)
+	}, GetConvarInt('voice_syncData', 1) == 1)
 
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)

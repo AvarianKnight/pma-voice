@@ -45,7 +45,7 @@ RegisterNetEvent('playerJoined', function()
 		voiceData[source] = defaultTable(source)
 		local plyState = Player(source).state
 		plyState:set('routingBucket', 0, true)
-		if GetConvarInt('voice_syncData', 0) == 1 then
+		if GetConvarInt('voice_syncData', 1) == 1 then
 			plyState:set('radio', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
 			plyState:set('phone', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
 			plyState:set('proximity', {}, true)
