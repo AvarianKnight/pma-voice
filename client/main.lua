@@ -259,19 +259,6 @@ exports('SetTokoProperty', setVoiceProperty)
 
 local currentRouting = 0
 local nextRoutingRefresh = GetGameTimer()
-local overrideCoords = false
-
---- function setOverrideCoords
---- will have to be updated every so often if used for spectate.
----@param coords vector3|boolean the coords to set override for, or false to reset
-function setOverrideCoords(coords)
-	local coordType = type(coords)
-	if coordType ~= 'vector3' and coordType ~= 'boolean' then
-		return logger.error('"setOverrideCoords" expects a vector3 or boolean, got %s', coordType)
-	end
-	overrideCoords = coords
-end
-exports('setOverrideCoords', setOverrideCoords)
 
 function getMaxSize(zoneRadius)
 	return math.floor(math.max(4500.0 + 8192.0, 0.0) / zoneRadius + math.max(8022.0 + 8192.0, 0.0) / zoneRadius)
@@ -281,7 +268,7 @@ end
 --- calculate the players grid
 ---@return number returns the players current grid.
 local function getGridZone()
-	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
+	local plyPos = GetEntityCoords(PlayerPedId(), false)
 	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
 	if nextRoutingRefresh < GetGameTimer() then
 		-- Constant deserialization (every frame) is a bad idea, only update it every so often.
@@ -326,38 +313,8 @@ local function updateZone(forced)
 		for nearbyGrids = currentGrid - 3, currentGrid + 3 do
 			MumbleAddVoiceTargetChannel(1, nearbyGrids)
 		end
-		for i = 1, #voiceChannelListeners do
-			MumbleAddVoiceTargetChannel(1, nearbyGrids)
-		end
 	end
 end
-
---- function addListenerChannels
---- adds the channels to the listener
----@param channels table|number|nil the channels to add
-function addListenerChannels(channels)
-	if not channels then
-		voiceChannelListeners = {}
-	end
-	local channelType = type(channels)
-	if channelType == 'table' then
-		local channelLength = #channels
-		if channelLength == 0 then
-			error('addListenerChannels expects a numbered table, but was not passed one, if you were trying to clear listener channels please set this to nil')
-		end
-		for i = 1, #channels do
-			local channel = channels[i]
-			if type(channel) ~= 'number' then
-				error('addListenerChannels expects a numbered table, but was passed a table with a non-number channel')
-			end
-			voiceChannelListeners[#voiceChannelListeners+1] = channel
-		end
-	elseif channelType == "number" then
-		voiceChannelListeners[#voiceChannelListeners+1] = channels
-	end
-	updateZone(true)
-end
-exports('addListenerChannels', addListenerChannels)
 
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false

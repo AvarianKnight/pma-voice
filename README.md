@@ -115,9 +115,7 @@ This would only allow the superadmin group to mute players.
 | addPlayerToCall       | Set call channel         | int          |
 | removePlayerFromRadio | Remove player from radio |              |
 | removePlayerFromCall  | Remove player from call  |              |
-| setOverrideCoords  | Overrides the player coords, resets when set to false  | vector3, boolean |
 | getGridZoneAtCoords | Gets the zone id at the specified coords | vector3 |
-| addListenerChannels | Adds channels for to listen to (using the grid system) | int|table|nil |
 
 ##### Toggles
 | Export              | Description                                            | Parameter(s) |
