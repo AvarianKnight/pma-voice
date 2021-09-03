@@ -52,7 +52,6 @@ function setVolume(volume, volumeType)
 		end
 	end
 end
-exports('setVolume', setVolume)
 
 exports('setRadioVolume', function(vol)
 	setVolume(vol, 'radio')

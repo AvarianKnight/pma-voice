@@ -105,19 +105,20 @@ This would only allow the superadmin group to mute players.
  
 | Export              | Description                 | Parameter(s) |
 |---------------------|-----------------------------|--------------|
-| setVoiceProperty    | Set config options          | string, any  |
-| setRadioChannel     | Set radio channel           | int          |
-| setCallChannel      | Set call channel            | int          |
-| setRadioVolume      | Set radio volume for player | int          |
-| setCallVolume       | Set call volume for player  | int          |
-| setVolume           | Sets the specified strings volume (currently 'radio' and 'call'), not providing a argument sets both.   | int, string (opt) |
-| addPlayerToRadio      | Set radio channel        | int          |
-| addPlayerToCall       | Set call channel         | int          |
-| removePlayerFromRadio | Remove player from radio |              |
-| removePlayerFromCall  | Remove player from call  |              |
-| getGridZoneAtCoords | Gets the zone id at the specified coords | vector3 |
+| [setVoiceProperty](docs/client-setters/setVoiceProperty.md)    | Set config options          | string, any  |
+| [setRadioChannel](docs/client-setters/setRadioChannel.md)     | Set radio channel           | int          |
+| [setCallChannel](docs/client-setters/setCallChannel.md)      | Set call channel            | int          |
+| [setRadioVolume](docs/client-setters/setRadioVolume.md)      | Set radio volume for player | int          |
+| [setCallVolume](docs/client-setters/setCallVolume.md)        | Set call volume for player  | int          |
+| [addPlayerToRadio](docs/client-setters/setRadioChannel.md)      | Set radio channel        | int          |
+| [addPlayerToCall](docs/client-setters/setCallChannel.md)       | Set call channel         | int          |
+| [removePlayerFromRadio](docs/client-setters/removePlayerFromRadio.md) | Remove player from radio |              |
+| [removePlayerFromCall](docs/client-setters/removePlayerFromCall.md)  | Remove player from call  |              |
 
 ##### Toggles
+
+These don't have docs as they're currently not in a extremely usable state (see #118)
+
 | Export              | Description                                            | Parameter(s) |
 |---------------------|--------------------------------------------------------|--------------|
 | toggleMute          | Toggles the current client muted                       |              |
@@ -128,24 +129,23 @@ Supported from mumble-voip / toko-voip
 
 | Export                | Description              | Parameter(s) |
 |-----------------------|--------------------------|--------------|
-| SetMumbleProperty     | Set config options       | string, any  |
-| SetTokoProperty       | Set config options       | string, any  |
-| SetRadioChannel       | Set radio channel        | int          |
-| SetCallChannel        | Set call channel         | int          |
+| [SetMumbleProperty](docs/client-setters/setVoiceProperty.md)     | Set config options       | string, any  |
+| [SetTokoProperty](docs/client-setters/setVoiceProperty.md)       | Set config options       | string, any  |
+| [SetRadioChannel](docs/client-setters/setRadioChannel.md)       | Set radio channel        | int          |
+| [SetCallChannel](docs/client-setters/setCallChannel.md)        | Set call channel         | int          |
 
 #### Getters
 
-All getters are done through player states, which requires you to use OneSync Infinity.
+The majority of setters are done through player states, while a small 
 
-You can get the Local Players state with `LocalPlayer.state['state bag here']`, if you want to be able to get the state bags on the server you will have to set `setr voice_syncData 1`, which will enable you to get the clients data on the server & on other clients.
 
 | State Bag     | Description                                                  | Return Type  |
 |---------------|--------------------------------------------------------------|--------------|
-| proximity     | Returns a table with the mode index, distance, and mode name | table        |
-| routingBucket | Returns the players current routing bucket                   | int          |
-| grid          | Returns the players current grid                             | int          |
-| radioChannel  | Returns the players current radio channel, or 0 for none     | int          |
-| callChannel   | Returns the players current call channel, or 0 for none      | int          |
+| [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
+| [routingBucket](docs/state-getters/stateBagGetters.md) | Returns the players current routing bucket                   | int          |
+| [grid](docs/state-getters/stateBagGetters.md)          | Returns the players current grid                             | int          |
+| [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
+| [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
 
 #### Events
 
@@ -153,7 +153,9 @@ These are events designed for third-party resource integration. These are emitte
 
 | Event                    | Description                                                  | Event Params   |
 |--------------------------|--------------------------------------------------------------|----------------|
-| pma-voice:setTalkingMode | Triggered on proximity mode change with the voice mode idx | voiceMode: int |
+| [pma-voice:settingsCallback](docs/client-getters/events.md) | When emited it will return the current pma-voice settings. | cb(voiceSettings) |
+| [pma-voice:radioActive](docs/client-getters/events.md) | Triggered when the radio is activated / deactivated | boolean |
+| [pma-voice:setTalkingMode](docs/client-getters/events.md) | Triggered on proximity mode change with the voice mode id | int |
 
 
 #### Server
@@ -162,10 +164,10 @@ These are events designed for third-party resource integration. These are emitte
 
 | Export               | Description                          | Parameter(s) |
 |----------------------|--------------------------------------|--------------|
-| setPlayerRadio       | Sets the players radio channel       | int, int     |
-| setPlayerCall        | Sets the players call channel        | int, int     |
-| updateRoutingBucket  | Updates the players routing bucket, if provided a secondary option it will set & update the players routing bucket.   | int, int (opt) |
-| addChannelCheck      | Adds a channel check to the players radio channel | int, function |
+| [setPlayerRadio](docs/server-setters/setPlayerRadio.md)       | Sets the players radio channel       | int, int     |
+| [setPlayerCall](docs/server-setters/setPlayerCall.md)        | Sets the players call channel        | int, int     |
+| [updateRoutingBucket](docs/server-setters/updateRoutingBucket.md)  | Updates the players routing bucket, if provided a secondary option it will set & update the players routing bucket.   | int, int (opt) |
+| [addChannelCheck](docs/server-setters/addChannelCheck.md)      | Adds a channel check to the players radio channel | int, function |
 
 
 ##### Getters
@@ -175,14 +177,14 @@ Server side state getters require the voice_syncData convar to be set to 1. You 
 
 | State Bag     | Description                                                  | Return Type  |
 |---------------|--------------------------------------------------------------|--------------|
-| proximity     | Returns a table with the mode index, distance, and mode name | table        |
-| routingBucket | Returns the players current routing bucket                   | int          |
-| grid          | Returns the players current grid                             | int          |
-| radioChannel  | Returns the players current radio channel, or 0 for none     | int          |
-| callChannel   | Returns the players current call channel, or 0 for none      | int          |
+| [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
+| [routingBucket](docs/state-getters/stateBagGetters.md) | Returns the players current routing bucket                   | int          |
+| [grid](docs/state-getters/stateBagGetters.md)          | Returns the players current grid                             | int          |
+| [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
+| [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
 
 ###### Exports
 
 | Export                       | Description                                       | Parameter(s) |
 |------------------------------|---------------------------------------------------|------|
-| getPlayersInRadioChannel     | Gets the current players in a radio channel       | int  |
+| [getPlayersInRadioChannel](docs/server-getters/getPlayersInRadioChannel.md)     | Gets the current players in a radio channel       | int  |

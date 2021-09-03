@@ -1,0 +1,21 @@
+## getPlayersInRadioChannel
+
+## Description
+
+Gets a list of all of the players in the specified radio channel.
+
+## Parameters
+
+* **radioChannel**: The player to update the routing bucket of
+
+## Returns
+
+Returns a table of all of the players in the specified radio channel
+
+```lua
+-- this will only update
+local players = exports['pma-voice']:getPlayersInRadioChannel(1)
+for source, isTalking in pairs(players) do
+	print(('%s is in radio channel 1, isTalking: %s'):format(GetPlayerName(source), isTalking))
+end
+```
