@@ -49,6 +49,7 @@ function addChannelCheck(channel, cb)
 		error(("'cb' expected 'function' got '%s'"):format(cbType))
 	end
 	radioChecks[channel] = cb
+	logger.info("%s added a check to channel %s", GetInvokingResource(), channel)
 end
 exports('addChannelCheck', addChannelCheck)
 
