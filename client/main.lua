@@ -258,6 +258,21 @@ exports('SetTokoProperty', setVoiceProperty)
 
 local currentRouting = 0
 local nextRoutingRefresh = GetGameTimer()
+local overrideCoords = false
+
+--- function setOverrideCoords
+--- overrides the players coords to a seperate coordinate, useful when spectating.
+---@param coords vector3|boolean the coords to override with, or false to reset
+function setOverrideCoords(coords) 
+	local coordType = type(coords)
+	-- if someone sets this to true it will break playerPos, error instead.
+	if coordType ~= 'vector3' and (coordType ~= 'boolean' or coords == true) then
+		return logger.error("setOverrideCoords expects a 'vector3' or 'boolean' (as false), got %s with the value of %s", coordType, coords)
+	end
+	overrideCoords = coords
+end
+exports('setOverrideCoords', setOverrideCoords)
+
 
 function getMaxSize(zoneRadius)
 	return math.floor(math.max(4500.0 + 8192.0, 0.0) / zoneRadius + math.max(8022.0 + 8192.0, 0.0) / zoneRadius)
@@ -267,7 +282,7 @@ end
 --- calculate the players grid
 ---@return number returns the players current grid.
 local function getGridZone()
-	local plyPos = GetEntityCoords(PlayerPedId(), false)
+	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
 	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
 	if nextRoutingRefresh < GetGameTimer() then
 		-- Constant deserialization (every frame) is a bad idea, only update it every so often.

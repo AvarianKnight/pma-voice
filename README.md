@@ -114,10 +114,11 @@ This would only allow the superadmin group to mute players.
 | [addPlayerToCall](docs/client-setters/setCallChannel.md)       | Set call channel         | int          |
 | [removePlayerFromRadio](docs/client-setters/removePlayerFromRadio.md) | Remove player from radio |              |
 | [removePlayerFromCall](docs/client-setters/removePlayerFromCall.md)  | Remove player from call  |              |
+| [setOverrideCoords](docs/client-setters/setOverrideCoords.md)  | Overrides the players coordinates | vector3|boolean |
 
 ##### Toggles
 
-These don't have docs as they're currently not in a extremely usable state (see #118)
+These don't have docs as they're currently not in a extremely usable state (see issue #118)
 
 | Export              | Description                                            | Parameter(s) |
 |---------------------|--------------------------------------------------------|--------------|
