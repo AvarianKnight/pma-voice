@@ -32,12 +32,14 @@ CreateThread(function()
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
 
-	if oneSync == 'legacy' then
-        for i = 1, 5 do
-            logger.warn('This resource was only tested with OneSync, and will likely be issues on legacy and you will not get support for them.')
-            Wait(5000)
-        end
-    end
+	-- we don't ever want this warning to stop, people will complain that 'pma-voice isn't working!'
+	-- when its only compatiable with OneSync & OneSync Legacy
+	if GetConvar('onesync') == 'off' then
+		while true do
+			logger.warn("OneSync was not detected, pma-voice will not work without OneSync, if you are on OneSync please use the 'onesync' variable as defined here: https://docs.fivem.net/docs/server-manual/server-commands/#onesync-onofflegacy")
+			Wait(5000)
+		end
+	end
 end)
 
 RegisterNetEvent('playerJoined', function()
@@ -112,7 +114,7 @@ RegisterCommand('mute', function(source, args)
 end, true)
 
 if GetConvarInt('voice_externalDisallowJoin', 0) == 1 then
-	AddEventHandler('playerConnecting', function(playerName, kickReason, deferral)
+	AddEventHandler('playerConnecting', function(_, _, deferral)
 		deferral.defer()
 		Wait(0)
 		deferral.done('This server is not accepting connections.')

@@ -23,7 +23,7 @@ logger = {
 	['info'] = function(message, ...)
 		if GetConvarInt('voice_debugMode', 0) >= 1 then
 			print(('[info] ' .. message):format(...))
-		end	
+		end
 	end,
 	['warn'] = function(message, ...)
 		print(('[^1WARNING^7] ' .. message):format(...))
@@ -34,7 +34,7 @@ logger = {
 	['verbose'] = function(message, ...)
 		if GetConvarInt('voice_debugMode', 0) >= 4 then
 			print(('[verbose] ' .. message):format(...))
-		end	
+		end
 	end,
 }
 
@@ -43,7 +43,8 @@ function tPrint(tbl, indent)
 	indent = indent or 0
 	for k, v in pairs(tbl) do
 		local tblType = type(v)
-		formatting = string.rep("  ", indent) .. k .. ": "
+		local formatting = string.rep("  ", indent) .. k .. ": "
+
 		if tblType == "table" then
 			print(formatting)
 			tPrint(v, indent + 1)
