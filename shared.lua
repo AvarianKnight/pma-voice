@@ -1,4 +1,12 @@
 Cfg = {}
+
+-- these are just here to satisfy linting
+if not IsDuplicityVersion() then
+	LocalPlayer = LocalPlayer
+end
+Player = Player
+Entity = Entity
+
 -- possibly GetConvar('voice_modes', '0.5;2.0;5.0')
 -- possibly GetConvar('voice_modeNames', 'Whisper;Normal;Shouting') and seperate them on runtime?
 if GetConvar('voice_useNativeAudio', 'false') == 'true' then
