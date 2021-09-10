@@ -257,7 +257,6 @@ exports('SetMumbleProperty', setVoiceProperty)
 exports('SetTokoProperty', setVoiceProperty)
 
 local currentRouting = 0
-local nextRoutingRefresh = GetGameTimer()
 local overrideCoords = false
 
 --- function setOverrideCoords
