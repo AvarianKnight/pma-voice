@@ -278,17 +278,20 @@ function getMaxSize(zoneRadius)
 	return math.floor(math.max(4500.0 + 8192.0, 0.0) / zoneRadius + math.max(8022.0 + 8192.0, 0.0) / zoneRadius)
 end
 
+local updatedRouting = false
 --- function getGridZone
 --- calculate the players grid
 ---@return number returns the players current grid.
 local function getGridZone()
 	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
 	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
-	if nextRoutingRefresh < GetGameTimer() then
-		-- Constant deserialization (every frame) is a bad idea, only update it every so often.
-		nextRoutingRefresh = GetGameTimer() + 500
-		currentRouting = LocalPlayer.state.routingBucket or 0
+	local newRouting = LocalPlayer.state.routingBucket
+
+	if newRouting ~= currentRouting then
+		currentRouting = newRouting or 0
+		updatedRouting = true
 	end
+
 	local sectorX = math.max(plyPos.x + 8192.0, 0.0) / zoneRadius
 	local sectorY = math.max(plyPos.y + 8192.0, 0.0) / zoneRadius
 	return (math.ceil(sectorX + sectorY) + (currentRouting * getMaxSize(zoneRadius)))
@@ -322,6 +325,11 @@ local function updateZone(forced)
 		currentGrid = newGrid
 		MumbleClearVoiceTargetChannels(1)
 		NetworkSetVoiceChannel(currentGrid)
+		-- Delay adding listener channels until NetworkSetVoiceChannel resolves
+		if updatedRouting then
+			Wait(GetConvarInt('voice_routingUpdateWait', 50))
+			updatedRouting = false
+		end
 		LocalPlayer.state:set('grid', currentGrid, true)
 		-- add nearby grids to voice targets
 		for nearbyGrids = currentGrid - 3, currentGrid + 3 do

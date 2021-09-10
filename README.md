@@ -73,7 +73,8 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
 | voice_zoneRadius        |   256    | Sets the zone radius size, setting this below 256 can cause voice loss among other issues. | int          |
 | voice_zoneRefreshRate   |   200    | How often to refresh the grid, higher value leads to issues when in the same car | int     |
-| voice_syncData          | 1   | enables state bags to be sync'd server side & to other clients, has to be enabled on startup *NOTE: Requires OneSync* | int        |
+| voice_syncData          | 1   | Enables state bags to be sync'd server side & to other clients, has to be enabled on startup | int        |
+| voice_routingUpdateWait          | 50   | How long to wait after a routing bucket to update their grid, larger servers might need to set this higher. | int        |
 
 ### External Server & Misc.
 | ConVar                  | Default | Description                                                        | Parameter(s) |
