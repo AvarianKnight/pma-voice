@@ -35,17 +35,26 @@ end
 
 --- set the players call channel
 ---@param source number the player to set the call off
----@param callChannel number the channel to set the player to (or 0 to remove them from any call channel)
-function setPlayerCall(source, callChannel)
+---@param _callChannel number the channel to set the player to (or 0 to remove them from any call channel)
+function setPlayerCall(source, _callChannel)
 	if GetConvarInt('voice_enablePhones', 1) ~= 1 then return end
-    if GetInvokingResource() then
-        -- got set in a export, need to update the client to tell them that their radio
-        -- changed
-        TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
-    end
     voiceData[source] = voiceData[source] or defaultTable(source)
+    local isResource = GetInvokingResource()
     local plyVoice = voiceData[source]
-    local callChannel = tonumber(callChannel)
+    local callChannel = tonumber(_callChannel)
+    if not callChannel then
+		-- only full error if its sent from another server-side resource
+		if isResource then
+			error(("'callChannel' expected 'number', got: %s"):format(type(_callChannel))) 
+		else
+			return logger.warn("%s sent a invalid call, 'callChannel' expected 'number', got: %s", source,type(_radioChannel))
+		end
+	end
+	if isResource then
+		-- got set in a export, need to update the client to tell them that their call
+		-- changed
+		TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
+	end
 
     if callChannel ~= 0 and plyVoice.call == 0 then
         addPlayerToCall(source, callChannel)

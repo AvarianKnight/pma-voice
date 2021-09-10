@@ -1,8 +1,8 @@
 local radioChecks = {}
 
 AddEventHandler("onResourceStop", function(resource)
-	for channel, functionRef in pairs(radioChecks) do
-		local functionRef = functionRef.__cfx_functionReference
+	for channel, cfxFunctionRef in pairs(radioChecks) do
+		local functionRef = cfxFunctionRef.__cfx_functionReference
 		local functionResource = string.match(functionRef, resource)
 		if functionResource then
 			radioChecks[channel] = nil
@@ -79,18 +79,26 @@ end
 -- TODO: Implement this in a way that allows players to be on multiple channels
 --- sets the players current radio channel
 ---@param source number the player to set the channel of
----@param radioChannel number the radio channel to set them to (or 0 to remove them from radios)
-function setPlayerRadio(source, radioChannel)
+---@param _radioChannel number the radio channel to set them to (or 0 to remove them from radios)
+function setPlayerRadio(source, _radioChannel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
-	if GetInvokingResource() then
+	voiceData[source] = voiceData[source] or defaultTable(source)
+	local isResource = GetInvokingResource()
+	local plyVoice = voiceData[source]
+	local radioChannel = tonumber(_radioChannel)
+	if not radioChannel then
+		-- only full error if its sent from another server-side resource
+		if isResource then
+			error(("'radioChannel' expected 'number', got: %s"):format(type(radioChannel))) 
+		else
+			return logger.warn("%s sent a invalid radio, 'radioChannel' expected 'number', got: %s", source,type(_radioChannel))
+		end
+	end
+	if isResource then
 		-- got set in a export, need to update the client to tell them that their radio
 		-- changed
 		TriggerClientEvent('pma-voice:clSetPlayerRadio', source, radioChannel)
 	end
-	voiceData[source] = voiceData[source] or defaultTable(source)
-	local plyVoice = voiceData[source]
-	local radioChannel = tonumber(radioChannel)
-	if not radioChannel then error(("'radioChannel' expected 'number', got: %s"):format(type(radioChannel))) return end
 	if radioChannel ~= 0 and plyVoice.radio == 0 then
 		addPlayerToRadio(source, radioChannel)
 	elseif radioChannel == 0 then
