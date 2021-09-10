@@ -21,13 +21,16 @@ CreateThread(function()
 		logger.warn('The convar \'voice_zoneRadius\' is less then 256 (currently %s, recommended is 256).', GetConvarInt('voice_zoneRadius', 256))
 	end
 
-	-- handle no convars being set
-	if GetConvar('voice_useNativeAudio', 'false') == 'false' and GetConvar('voice_use3dAudio', 'false') == 'false' and GetConvar('voice_use2dAudio', 'false') == 'false' then
+	-- handle no convars being set (default drag n' drop)
+	if GetConvar('voice_useNativeAudio', 'false') == 'false'
+		and GetConvar('voice_use3dAudio', 'false') == 'false'
+		and GetConvar('voice_use2dAudio', 'false') == 'false'
+	then
 		SetConvarReplicated('voice_useNativeAudio', 'true')
 		if GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
 			SetConvarReplicated('voice_useSendingRangeOnly', 'true')
 		end
-		logger.warn('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
+		logger.info('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
 	elseif GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
@@ -104,7 +107,7 @@ AddEventHandler('onResourceStart', function(resource)
 	end
 end)
 
-RegisterCommand('mute', function(source, args)
+RegisterCommand('mute', function(_, args)
 	local mutePly = tonumber(args[1])
 	if mutePly then
 		if voiceData[mutePly] then
