@@ -48,7 +48,7 @@ RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 function removePlayerFromRadio(plySource)
 	if plySource == playerServerId then
 		logger.info('[radio] Left radio %s, cleaning up.', radioChannel)
-		for tgt, enabled in pairs(radioData) do
+		for tgt, _ in pairs(radioData) do
 			if tgt ~= playerServerId then
 				toggleVoice(tgt, false, 'radio')
 			end
@@ -101,8 +101,8 @@ end)
 --- exports addPlayerToRadio
 --- sets the local players current radio channel and updates the server
 ---@param radio number the channel to set the player to, or 0 to remove them.
-exports('addPlayerToRadio', function(radio)
-	local radio = tonumber(radio)
+exports('addPlayerToRadio', function(_radio)
+	local radio = tonumber(_radio)
 	if radio then
 		setRadioChannel(radio)
 	end

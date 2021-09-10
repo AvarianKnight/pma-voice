@@ -41,7 +41,7 @@ end)
 
 RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
 	if plySource == playerServerId then
-		for tgt, enabled in pairs(callData) do
+		for tgt, _ in pairs(callData) do
 			if tgt ~= playerServerId then
 				toggleVoice(tgt, false, 'phone')
 			end
@@ -76,8 +76,8 @@ end
 exports('setCallChannel', setCallChannel)
 exports('SetCallChannel', setCallChannel)
 
-exports('addPlayerToCall', function(call)
-	local call = tonumber(call)
+exports('addPlayerToCall', function(_call)
+	local call = tonumber(_call)
 	if call then
 		setCallChannel(call)
 	end
