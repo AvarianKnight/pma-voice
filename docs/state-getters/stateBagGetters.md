@@ -35,7 +35,6 @@ You can also set the routing bucket! This is useful if you want to change the ro
 local plyState = Player(source).state
 plyState:set('routingBucket', 1,--[[should be replicated to client]] true) -- sets the routing bucket to 1
 -- You can also do this:
--- the main reason this isn't used in pma-voice is it doesn't show if you want it replicated.
 plyState.routingBucket = 1 -- this is the same as the line above
 ```
 
