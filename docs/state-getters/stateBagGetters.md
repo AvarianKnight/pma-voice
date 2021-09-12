@@ -4,6 +4,8 @@
 
 State bag getters are a little bit simpler, they just return the current value that is set in the state bag.
 
+#### Note: If you're on the client and only using it on the current player, you can replace Player(source) with LocalPlayer
+
 ## Example for Proximity
 
 ```lua
@@ -16,7 +18,7 @@ print(proximity.mode) -- prints the mode name of the proximity
 
 ## Example for routing bucket
 
-## NOTE: The getting portion of this is applicable for `grid`, `radioChannel`, and `callChannel`, the setter portion is not.
+#### This is also applicable for grid, radioChannel, and callChannel, just replace routingBucket with one of the other alternatives
 
 ```lua
 local plyState = Player(source).state
@@ -24,6 +26,9 @@ local routing = plyState.routingbucket
 print(routing) -- prints the routing bucket that is currently set
 ```
 
+## Example for setting routing buckets
+
+### NOTE: This is only applicable for routing buckets.
 You can also set the routing bucket! This is useful if you want to change the routing bucket of a player without calling the export.
 
 ```lua
