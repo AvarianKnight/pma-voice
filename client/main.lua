@@ -79,14 +79,14 @@ end)
 -- radio submix
 local radioEffectId = CreateAudioSubmix('Radio')
 SetAudioSubmixEffectRadioFx(radioEffectId, 0)
-SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
+SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
 AddAudioSubmixOutput(radioEffectId, 0)
 
 local phoneEffectId = CreateAudioSubmix('Phone')
 SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
-SetAudioSubmixEffectParamInt(phoneEffectId, 1, GetHashKey('default'), 1)
-SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 300.0)
-SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_hi'), 6000.0)
+SetAudioSubmixEffectParamInt(phoneEffectId, 1, `default`, 1)
+SetAudioSubmixEffectParamFloat(phoneEffectId, 1, `freq_low`, 300.0)
+SetAudioSubmixEffectParamFloat(phoneEffectId, 1, `freq_hi`, 6000.0)
 AddAudioSubmixOutput(phoneEffectId, 1)
 
 local submixFunctions = {
@@ -458,9 +458,9 @@ RegisterCommand('setvoiceintent', function(source, args)
 	if GetConvarInt('voice_allowSetIntent', 1) == 1 then
 		local intent = args[1]
 		if intent == 'speech' then
-			MumbleSetAudioInputIntent(GetHashKey('speech'))
+			MumbleSetAudioInputIntent(`speech`)
 		elseif intent == 'music' then
-			MumbleSetAudioInputIntent(GetHashKey('music'))
+			MumbleSetAudioInputIntent(`music`)
 		end
 	end
 end)
