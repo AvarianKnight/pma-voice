@@ -89,7 +89,7 @@ function setPlayerRadio(source, _radioChannel)
 	if not radioChannel then
 		-- only full error if its sent from another server-side resource
 		if isResource then
-			error(("'radioChannel' expected 'number', got: %s"):format(type(radioChannel))) 
+			error(("'radioChannel' expected 'number', got: %s"):format(type(_radioChannel))) 
 		else
 			return logger.warn("%s sent a invalid radio, 'radioChannel' expected 'number', got: %s", source,type(_radioChannel))
 		end
