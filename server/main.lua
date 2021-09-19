@@ -2,7 +2,7 @@ voiceData = {}
 radioData = {}
 callData = {}
 
-function defaultTable(source)
+function defaultTable()
 	return {
 		radio = 0,
 		call = 0,
@@ -12,14 +12,8 @@ function defaultTable(source)
 end
 
 -- temp fix before an actual fix is added
-CreateThread(function()
-    for i = 1, 1024 do
-        MumbleCreateChannel(i)
-    end
+Citizen.CreateThreadNow(function()
 	Wait(5000)
-	if GetConvarInt('voice_zoneRadius', 256) < 256 then
-		logger.warn('The convar \'voice_zoneRadius\' is less then 256 (currently %s, recommended is 256).', GetConvarInt('voice_zoneRadius', 256))
-	end
 
 	-- handle no convars being set (default drag n' drop)
 	if GetConvar('voice_useNativeAudio', 'false') == 'false'
@@ -45,11 +39,10 @@ CreateThread(function()
 	end
 end)
 
-RegisterNetEvent('playerJoined', function()
+AddEventHandler('playerJoined', function()
 	if not voiceData[source] then
-		voiceData[source] = defaultTable(source)
+		voiceData[source] = defaultTable()
 		local plyState = Player(source).state
-		plyState:set('routingBucket', 0, true)
 		if GetConvarInt('voice_syncData', 1) == 1 then
 			plyState:set('radio', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
 			plyState:set('phone', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
@@ -59,22 +52,6 @@ RegisterNetEvent('playerJoined', function()
 		end
 	end
 end)
-
---- update/sets the players routing bucket
----@param source number the player to update/set
----@param routingBucket number the routing bucket to set them to
-function updateRoutingBucket(source, routingBucket)
-	local route
-	-- make it optional to provide the routing bucket just incase 
-	-- people use another resource to manage their routing buckets.
-	if routingBucket then
-		SetPlayerRoutingBucket(source, routingBucket)
-	else
-		route = GetPlayerRoutingBucket(source)
-	end
-	Player(source).state:set('routingBucket', route or routingBucket, true)
-end
-exports('updateRoutingBucket', updateRoutingBucket)
 
 AddEventHandler("playerDropped", function()
 	local source = source
@@ -98,9 +75,9 @@ AddEventHandler('onResourceStart', function(resource)
 	if GetConvar('onesync') == 'on' then
 		local players = GetPlayers()
 		for i = 1, #players do
-			local ply = players[i]
+			local ply = tonumber(players[i])
 			if not voiceData[ply] then
-				voiceData[ply] = defaultTable(ply)
+				voiceData[ply] = defaultTable()
 				Player(ply).state:set('routingBucket', GetPlayerRoutingBucket(ply), true)
 			end
 		end

@@ -67,14 +67,12 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_defaultRadio           |   LALT  | The default key to use the radio. You can find a list of valid keys [in the FiveM docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                             | string       |
 
-### Grid & Sync
+### Sync
 
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_zoneRadius        |   256    | Sets the zone radius size, setting this below 256 can cause voice loss among other issues. | int          |
-| voice_zoneRefreshRate   |   200    | How often to refresh the grid, higher value leads to issues when in the same car | int     |
+| voice_uiRefreshRate   |   200    | How often the UI is refreshed | int     |
 | voice_syncData          | 1   | Enables state bags to be sync'd server side & to other clients, has to be enabled on startup | int        |
-| voice_routingUpdateWait          | 50   | How long to wait after a routing bucket to update their grid, larger servers might need to set this higher. | int        |
 
 ### External Server & Misc.
 | ConVar                  | Default | Description                                                        | Parameter(s) |
@@ -142,8 +140,6 @@ The majority of setters are done through player states, while a small
 | State Bag     | Description                                                  | Return Type  |
 |---------------|--------------------------------------------------------------|--------------|
 | [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
-| [routingBucket](docs/state-getters/stateBagGetters.md) | Returns the players current routing bucket                   | int          |
-| [grid](docs/state-getters/stateBagGetters.md)          | Returns the players current grid                             | int          |
 | [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
 | [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
 
@@ -166,7 +162,6 @@ These are events designed for third-party resource integration. These are emitte
 |----------------------|--------------------------------------|--------------|
 | [setPlayerRadio](docs/server-setters/setPlayerRadio.md)       | Sets the players radio channel       | int, int     |
 | [setPlayerCall](docs/server-setters/setPlayerCall.md)        | Sets the players call channel        | int, int     |
-| [updateRoutingBucket](docs/server-setters/updateRoutingBucket.md)  | Updates the players routing bucket, if provided a secondary option it will set & update the players routing bucket.   | int, int (opt) |
 | [addChannelCheck](docs/server-setters/addChannelCheck.md)      | Adds a channel check to the players radio channel | int, function |
 
 
@@ -178,8 +173,6 @@ Server side state getters require the voice_syncData convar to be set to 1. You 
 | State Bag     | Description                                                  | Return Type  |
 |---------------|--------------------------------------------------------------|--------------|
 | [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
-| [routingBucket](docs/state-getters/stateBagGetters.md) | Returns the players current routing bucket                   | int          |
-| [grid](docs/state-getters/stateBagGetters.md)          | Returns the players current grid                             | int          |
 | [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
 | [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
 
