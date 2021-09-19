@@ -1,12 +1,13 @@
 local Cfg = Cfg
-local currentGrid = 0
+local currentlyListening = {}
+
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
 	-- people are setting this to 1 instead of 1.0 and expecting it to work.
 	['radio'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 }
-local voiceChannelListeners = {}
+
 local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
@@ -148,7 +149,7 @@ function playerTargets(...)
 				logger.verbose('[main] %s is already target don\'t re-add', id)
 				goto skip_loop
 			end
-			if not addedPlayers[id] then
+			if not addedPlayers[id] and not currentlyListening[id] then
 				logger.verbose('[main] Adding %s as a voice target', id)
 				addedPlayers[id] = true
 				MumbleAddVoiceTargetPlayerByServerId(1, id)
@@ -170,7 +171,7 @@ function playMicClicks(clickType)
 end
 
 local playerMuted = false
-RegisterCommand('+cycleproximity', function()
+RegisterCommand('cycleproximity', function()
 	if GetConvarInt('voice_enableProximity', 1) ~= 1 then return end
 	if playerMuted then return end
 
@@ -192,9 +193,7 @@ RegisterCommand('+cycleproximity', function()
 	})
 	TriggerEvent('pma-voice:setTalkingMode', voiceMode)
 end, false)
-RegisterCommand('-cycleproximity', function()
-end)
-RegisterKeyMapping('+cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
+RegisterKeyMapping('cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 
 --- Toggles the current player muted 
 function toggleMute() 
@@ -221,6 +220,7 @@ exports('toggleMute', toggleMute)
 RegisterNetEvent('pma-voice:toggleMute', toggleMute)
 
 local mutedTbl = {}
+-- TODO: Reimplement this with new voice concept
 --- toggles the targeted player muted
 ---@param source number the player to mute
 function toggleMutePlayer(source)
@@ -256,86 +256,34 @@ exports('setVoiceProperty', setVoiceProperty)
 exports('SetMumbleProperty', setVoiceProperty)
 exports('SetTokoProperty', setVoiceProperty)
 
-local currentRouting = 0
-local overrideCoords = false
-
---- function setOverrideCoords
---- overrides the players coords to a seperate coordinate, useful when spectating.
----@param coords vector3|boolean the coords to override with, or false to reset
-function setOverrideCoords(coords) 
-	local coordType = type(coords)
-	-- if someone sets this to true it will break playerPos, error instead.
-	if coordType ~= 'vector3' and (coordType ~= 'boolean' or coords == true) then
-		return logger.error("setOverrideCoords expects a 'vector3' or 'boolean' (as false), got %s with the value of %s", coordType, coords)
-	end
-	overrideCoords = coords
-end
-exports('setOverrideCoords', setOverrideCoords)
-
-
-function getMaxSize(zoneRadius)
-	return math.floor(math.max(4500.0 + 8192.0, 0.0) / zoneRadius + math.max(8022.0 + 8192.0, 0.0) / zoneRadius)
-end
-
-local updatedRouting = false
---- function getGridZone
---- calculate the players grid
----@return number returns the players current grid.
-local function getGridZone()
-	local plyPos = overrideCoords or GetEntityCoords(PlayerPedId(), false)
-	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
-	local newRouting = LocalPlayer.state.routingBucket
-
-	if newRouting ~= currentRouting then
-		currentRouting = newRouting or 0
-		updatedRouting = true
-	end
-
-	local sectorX = math.max(plyPos.x + 8192.0, 0.0) / zoneRadius
-	local sectorY = math.max(plyPos.y + 8192.0, 0.0) / zoneRadius
-	return (math.ceil(sectorX + sectorY) + (currentRouting * getMaxSize(zoneRadius)))
-end
-
---- function getGridZoneAtCoords
---- gets the grid at the set coords
---- @param coords vector3 the coords to get the grid at
----@return number returns the grid that would be at the current coords
-local function getGridZoneAtCoords(coords)
-	local plyPos = coords
-	local zoneRadius = GetConvarInt('voice_zoneRadius', 256)
-
-	local sectorX = math.max(plyPos.x + 8192.0, 0.0) / zoneRadius
-	local sectorY = math.max(plyPos.y + 8192.0, 0.0) / zoneRadius
-	return (math.ceil(sectorX + sectorY) + (currentRouting * getMaxSize(zoneRadius)))
-end
-exports('getGridZoneAtCoords', getGridZoneAtCoords)
-
-local lastGridChange = GetGameTimer()
-
---- function updateZone
---- updates the players current grid, if they're in a different grid.
----@param forced boolean whether or not to force a grid refresh. default: false
-local function updateZone(forced)
-	local newGrid = getGridZone()
-	if newGrid ~= currentGrid or forced then
-		logger.verbose('Time since last grid change: %s',  (GetGameTimer() - lastGridChange)/1000)
-		logger.info('Updating zone from %s to %s and adding nearby grids, was forced: %s', currentGrid, newGrid, forced)
-		lastGridChange = GetGameTimer()
-		currentGrid = newGrid
-		MumbleClearVoiceTargetChannels(1)
-		NetworkSetVoiceChannel(currentGrid)
-		-- Delay adding listener channels until NetworkSetVoiceChannel resolves
-		if updatedRouting then
-			Wait(GetConvarInt('voice_routingUpdateWait', 50))
-			updatedRouting = false
-		end
-		LocalPlayer.state:set('grid', currentGrid, true)
-		-- add nearby grids to voice targets
-		for nearbyGrids = currentGrid - 3, currentGrid + 3 do
-			MumbleAddVoiceTargetChannel(1, nearbyGrids)
+--- function forceUpdateListeners
+--- updates the clients current listener, only used on reconnect/initial connection
+local function forceUpdateListeners()
+	local players = GetActivePlayers()
+	for i = 1, #players do
+		local serverId = GetPlayerServerId(players[i])
+		if serverId ~= playerServerId then
+			MumbleAddVoiceTargetChannel(1, serverId)
+			currentlyListening[serverId] = true
 		end
 	end
 end
+
+RegisterNetEvent('onPlayerJoining', function(serverId)
+	logger.verbose('Added %s to listener', serverId)
+	MumbleAddVoiceTargetChannel(1, serverId)
+	currentlyListening[serverId] = true
+end)
+
+RegisterNetEvent('onPlayerDropped', function(serverId)
+	logger.verbose('Removed %s from the listener', serverId)
+	MumbleRemoveVoiceTargetChannel(1, serverId)
+	currentlyListening[serverId] = nil
+end)
+
+RegisterCommand('printlisten', function()
+	tPrint(currentlyListening)
+end)
 
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
@@ -347,10 +295,8 @@ Citizen.CreateThread(function()
 	while true do
 		-- wait for reconnection, trying to set your voice channel when theres nothing to set it to is useless.
 		while not MumbleIsConnected() do
-			currentGrid = -1 -- reset the grid to something out of bounds so it will resync their zone on disconnect.
 			Wait(100)
 		end
-		updateZone()
 		if GetConvarInt('voice_enableUi', 1) == 1 then
 			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
 				lastRadioStatus = radioPressed
@@ -361,7 +307,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		Wait(GetConvarInt('voice_zoneRefreshRate', 200))
+		Wait(GetConvarInt('voice_uiRefreshRate', 200))
 	end
 end)
 
@@ -378,27 +324,6 @@ CreateThread(function()
 			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
 		end
 	end
-end)
-
---- forces the player to resync with the mumble server
---- sets their server address (if there is one) and forces their grid to update
-RegisterCommand('vsync', function()
-	local newGrid = getGridZone()
-	print(('[vsync] Forcing zone from %s to %s and resetting voice targets.'):format(currentGrid, newGrid))
-	if GetConvar('voice_externalAddress', '') ~= '' and GetConvarInt('voice_externalPort', 0) ~= 0 then
-		MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
-		while not MumbleIsConnected() do
-			Wait(250)
-		end
-	end
-	NetworkSetVoiceChannel(newGrid + 100)
-	-- reset the players voice targets
-	MumbleSetVoiceTarget(0)
-	MumbleClearVoiceTarget(1)
-	MumbleSetVoiceTarget(1)
-	MumbleClearVoiceTargetPlayers(1)
-	-- force a zone update.
-	updateZone(true)
 end)
 
 AddEventHandler('onClientResourceStart', function(resource)
@@ -443,12 +368,11 @@ AddEventHandler('onClientResourceStart', function(resource)
 		Wait(250)
 	end
 
-
-	MumbleSetVoiceTarget(0)
 	MumbleClearVoiceTarget(1)
 	MumbleSetVoiceTarget(1)
+	NetworkSetVoiceChannel(playerServerId)
 
-	updateZone()
+	forceUpdateListeners()
 
 	print('Script initialization finished.')
 
@@ -461,10 +385,6 @@ AddEventHandler('onClientResourceStart', function(resource)
 			voiceMode = mode - 1
 		})
 	end
-end)
-
-RegisterCommand("grid", function()
-	print(('Players current grid is %s'):format(currentGrid))
 end)
 
 RegisterCommand('setvoiceintent', function(source, args)
@@ -482,10 +402,9 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 	logger.log('Connected to mumble server with address of %s, is this a reconnect %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, isReconnecting)
 	-- don't try to set channel instantly, we're still getting data.
 	Wait(1000)
-	updateZone(true)
+	forceUpdateListeners()
 end)
 
 AddEventHandler('mumbleDisconnected', function(address)
 	logger.log('Disconnected from mumble server with address of %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address)
-	currentGrid = -1
 end)
