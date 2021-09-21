@@ -489,3 +489,8 @@ AddEventHandler('mumbleDisconnected', function(address)
 	logger.log('Disconnected from mumble server with address of %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address)
 	currentGrid = -1
 end)
+
+RegisterCommand('volume', function(source, args)
+	local volume = math.floor(args[1])
+	exports['pma-voice']:setRadioVolume(volume)
+end)
