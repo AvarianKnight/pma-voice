@@ -109,9 +109,13 @@ end)
 
 RegisterCommand('mute', function(_, args)
 	local mutePly = tonumber(args[1])
+	local muteDuration = 86400 * 1000
+	if tonumber(args[2]) ~= nil then 
+		muteDuration = tonumber(args[2]) * 1000
+	end
 	if mutePly then
 		if voiceData[mutePly] then
-			TriggerClientEvent('pma-voice:toggleMute', mutePly)
+			TriggerClientEvent('pma-voice:toggleMute', mutePly, muteDuration)
 		end
 	end
 end, true)
