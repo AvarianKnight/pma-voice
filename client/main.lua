@@ -218,7 +218,13 @@ function toggleMute()
 	end
 end
 exports('toggleMute', toggleMute)
-RegisterNetEvent('pma-voice:toggleMute', toggleMute)
+RegisterNetEvent('pma-voice:toggleMute', function(muteDuration)
+	toggleMute()
+	Citizen.Wait(muteDuration)
+	if playerMuted then
+		toggleMute()
+	end
+end)
 
 local mutedTbl = {}
 --- toggles the targeted player muted
