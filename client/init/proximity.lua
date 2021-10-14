@@ -4,7 +4,7 @@ local isListenerEnabled = false
 
 local currentVoiceTargets = {}
 
-function addNearybyPlayers()
+function addNearbyPlayers()
 	if disableUpdates then return end
 	local coords = GetEntityCoords(PlayerPedId())
 	local voiceModeData = Cfg.voiceModes[mode]
@@ -95,7 +95,7 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		addNearybyPlayers()
+		addNearbyPlayers()
 		Wait(GetConvarInt('voice_uiRefreshRate', 200))
 	end
 end)
