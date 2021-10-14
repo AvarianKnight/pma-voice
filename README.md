@@ -87,6 +87,9 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 
 
 ### Aces
+
+The mute command doesn't work very consistently, it will be fixed in the future.
+
 pma-voice comes with a built in /mute command, in order to allow your staff to use it you will have to grand them the ace!
 
 Example:
@@ -111,16 +114,14 @@ This would only allow the superadmin group to mute players.
 | [addPlayerToCall](docs/client-setters/setCallChannel.md)       | Set call channel         | int          |
 | [removePlayerFromRadio](docs/client-setters/removePlayerFromRadio.md) | Remove player from radio |              |
 | [removePlayerFromCall](docs/client-setters/removePlayerFromCall.md)  | Remove player from call  |              |
-| [setOverrideCoords](docs/client-setters/setOverrideCoords.md)  | Overrides the players coordinates | vector3|boolean |
 
 ##### Toggles
-
-These don't have docs as they're currently not in a extremely usable state (see issue #118)
 
 | Export              | Description                                            | Parameter(s) |
 |---------------------|--------------------------------------------------------|--------------|
 | toggleMute          | Toggles the current client muted                       |              |
 | toggleMutePlayer    | Toggles the selected player muted for the local client | int          |
+| [toggleSpectatorListen](docs/client-toggles/toggleSpectatorListen.md) | Toggles the person to listen to all people within their render distance, they can still only hear players within their proximity | int   |
 
 
 Supported from mumble-voip / toko-voip

@@ -14,7 +14,11 @@ lua54 'yes'
 shared_script 'shared.lua'
 
 client_scripts {
-    'client/**/*.lua',
+	'client/init/proximity.lua',
+	'client/init/init.lua',
+	'client/init/main.lua',
+	'client/module/*.lua',
+    'client/*.lua',
 }
 
 server_scripts {

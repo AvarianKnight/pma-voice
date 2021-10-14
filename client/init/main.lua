@@ -1,5 +1,4 @@
 local Cfg = Cfg
-local currentlyListening = {}
 
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
@@ -8,25 +7,10 @@ local volumes = {
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 }
 
-local micClicks = true
 playerServerId = GetPlayerServerId(PlayerId())
-radioEnabled, radioPressed, mode, radioChannel, callChannel = false, false, 2, 0, 0
+radioEnabled, radioPressed, mode = false, false, 2
 radioData = {}
 callData = {}
-
--- TODO: Convert the last Cfg to a Convar, while still keeping it simple.
-AddEventHandler('pma-voice:settingsCallback', function(cb)
-	cb(Cfg)
-end)
-
--- TODO: Better implementation of this?
-RegisterCommand('vol', function(_, args)
-	if not args[1] then return end
-	local volume = tonumber(args[1])
-	if volume then
-		setVolume(volume / 100)
-	end
-end)
 
 --- function setVolume
 --- Toggles the players volume
@@ -38,6 +22,7 @@ function setVolume(volume, volumeType)
 	if checkType ~= 'number' then
 		return error(('setVolume expected type number, got %s'):format(checkType))
 	end
+	volume = volume / 100
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
@@ -47,9 +32,10 @@ function setVolume(volume, volumeType)
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
 	else
-		for types, vol in pairs(volumes) do
-			volumes[types] = volume
-			LocalPlayer.state:set(types, volume, GetConvarInt('voice_syncData', 1) == 1)
+		-- _ is here to not mess with global 'type' function
+		for _type, vol in pairs(volumes) do
+			volumes[_type] = volume
+			LocalPlayer.state:set(_type, volume, GetConvarInt('voice_syncData', 1) == 1)
 		end
 	end
 end
@@ -149,7 +135,7 @@ function playerTargets(...)
 				logger.verbose('[main] %s is already target don\'t re-add', id)
 				goto skip_loop
 			end
-			if not addedPlayers[id] and not currentlyListening[id] then
+			if not addedPlayers[id] then
 				logger.verbose('[main] Adding %s as a voice target', id)
 				addedPlayers[id] = true
 				MumbleAddVoiceTargetPlayerByServerId(1, id)
@@ -170,35 +156,9 @@ function playMicClicks(clickType)
 	})
 end
 
-local playerMuted = false
-RegisterCommand('cycleproximity', function()
-	if GetConvarInt('voice_enableProximity', 1) ~= 1 then return end
-	if playerMuted then return end
-
-	local voiceMode = mode
-	local newMode = voiceMode + 1
-
-	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
-	local voiceModeData = Cfg.voiceModes[voiceMode]
-	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
-	mode = voiceMode
-	LocalPlayer.state:set('proximity', {
-		index = voiceMode,
-		distance =  voiceModeData[1],
-		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 1) == 1)
-	-- make sure we update the UI to the latest voice mode
-	SendNUIMessage({
-		voiceMode = voiceMode - 1
-	})
-	TriggerEvent('pma-voice:setTalkingMode', voiceMode)
-end, false)
-RegisterKeyMapping('cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
-
 --- Toggles the current player muted 
 function toggleMute() 
 	playerMuted = not playerMuted
-	
 	if playerMuted then
 		LocalPlayer.state:set('proximity', {
 			index = 0,
@@ -219,21 +179,21 @@ end
 exports('toggleMute', toggleMute)
 RegisterNetEvent('pma-voice:toggleMute', toggleMute)
 
-local mutedTbl = {}
--- TODO: Reimplement this with new voice concept
+local mutedPlayers = {}
+
+-- TODO: Reimplement this after adding new mute natives
 --- toggles the targeted player muted
 ---@param source number the player to mute
 function toggleMutePlayer(source)
-	if mutedTbl[source] then
-		mutedTbl[source] = nil
+	if mutedPlayers[source] then
+		mutedPlayers[source] = nil
 		MumbleSetVolumeOverrideByServerId(source, -1.0)
 	else
-		mutedTbl[source] = true
+		mutedPlayers[source] = true
 		MumbleSetVolumeOverrideByServerId(source, 0.0)
 	end
 end
 exports('toggleMutePlayer', toggleMutePlayer)
-
 
 --- function setVoiceProperty
 --- sets the specified voice property
@@ -256,60 +216,6 @@ exports('setVoiceProperty', setVoiceProperty)
 exports('SetMumbleProperty', setVoiceProperty)
 exports('SetTokoProperty', setVoiceProperty)
 
---- function forceUpdateListeners
---- updates the clients current listener, only used on reconnect/initial connection
-local function forceUpdateListeners()
-	local players = GetActivePlayers()
-	for i = 1, #players do
-		local serverId = GetPlayerServerId(players[i])
-		if serverId ~= playerServerId then
-			MumbleAddVoiceTargetChannel(1, serverId)
-			currentlyListening[serverId] = true
-		end
-	end
-end
-
-RegisterNetEvent('onPlayerJoining', function(serverId)
-	logger.verbose('Added %s to listener', serverId)
-	MumbleAddVoiceTargetChannel(1, serverId)
-	currentlyListening[serverId] = true
-end)
-
-RegisterNetEvent('onPlayerDropped', function(serverId)
-	logger.verbose('Removed %s from the listener', serverId)
-	MumbleRemoveVoiceTargetChannel(1, serverId)
-	currentlyListening[serverId] = nil
-end)
-
-RegisterCommand('printlisten', function()
-	tPrint(currentlyListening)
-end)
-
--- cache talking status so we only send a nui message when its not the same as what it was before
-local lastTalkingStatus = false
-local lastRadioStatus = false
-Citizen.CreateThread(function()
-	TriggerEvent('chat:addSuggestion', '/mute', 'Mutes the player with the specified id', {
-		{ name = "player id", help = "the player to toggle mute" }
-	})
-	while true do
-		-- wait for reconnection, trying to set your voice channel when theres nothing to set it to is useless.
-		while not MumbleIsConnected() do
-			Wait(100)
-		end
-		if GetConvarInt('voice_enableUi', 1) == 1 then
-			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
-				lastRadioStatus = radioPressed
-				lastTalkingStatus = NetworkIsPlayerTalking(PlayerId()) == 1
-				SendNUIMessage({
-					usingRadio = lastRadioStatus,
-					talking = lastTalkingStatus
-				})
-			end
-		end
-		Wait(GetConvarInt('voice_uiRefreshRate', 200))
-	end
-end)
 
 -- cache their external servers so if it changes in runtime we can reconnect the client.
 local externalAddress = ''
@@ -324,87 +230,4 @@ CreateThread(function()
 			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
 		end
 	end
-end)
-
-AddEventHandler('onClientResourceStart', function(resource)
-	if resource ~= GetCurrentResourceName() then
-		return
-	end
-	print('Starting script initialization')
-
-	-- Some people modify pma-voice and mess up the resource Kvp, which means that if someone
-	-- joins another server that has pma-voice, it will error out, this will catch and fix the kvp.
-	local success = pcall(function() 
-		local micClicksKvp = GetResourceKvpString('pma-voice_enableMicClicks')
-		if not micClicksKvp then
-			SetResourceKvp('pma-voice_enableMicClicks', tostring(true))
-		else
-			if micClicksKvp ~= 'true' and micClicksKvp ~= 'false' then
-				error('Invalid Kvp, throwing error for automatic cleaning')
-			end
-			micClicks = micClicksKvp
-		end
-	end)
-
-	if not success then
-		logger.warn('Failed to load resource Kvp, likely was inapproparielty modified by another server, resetting the Kvp.')
-		SetResourceKvp('pma-voice_enableMicClicks', tostring(true))
-		micClicks = 'true'
-	end
-
-	local voiceModeData = Cfg.voiceModes[mode]
-	-- sets how far the player can talk
-	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
-	LocalPlayer.state:set('proximity', {
-		index = mode,
-		distance =  voiceModeData[1],
-		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 1) == 1)
-
-	-- this sets how far the player can hear.
-	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
-
-	while not MumbleIsConnected() do
-		Wait(250)
-	end
-
-	MumbleClearVoiceTarget(1)
-	MumbleSetVoiceTarget(1)
-	NetworkSetVoiceChannel(playerServerId)
-
-	forceUpdateListeners()
-
-	print('Script initialization finished.')
-
-	-- not waiting right here (in testing) let to some cases of the UI 
-	-- just not working at all.
-	Wait(1000)
-	if GetConvarInt('voice_enableUi', 1) == 1 then
-		SendNUIMessage({
-			voiceModes = json.encode(Cfg.voiceModes),
-			voiceMode = mode - 1
-		})
-	end
-end)
-
-RegisterCommand('setvoiceintent', function(source, args)
-	if GetConvarInt('voice_allowSetIntent', 1) == 1 then
-		local intent = args[1]
-		if intent == 'speech' then
-			MumbleSetAudioInputIntent(GetHashKey('speech'))
-		elseif intent == 'music' then
-			MumbleSetAudioInputIntent(GetHashKey('music'))
-		end
-	end
-end)
-
-AddEventHandler('mumbleConnected', function(address, isReconnecting)
-	logger.log('Connected to mumble server with address of %s, is this a reconnect %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, isReconnecting)
-	-- don't try to set channel instantly, we're still getting data.
-	Wait(1000)
-	forceUpdateListeners()
-end)
-
-AddEventHandler('mumbleDisconnected', function(address)
-	logger.log('Disconnected from mumble server with address of %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address)
 end)
