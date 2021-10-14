@@ -1,3 +1,5 @@
+local radioChannel = 0
+
 --- event syncRadioData
 --- syncs the current players on the radio to the client
 ---@param radioTable table the table of the current players on the radio

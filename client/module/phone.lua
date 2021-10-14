@@ -1,3 +1,5 @@
+local callChannel = 0
+
 ---function createPhoneThread
 ---creates a phone thread to listen for key presses
 local function createPhoneThread()
