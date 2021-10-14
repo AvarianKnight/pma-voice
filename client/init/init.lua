@@ -24,33 +24,6 @@ AddEventHandler('onClientResourceStart', function(resource)
 		SetResourceKvp('pma-voice_enableMicClicks', tostring(true))
 		micClicks = 'true'
 	end
-
-	local voiceModeData = Cfg.voiceModes[mode]
-	-- sets how far the player can talk
-	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
-	LocalPlayer.state:set('proximity', {
-		index = mode,
-		distance =  voiceModeData[1],
-		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 1) == 1)
-
-	-- this sets how far the player can hear.
-	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
-
-	while not MumbleIsConnected() do
-		Wait(250)
-	end
-
-	MumbleClearVoiceTarget(1)
-	MumbleSetVoiceTarget(1)
-	NetworkSetVoiceChannel(playerServerId)
-
-	addNearybyPlayers()
-
-	print('Script initialization finished.')
-
-	-- not waiting right here (in testing) let to some cases of the UI 
-	-- just not working at all.
 	Wait(1000)
 	if GetConvarInt('voice_enableUi', 1) == 1 then
 		SendNUIMessage({
@@ -58,4 +31,5 @@ AddEventHandler('onClientResourceStart', function(resource)
 			voiceMode = mode - 1
 		})
 	end
+	print('Script initialization finished.')
 end)

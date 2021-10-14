@@ -24,7 +24,7 @@ function addNearybyPlayers()
 				MumbleAddVoiceTargetChannel(1, serverId)
 				currentVoiceTargets[serverId] = true
 			end
-		elseif isTarget and isTarget ~= 'override' then
+		elseif isTarget then
 			logger.verbose('Removed %s from voice targets', serverId)
 			MumbleRemoveVoiceTargetChannel(1, serverId)
 			currentVoiceTargets[serverId] = nil
