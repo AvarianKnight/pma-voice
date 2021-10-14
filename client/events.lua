@@ -21,7 +21,7 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 	MumbleSetVoiceTarget(1)
 	NetworkSetVoiceChannel(playerServerId)
 
-	addNearybyPlayers()
+	addNearbyPlayers()
 
 	logger.log('Finished connection logic')
 end)
