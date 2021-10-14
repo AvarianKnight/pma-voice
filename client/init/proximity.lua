@@ -67,6 +67,10 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
 	if isListenerEnabled then
 		MumbleRemoveVoiceChannelListen(serverId)
 	end
+	if currentVoiceTargets[serverId] then
+		currentVoiceTargets[serverId] = nil
+		MumbleRemoveVoiceChannelListen(serverId)
+	end
 end)
 
 -- cache talking status so we only send a nui message when its not the same as what it was before
