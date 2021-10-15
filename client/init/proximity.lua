@@ -1,6 +1,5 @@
 -- used when muted
 local disableUpdates = false
-local isListenerEnabled = false
 
 local currentVoiceTargets = {}
 
@@ -18,7 +17,7 @@ function addNearbyPlayers()
 
 		local ped = GetPlayerPed(ply)
 		local isTarget = currentVoiceTargets[serverId]
-		if #(coords - GetEntityCoords(ped)) < distance then
+		if #(coords - GetEntityCoords(ped)) < distance or Player(serverId).state.voiceOverride then
 			if not isTarget then
 				logger.verbose('Added %s as a voice target', serverId)
 				MumbleAddVoiceTargetChannel(1, serverId)
@@ -34,39 +33,9 @@ function addNearbyPlayers()
 	end
 end
 
-function toggleSpectatorListen()
-	isListenerEnabled = not isListenerEnabled
-	local players = GetActivePlayers()
-	if isListenerEnabled then
-		for i = 1, #players do
-			local ply = players[i]
-			local serverId = GetPlayerServerId(ply)
-			if serverId == playerServerId then goto skip_loop end
-			MumbleAddVoiceChannelListen(serverId)
-			::skip_loop::
-		end
-	else
-		for i = 1, #players do
-			local ply = players[i]
-			local serverId = GetPlayerServerId(ply)
-			if serverId == playerServerId then goto skip_loop end
-			MumbleRemoveVoiceChannelListen(serverId)
-			::skip_loop::
-		end
-	end
-end
-exports('toggleSpectatorListen', toggleSpectatorListen)
 
-RegisterNetEvent('onPlayerJoining', function(serverId)
-	if isListenerEnabled then
-		MumbleAddVoiceChannelListen(serverId)
-	end
-end)
 
 RegisterNetEvent('onPlayerDropped', function(serverId)
-	if isListenerEnabled then
-		MumbleRemoveVoiceChannelListen(serverId)
-	end
 	if currentVoiceTargets[serverId] then
 		currentVoiceTargets[serverId] = nil
 		MumbleRemoveVoiceChannelListen(serverId)
