@@ -34,14 +34,15 @@ function addNearbyPlayers()
 	end
 end
 
-function toggleSpectatorListen()
-	isListenerEnabled = not isListenerEnabled
+function setSpectatorMode(enabled)
+	isListenerEnabled = enabled
 	local players = GetActivePlayers()
 	if isListenerEnabled then
 		for i = 1, #players do
 			local ply = players[i]
 			local serverId = GetPlayerServerId(ply)
 			if serverId == playerServerId then goto skip_loop end
+			logger.verbose("Adding %s to listen table", serverId)
 			MumbleAddVoiceChannelListen(serverId)
 			::skip_loop::
 		end
@@ -50,22 +51,24 @@ function toggleSpectatorListen()
 			local ply = players[i]
 			local serverId = GetPlayerServerId(ply)
 			if serverId == playerServerId then goto skip_loop end
+			logger.verbose("Removing %s from listen table", serverId)
 			MumbleRemoveVoiceChannelListen(serverId)
 			::skip_loop::
 		end
 	end
 end
-exports('toggleSpectatorListen', toggleSpectatorListen)
 
 RegisterNetEvent('onPlayerJoining', function(serverId)
 	if isListenerEnabled then
 		MumbleAddVoiceChannelListen(serverId)
+		logger.verbose("Adding %s to listen table", serverId)
 	end
 end)
 
 RegisterNetEvent('onPlayerDropped', function(serverId)
 	if isListenerEnabled then
 		MumbleRemoveVoiceChannelListen(serverId)
+		logger.verbose("Removing %s from listen table", serverId)
 	end
 	if currentVoiceTargets[serverId] then
 		currentVoiceTargets[serverId] = nil
@@ -96,6 +99,13 @@ Citizen.CreateThread(function()
 			end
 		end
 		addNearbyPlayers()
-		Wait(GetConvarInt('voice_uiRefreshRate', 200))
+		local isSpectating = NetworkIsInSpectatorMode()
+		if isSpectating and not isListenerEnabled then
+			setSpectatorMode(true)
+		elseif not isSpectating and isListenerEnabled then
+			setSpectatorMode(false)
+		end
+
+		Wait(GetConvarInt('voice_refreshRate', 200))
 	end
 end)

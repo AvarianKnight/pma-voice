@@ -20,6 +20,7 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 	MumbleClearVoiceTarget(1)
 	MumbleSetVoiceTarget(1)
 	NetworkSetVoiceChannel(playerServerId)
+	MumbleAddVoiceTargetChannel(1, playerServerId)
 
 	addNearbyPlayers()
 

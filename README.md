@@ -71,7 +71,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_uiRefreshRate   |   200    | How often the UI is refreshed | int     |
+| voice_refreshRate   |   200    | How often the UI/Proximity is refreshed | int     |
 | voice_syncData          | 1   | Enables state bags to be sync'd server side & to other clients, has to be enabled on startup | int        |
 
 ### External Server & Misc.
@@ -121,8 +121,6 @@ This would only allow the superadmin group to mute players.
 |---------------------|--------------------------------------------------------|--------------|
 | toggleMute          | Toggles the current client muted                       |              |
 | toggleMutePlayer    | Toggles the selected player muted for the local client | int          |
-| [toggleSpectatorListen](docs/client-toggles/toggleSpectatorListen.md) | Toggles the person to listen to all people within their render distance, they can still only hear players within their proximity | int   |
-
 
 Supported from mumble-voip / toko-voip
 
@@ -176,6 +174,7 @@ Server side state getters require the voice_syncData convar to be set to 1. You 
 | [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
 | [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
 | [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
+
 
 ###### Exports
 
