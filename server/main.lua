@@ -70,20 +70,6 @@ AddEventHandler("playerDropped", function()
 	end
 end)
 
-AddEventHandler('onResourceStart', function(resource)
-	if resource ~= GetCurrentResourceName() then return end
-	if GetConvar('onesync') == 'on' then
-		local players = GetPlayers()
-		for i = 1, #players do
-			local ply = tonumber(players[i])
-			if not voiceData[ply] then
-				voiceData[ply] = defaultTable()
-				Player(ply).state:set('routingBucket', GetPlayerRoutingBucket(ply), true)
-			end
-		end
-	end
-end)
-
 RegisterCommand('mute', function(_, args)
 	local mutePly = tonumber(args[1])
 	if mutePly then

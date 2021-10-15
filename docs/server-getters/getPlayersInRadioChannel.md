@@ -6,7 +6,7 @@ Gets a list of all of the players in the specified radio channel.
 
 ## Parameters
 
-* **radioChannel**: The player to update the routing bucket of
+* **radioChannel**: The channel to get all the members of
 
 ## Returns
 
