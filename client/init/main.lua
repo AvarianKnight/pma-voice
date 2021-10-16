@@ -152,7 +152,7 @@ function playMicClicks(clickType)
 	if micClicks ~= 'true' then return end
 	SendNUIMessage({
 		sound = (clickType and "audio_on" or "audio_off"),
-		volume = (clickType and (volume) or 0.05)
+		volume = (clickType and (volumes["radio"]) or 0.05)
 	})
 end
 
