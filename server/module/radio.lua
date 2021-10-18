@@ -15,13 +15,13 @@ end)
 ---@param source number the player to remove
 ---@param radioChannel number the current channel to remove them from
 function removePlayerFromRadio(source, radioChannel)
-	logger.info('[radio] Removed %s from radio %s', source, radioChannel)
+	logger.verbose('[radio] Removed %s from radio %s', source, radioChannel)
 	radioData[radioChannel] = radioData[radioChannel] or {}
 	for player, _ in pairs(radioData[radioChannel]) do
 		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source)
 	end
 	radioData[radioChannel][source] = nil
-	voiceData[source] = voiceData[source] or defaultTable(source)
+	voiceData[source] = voiceData[source] or defaultTable()
 	voiceData[source].radio = 0
 end
 
@@ -61,7 +61,7 @@ function addPlayerToRadio(source, radioChannel)
 		-- remove the player from the radio client side
 		return TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source)
 	end
-	logger.info('[radio] Added %s to radio %s', source, radioChannel)
+	logger.verbose('[radio] Added %s to radio %s', source, radioChannel)
 
 	-- check if the channel exists, if it does set the varaible to it
 	-- if not create it (basically if not radiodata make radiodata)
@@ -122,7 +122,7 @@ function setTalkingOnRadio(talking)
 	local plyVoice = voiceData[source]
 	local radioTbl = radioData[plyVoice.radio]
 	if radioTbl then
-		logger.info('[radio] Set %s to talking: %s on radio %s',source, talking, plyVoice.radio)
+		logger.verbose('[radio] Set %s to talking: %s on radio %s',source, talking, plyVoice.radio)
 		for player, _ in pairs(radioTbl) do
 			if player ~= source then
 				TriggerClientEvent('pma-voice:setTalkingOnRadio', player, source, talking)
