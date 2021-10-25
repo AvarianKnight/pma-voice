@@ -1,4 +1,4 @@
-### Disclaimer: Code in the main repo is considered to be 'dev', please use the [Latest Release](https://github.com/AvarianKnight/pma-voice/releases) for a stable version.
+### NOTICE: pma-voice 6.0.0+ requires you to use server build 4834+ as it includes a maximum voice target increase, if you use a older version you will only be able to target 16 nearby players.
 
 # pma-voice
 A voice system designed around the use if FiveM's internal mumble server.

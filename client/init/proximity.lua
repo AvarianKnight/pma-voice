@@ -35,6 +35,7 @@ function addNearbyPlayers()
 end
 
 function setSpectatorMode(enabled)
+	logger.info('Setting spectate mode to %s', enabled)
 	isListenerEnabled = enabled
 	local players = GetActivePlayers()
 	if isListenerEnabled then
