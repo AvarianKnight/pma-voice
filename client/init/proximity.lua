@@ -19,7 +19,7 @@ function addNearbyPlayers()
 		local ped = GetPlayerPed(ply)
 		local isTarget = currentVoiceTargets[serverId]
 		if #(coords - GetEntityCoords(ped)) < distance then
-			if not isTarget then
+			if not isTarget and MumbleGetVoiceChannelFromServerId(serverId) == serverId then
 				logger.info('Added %s as a voice target', serverId)
 				MumbleAddVoiceTargetChannel(voiceTarget, serverId)
 				currentVoiceTargets[serverId] = true
