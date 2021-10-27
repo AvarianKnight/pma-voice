@@ -7,7 +7,6 @@ local volumes = {
 	['phone'] = tonumber(GetConvar('voice_defaultVolume', '0.3')) + 0.0,
 }
 
-playerServerId = GetPlayerServerId(PlayerId())
 radioEnabled, radioPressed, mode = false, false, 2
 radioData = {}
 callData = {}
@@ -138,7 +137,7 @@ function playerTargets(...)
 			if not addedPlayers[id] then
 				logger.verbose('[main] Adding %s as a voice target', id)
 				addedPlayers[id] = true
-				MumbleAddVoiceTargetPlayerByServerId(1, id)
+				MumbleAddVoiceTargetPlayerByServerId(voiceTarget, id)
 			end
 			::skip_loop::
 		end
@@ -156,32 +155,8 @@ function playMicClicks(clickType)
 	})
 end
 
---- Toggles the current player muted 
-function toggleMute() 
-	playerMuted = not playerMuted
-	if playerMuted then
-		LocalPlayer.state:set('proximity', {
-			index = 0,
-			distance = 0.1,
-			mode = 'Muted',
-		}, GetConvarInt('voice_syncData', 1) == 1)
-		MumbleSetAudioInputDistance(0.1)
-	else
-		local voiceModeData = Cfg.voiceModes[mode]
-		LocalPlayer.state:set('proximity', {
-			index = mode,
-			distance =  voiceModeData[1],
-			mode = voiceModeData[2],
-		}, GetConvarInt('voice_syncData', 1) == 1)
-		MumbleSetAudioInputDistance(Cfg.voiceModes[mode][1])
-	end
-end
-exports('toggleMute', toggleMute)
-RegisterNetEvent('pma-voice:toggleMute', toggleMute)
-
 local mutedPlayers = {}
 
--- TODO: Reimplement this after adding new mute natives
 --- toggles the targeted player muted
 ---@param source number the player to mute
 function toggleMutePlayer(source)

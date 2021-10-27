@@ -1,8 +1,13 @@
 Cfg = {}
 
+voiceTarget = 1
+radioTarget = 2
+callTarget = 3
+
 -- these are just here to satisfy linting
 if not IsDuplicityVersion() then
 	LocalPlayer = LocalPlayer
+	playerServerId = GetPlayerServerId(PlayerId())
 end
 Player = Player
 Entity = Entity
