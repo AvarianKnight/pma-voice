@@ -1,8 +1,6 @@
 AddEventHandler('mumbleConnected', function(address, isReconnecting)
 	logger.info('Connected to mumble server with address of %s, is this a reconnect %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, isReconnecting)
 
-	Wait(1000)
-
 	logger.log('Connecting to mumble, setting targets.')
 	-- don't try to set channel instantly, we're still getting data.
 	local voiceModeData = Cfg.voiceModes[mode]
@@ -17,10 +15,15 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 	-- this sets how far the player can hear.
 	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
 
-	MumbleClearVoiceTarget(1)
-	MumbleSetVoiceTarget(1)
+	MumbleClearVoiceTarget(voiceTarget)
+	MumbleSetVoiceTarget(voiceTarget)
 	NetworkSetVoiceChannel(playerServerId)
-	MumbleAddVoiceTargetChannel(1, playerServerId)
+
+	while MumbleGetVoiceChannelFromServerId(playerServerId) ~= playerServerId do
+		Wait(250)
+	end
+
+	MumbleAddVoiceTargetChannel(voiceTarget, playerServerId)
 
 	addNearbyPlayers()
 

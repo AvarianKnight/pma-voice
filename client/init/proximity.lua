@@ -21,12 +21,12 @@ function addNearbyPlayers()
 		if #(coords - GetEntityCoords(ped)) < distance then
 			if not isTarget then
 				logger.info('Added %s as a voice target', serverId)
-				MumbleAddVoiceTargetChannel(1, serverId)
+				MumbleAddVoiceTargetChannel(voiceTarget, serverId)
 				currentVoiceTargets[serverId] = true
 			end
 		elseif isTarget then
 			logger.info('Removed %s from voice targets', serverId)
-			MumbleRemoveVoiceTargetChannel(1, serverId)
+			MumbleRemoveVoiceTargetChannel(voiceTarget, serverId)
 			currentVoiceTargets[serverId] = nil
 		end
 

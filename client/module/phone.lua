@@ -13,7 +13,7 @@ local function createPhoneThread()
 				TriggerServerEvent('pma-voice:setTalkingOnCall', true)
 			elseif changed and NetworkIsPlayerTalking(PlayerId()) ~= 1 then
 				changed = false
-				MumbleClearVoiceTargetPlayers(1)
+				MumbleClearVoiceTargetPlayers(voiceTarget)
 				TriggerServerEvent('pma-voice:setTalkingOnCall', false)
 			end
 			Wait(0)
@@ -49,14 +49,14 @@ RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
 			end
 		end
 		callData = {}
-		MumbleClearVoiceTargetPlayers(1)
+		MumbleClearVoiceTargetPlayers(voiceTarget)
 		playerTargets(radioPressed and radioData or {}, callData)
 		LocalPlayer.state:set('callChannel', 0, GetConvarInt('voice_syncData', 1) == 1)
 	else
 		callData[plySource] = nil
 		toggleVoice(plySource, false, 'phone')
 		if NetworkIsPlayerTalking(PlayerId()) then
-			MumbleClearVoiceTargetPlayers(1)
+			MumbleClearVoiceTargetPlayers(voiceTarget)
 			playerTargets(radioPressed and radioData or {}, callData)
 		end
 	end
