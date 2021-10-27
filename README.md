@@ -88,12 +88,10 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 
 ### Aces
 
-The mute command doesn't work very consistently, it will be fixed in the future.
-
-pma-voice comes with a built in /mute command, in order to allow your staff to use it you will have to grand them the ace!
+pma-voice comes with a built in /muteply (tgtPly) (duration) command, in order to allow your staff to use it you will have to grand them the ace!
 
 Example:
-`add_ace group.superadmin command.mute allow;`
+`add_ace group.superadmin command.muteply allow;`
 
 This would only allow the superadmin group to mute players.
 
@@ -119,7 +117,6 @@ This would only allow the superadmin group to mute players.
 
 | Export              | Description                                            | Parameter(s) |
 |---------------------|--------------------------------------------------------|--------------|
-| toggleMute          | Toggles the current client muted                       |              |
 | toggleMutePlayer    | Toggles the selected player muted for the local client | int          |
 
 Supported from mumble-voip / toko-voip

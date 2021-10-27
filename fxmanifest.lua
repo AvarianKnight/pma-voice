@@ -21,7 +21,8 @@ client_scripts {
 }
 
 server_scripts {
-    'server/**/*.lua'
+    'server/**/*.lua',
+	'server/**/*.js'
 }
 
 files {
