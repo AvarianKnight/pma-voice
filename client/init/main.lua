@@ -1,4 +1,4 @@
-local Cfg = Cfg
+local mutedPlayers = {}
 
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
@@ -92,6 +92,7 @@ local disableSubmixReset = {}
 ---@param enabled boolean if the players voice is getting activated or deactivated
 ---@param moduleType string the volume & submix to use for the voice.
 function toggleVoice(plySource, enabled, moduleType)
+	if mutedPlayers[source] then return end
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	if enabled then
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
@@ -154,8 +155,6 @@ function playMicClicks(clickType)
 		volume = (clickType and (volumes["radio"]) or 0.05)
 	})
 end
-
-local mutedPlayers = {}
 
 --- toggles the targeted player muted
 ---@param source number the player to mute
