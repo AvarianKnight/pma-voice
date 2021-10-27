@@ -13,6 +13,13 @@ end
 
 -- temp fix before an actual fix is added
 Citizen.CreateThreadNow(function()
+
+	local plyTbl = GetPlayers()
+	for i = 1, #plyTbl do
+		local ply = tonumber(plyTbl[i])
+		voiceData[ply] = defaultTable()
+	end
+
 	Wait(5000)
 
 	-- handle no convars being set (default drag n' drop)
@@ -62,15 +69,6 @@ AddEventHandler("playerDropped", function()
 	end
 end)
 
-RegisterCommand('mute', function(_, args)
-	local mutePly = tonumber(args[1])
-	if mutePly then
-		if voiceData[mutePly] then
-			TriggerClientEvent('pma-voice:toggleMute', mutePly)
-		end
-	end
-end, true)
-
 if GetConvarInt('voice_externalDisallowJoin', 0) == 1 then
 	AddEventHandler('playerConnecting', function(_, _, deferral)
 		deferral.defer()
@@ -79,6 +77,11 @@ if GetConvarInt('voice_externalDisallowJoin', 0) == 1 then
 	end)
 end
 
+-- only meant for internal use so no documentation
+function isValidPlayer(source)
+	return voiceData[source]
+end
+exports('isValidPlayer', isValidPlayer)
 
 function getPlayersInRadioChannel(channel)
 	local returnChannel = radioData[channel]

@@ -81,8 +81,9 @@ end)
 local lastTalkingStatus = false
 local lastRadioStatus = false
 Citizen.CreateThread(function()
-	TriggerEvent('chat:addSuggestion', '/mute', 'Mutes the player with the specified id', {
-		{ name = "player id", help = "the player to toggle mute" }
+	TriggerEvent('chat:addSuggestion', '/muteply', 'Mutes the player with the specified id', {
+		{ name = "player id", help = "the player to toggle mute" },
+		{ name = "duration", help = "(opt) the duration the mute in seconds (default: 900)" }
 	})
 	while true do
 		-- wait for mumble to reconnect
