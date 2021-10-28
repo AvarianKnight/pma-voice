@@ -134,7 +134,7 @@ RegisterCommand('+radiotalk', function()
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			radioPressed = true
 			playMicClicks(true)
-			if GetConvarInt('voice_enableRadioAnim', 0) == 1 then
+			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not IsPedInAnyVehicle(PlayerPedId(), false) then
 				RequestAnimDict('random@arrests')
 				while not HasAnimDictLoaded('random@arrests') do
 					Citizen.Wait(10)
