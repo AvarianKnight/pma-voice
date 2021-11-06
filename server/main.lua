@@ -38,7 +38,7 @@ Citizen.CreateThreadNow(function()
 	end
 end)
 
-AddEventHandler('playerJoined', function()
+AddEventHandler('playerJoining', function()
 	if not voiceData[source] then
 		voiceData[source] = defaultTable()
 		local plyState = Player(source).state
