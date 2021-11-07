@@ -1,4 +1,4 @@
-### NOTICE: pma-voice 6.1.0+ requires you to use server build 4837+ as it includes a maximum voice target increase, if you use a older version you will only be able to target 16 nearby players.
+### NOTICE: pma-voice 6.1.0+ requires you to use server build 4837+. It will fail to start on older builds.
 
 # pma-voice
 A voice system designed around the use if FiveM's internal mumble server.
