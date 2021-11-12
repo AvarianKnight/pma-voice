@@ -18,7 +18,7 @@ Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance
 # Credits
 
 - @Frazzle for mumble-voip (for which the concept came from)
-- @pichotm for pVoice (where the grid concept came from)
+- @pichotm for pVoice (where the original grid concept came from)
 
 # FiveM Config
 
@@ -94,6 +94,10 @@ Example:
 `add_ace group.superadmin command.muteply allow;`
 
 This would only allow the superadmin group to mute players.
+
+# I read it, I swear!
+
+After reading the readme do `set voice_readReadMe 1` to get rid of the warn notification in console, sorry that this measure is needed, but most people ignore all the information provided in here, and it provides everything you need to know.
 
 ### Exports
 

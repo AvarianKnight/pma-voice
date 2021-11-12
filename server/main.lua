@@ -36,6 +36,15 @@ Citizen.CreateThreadNow(function()
 	elseif GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
+
+	Wait(5000)
+	if GetConvarInt('voice_readReadMe', 0) == 0 then
+		local notifTime = GetGameTimer() + 2000
+		while notifTime > GetGameTimer() do
+			logger.warn("It doesn't look like you've read the README! There is a lot of critical information for the end user on how to configure your server.")
+			Wait(250)
+		end
+	end
 end)
 
 AddEventHandler('playerJoining', function()
