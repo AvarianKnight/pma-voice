@@ -3,15 +3,12 @@ function handleMumbleConnection(initialStart)
 		-- don't try to set channel instantly, we're still getting data.
 		local voiceModeData = Cfg.voiceModes[mode]
 		-- sets how far the player can talk
-		MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
+		setTalkerProximity(voiceModeData[1] + 0.0)
 		LocalPlayer.state:set('proximity', {
 			index = mode,
 			distance =  voiceModeData[1],
 			mode = voiceModeData[2],
 		}, GetConvarInt('voice_syncData', 1) == 1)
-
-		-- this sets how far the player can hear.
-		MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
 	end
 
 	MumbleClearVoiceTarget(voiceTarget)

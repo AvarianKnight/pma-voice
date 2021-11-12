@@ -24,7 +24,7 @@ RegisterCommand('cycleproximity', function()
 
 	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
 	local voiceModeData = Cfg.voiceModes[voiceMode]
-	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
+	setTalkerProximity(voiceModeData[1] + 0.0)
 	mode = voiceMode
 	LocalPlayer.state:set('proximity', {
 		index = voiceMode,
@@ -37,4 +37,6 @@ RegisterCommand('cycleproximity', function()
 	})
 	TriggerEvent('pma-voice:setTalkingMode', voiceMode)
 end, false)
-RegisterKeyMapping('cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
+if gameVersion == 'fivem' then
+	RegisterKeyMapping('cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
+end
