@@ -1,7 +1,7 @@
 ### NOTICE: pma-voice 6.1.0+ requires you to use server build 4837+ as it includes a maximum voice target increase, if you use a older version you will only be able to target 16 nearby players.
 
 # pma-voice
-A voice system designed around the use if FiveM's internal mumble server.
+A voice system designed around the use of FiveM/RedM internal mumble server.
 
 ## Support
 
@@ -20,7 +20,7 @@ Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance
 - @Frazzle for mumble-voip (for which the concept came from)
 - @pichotm for pVoice (where the grid concept came from)
 
-# FiveM Config
+# FiveM/RedM Config
 
 ### NOTE: Only use one of the Audio options (don't enable 3d Audio & Native Audio at the same time), its also recommended to always use voice_useSendingRangeOnly.
 
@@ -28,10 +28,13 @@ You only need to add the convar **if** you're changing the value.
 
 All of the configs here are set using `setr [voice_configOption] [boolean]`
 
+Native audio will not work on RedM, you will have to use 3d audio.
+
 | ConVar                     | Default | Description                                                   | Parameter(s) |
 |----------------------------|---------|---------------------------------------------------------------|--------------|
-| voice_useNativeAudio       |  false  | Uses the games native audio, will add 3d sound, echo, reverb, and more. Required for submixs   | boolean      |
-| voice_use2dAudio           |  false  | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity. | boolean      |
+| voice_useNativeAudio       |  false  | **This will not work for RedM** Uses the games native audio, will add 3d sound, echo, reverb, and more. **Required for submixs**   | boolean      |
+| voice_use2dAudio           |  false  | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity. | boolean      
+| voice_use3dAudio           |  false  | Uses 3d audio | boolean |
 | voice_useSendingRangeOnly  |  false  | Only allows you to hear people within your hear/send range, prevents people from connecting to your mumble server and trolling. | boolean      |
 
 
@@ -53,7 +56,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
 | voice_enableUi               |    1    | Enables the built in user interface                            | int          |
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
-| voice_defaultCycle           |   F11   | The default key to cycle the players proximity. You can find a list of valid keys [in the FiveM docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                | string       |
+| voice_defaultCycle           |   F11   | The default key to cycle the players proximity. You can find a list of valid keys [in the Cfx docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                | string       |
 | voice_defaultVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
 
 

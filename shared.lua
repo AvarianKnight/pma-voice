@@ -4,10 +4,28 @@ voiceTarget = 1
 radioTarget = 2
 callTarget = 3
 
+gameVersion = GetGameName()
+
 -- these are just here to satisfy linting
 if not IsDuplicityVersion() then
 	LocalPlayer = LocalPlayer
 	playerServerId = GetPlayerServerId(PlayerId())
+	-- TODO: Use MumbleIsPlayerTalking for everything, this was added before https://github.com/citizenfx/fivem/pull/1134/files was added.
+	function isPlayerTalking(player)
+		if gameVersion == 'fivem' then
+			return NetworkIsPlayerTalking(player)
+		else
+			return MumbleIsPlayerTalking(player)
+		end
+	end
+
+	function setTalkerProximity(distance)
+		if gameVersion == 'fivem' then
+			NetworkSetTalkerProximity(distance)
+		else
+			MumbleSetTalkerProximity(distance)
+		end
+	end
 end
 Player = Player
 Entity = Entity
