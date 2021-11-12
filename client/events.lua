@@ -12,9 +12,7 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 		mode = voiceModeData[2],
 	}, GetConvarInt('voice_syncData', 1) == 1)
 
-	-- this sets how far the player can hear.
-	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
-
+	setTalkerProximity(voiceModeData[1] + 0.0)
 	MumbleClearVoiceTarget(voiceTarget)
 	MumbleSetVoiceTarget(voiceTarget)
 	NetworkSetVoiceChannel(playerServerId)

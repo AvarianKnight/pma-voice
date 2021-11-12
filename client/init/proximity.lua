@@ -92,9 +92,9 @@ Citizen.CreateThread(function()
 			Wait(100)
 		end
 		if GetConvarInt('voice_enableUi', 1) == 1 then
-			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
+			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= (isPlayerTalking(PlayerId()) == 1) then
 				lastRadioStatus = radioPressed
-				lastTalkingStatus = NetworkIsPlayerTalking(PlayerId()) == 1
+				lastTalkingStatus = isPlayerTalking(PlayerId()) == 1
 				SendNUIMessage({
 					usingRadio = lastRadioStatus,
 					talking = lastTalkingStatus
