@@ -223,3 +223,8 @@ if gameVersion == 'redm' then
 		end
 	end)
 end
+
+RegisterCommand('vsync', function()
+    NetworkSetVoiceChannel(-1)
+	-- We have automatic code to handle fixing channel
+end)
