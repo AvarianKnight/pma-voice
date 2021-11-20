@@ -57,7 +57,7 @@ function removePlayerFromRadio(plySource)
 		end
 		radioData = {}
 		playerTargets(isPlayerTalking(PlayerId()) and callData or {})
-		LocalPlayer.state:set('radioChannel', 0, GetConvarInt('voice_syncData', 1) == 1)
+		LocalPlayer.state:set('radioChannel', radioChannel, GetConvarInt('voice_syncData', 1) == 1)
 	else
 		radioData[plySource] = nil
 		toggleVoice(plySource, false)
