@@ -1,39 +1,31 @@
-function handleMumbleConnection(initialStart)
-	if initialStart then
-		-- don't try to set channel instantly, we're still getting data.
-		local voiceModeData = Cfg.voiceModes[mode]
-		-- sets how far the player can talk
-		MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
-		LocalPlayer.state:set('proximity', {
-			index = mode,
-			distance =  voiceModeData[1],
-			mode = voiceModeData[2],
-		}, GetConvarInt('voice_syncData', 1) == 1)
+AddEventHandler('mumbleConnected', function(address, isReconnecting)
+	logger.info('Connected to mumble server with address of %s, is this a reconnect %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, isReconnecting)
 
-		-- this sets how far the player can hear.
-		MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
-	end
+	logger.log('Connecting to mumble, setting targets.')
+	-- don't try to set channel instantly, we're still getting data.
+	local voiceModeData = Cfg.voiceModes[mode]
+	-- sets how far the player can talk
+	MumbleSetAudioInputDistance(voiceModeData[1] + 0.0)
+	LocalPlayer.state:set('proximity', {
+		index = mode,
+		distance =  voiceModeData[1],
+		mode = voiceModeData[2],
+	}, GetConvarInt('voice_syncData', 1) == 1)
+
+	-- this sets how far the player can hear.
+	MumbleSetAudioOutputDistance(Cfg.voiceModes[#Cfg.voiceModes][1] + 0.0)
 
 	MumbleClearVoiceTarget(voiceTarget)
 	MumbleSetVoiceTarget(voiceTarget)
+	NetworkSetVoiceChannel(playerServerId)
 
 	while MumbleGetVoiceChannelFromServerId(playerServerId) ~= playerServerId do
-		logger.info("Setting voice channel to server id: %s", playerServerId)
-		NetworkSetVoiceChannel(playerServerId)
-		Wait(500)
+		Wait(250)
 	end
 
 	MumbleAddVoiceTargetChannel(voiceTarget, playerServerId)
 
 	addNearbyPlayers()
-end
-
-AddEventHandler('mumbleConnected', function(address, isReconnecting)
-	logger.info('Connected to mumble server with address of %s, is this a reconnect %s', GetConvarInt('voice_hideEndpoints', 1) == 1 and 'HIDDEN' or address, isReconnecting)
-
-	logger.log('Handling connection logic')
-
-	handleMumbleConnection(true)
 
 	logger.log('Finished connection logic')
 end)

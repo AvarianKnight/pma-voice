@@ -21,10 +21,6 @@ function addNearbyPlayers()
 		if #(coords - GetEntityCoords(ped)) < distance then
 			local voiceChannel = MumbleGetVoiceChannelFromServerId(serverId)
 			if isTarget then goto skip_loop end
-			if voiceChannel ~= serverId then
-				logger.warn("%s isn't set the right voice channel, got %s expected %s", serverId, voiceChannel, serverId)
-				goto skip_loop
-			end
 
 			logger.info('Added %s as a voice target', serverId)
 			MumbleAddVoiceTargetChannel(voiceTarget, serverId)
@@ -94,10 +90,6 @@ Citizen.CreateThread(function()
 		-- wait for mumble to reconnect
 		while not MumbleIsConnected() do
 			Wait(100)
-		end
-		if MumbleGetVoiceChannelFromServerId(playerServerId) ~= playerServerId then
-			logger.warn("Not set to the proper voice channel, resetting.")
-			handleMumbleConnection()
 		end
 		if GetConvarInt('voice_enableUi', 1) == 1 then
 			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= (NetworkIsPlayerTalking(PlayerId()) == 1) then
