@@ -30,7 +30,7 @@ RegisterCommand('cycleproximity', function()
 		index = voiceMode,
 		distance =  voiceModeData[1],
 		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 1) == 1)
+	}, true)
 	-- make sure we update the UI to the latest voice mode
 	SendNUIMessage({
 		voiceMode = voiceMode - 1

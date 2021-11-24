@@ -11,6 +11,15 @@ function defaultTable()
 	}
 end
 
+function handleStateBagInitilization(source)
+	local plyState = Player(source).state
+	plyState:set('radio', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
+	plyState:set('phone', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
+	plyState:set('proximity', {}, true)
+	plyState:set('callChannel', 0, true)
+	plyState:set('radioChannel', 0, true)
+end
+
 -- temp fix before an actual fix is added
 Citizen.CreateThreadNow(function()
 
@@ -18,6 +27,7 @@ Citizen.CreateThreadNow(function()
 	for i = 1, #plyTbl do
 		local ply = tonumber(plyTbl[i])
 		voiceData[ply] = defaultTable()
+		handleStateBagInitilization(ply)
 	end
 
 	Wait(5000)
@@ -63,14 +73,7 @@ end)
 AddEventHandler('playerJoining', function()
 	if not voiceData[source] then
 		voiceData[source] = defaultTable()
-		local plyState = Player(source).state
-		if GetConvarInt('voice_syncData', 1) == 1 then
-			plyState:set('radio', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
-			plyState:set('phone', tonumber(GetConvar('voice_defaultVolume', '0.3')), true)
-			plyState:set('proximity', {}, true)
-			plyState:set('callChannel', 0, true)
-			plyState:set('radioChannel', 0, true)
-		end
+		handleStateBagInitilization(source)
 	end
 end)
 

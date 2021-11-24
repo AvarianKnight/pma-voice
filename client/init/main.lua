@@ -25,7 +25,7 @@ function setVolume(volume, volumeType)
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
-			LocalPlayer.state:set(volumeType, volume, GetConvarInt('voice_syncData', 1) == 1)
+			LocalPlayer.state:set(volumeType, volume, true)
 			volumes[volumeType] = volume
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
@@ -34,7 +34,7 @@ function setVolume(volume, volumeType)
 		-- _ is here to not mess with global 'type' function
 		for _type, vol in pairs(volumes) do
 			volumes[_type] = volume
-			LocalPlayer.state:set(_type, volume, GetConvarInt('voice_syncData', 1) == 1)
+			LocalPlayer.state:set(_type, volume, true)
 		end
 	end
 end

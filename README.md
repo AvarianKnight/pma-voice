@@ -75,7 +75,6 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | ConVar                  | Default | Description                                                        | Parameter(s) |
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
 | voice_refreshRate   |   200    | How often the UI/Proximity is refreshed | int     |
-| voice_syncData          | 1   | Enables state bags to be sync'd server side & to other clients, has to be enabled on startup | int        |
 
 ### External Server & Misc.
 | ConVar                  | Default | Description                                                        | Parameter(s) |
@@ -167,7 +166,7 @@ These are events designed for third-party resource integration. These are emitte
 ##### Getters
 
 ###### State Bags
-Server side state getters require the voice_syncData convar to be set to 1. You can access the state with `Player(source).state['state bag here']`
+You can access the state with `Player(source).state['state bag here']`
 
 | State Bag     | Description                                                  | Return Type  |
 |---------------|--------------------------------------------------------------|--------------|
