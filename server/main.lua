@@ -22,19 +22,41 @@ Citizen.CreateThreadNow(function()
 
 	Wait(5000)
 
+	local nativeAudio = GetConvar('voice_useNativeAudio', 'false')
+	local _3dAudio = GetConvar('voice_use3dAudio', 'false')
+	local _2dAudio = GetConvar('voice_use2dAudio', 'false')
+	local sendingRangeOnly = GetConvar('voice_useSendingRangeOnly', 'false')
+	local gameVersion = GetConvar('gamename', 'fivem')
+
 	-- handle no convars being set (default drag n' drop)
 	if
-		GetConvar('voice_useNativeAudio', 'false') == 'false'
-		and GetConvar('voice_use3dAudio', 'false') == 'false'
-		and GetConvar('voice_use2dAudio', 'false') == 'false'
+		nativeAudio == 'false'
+		and _3dAudio == 'false'
+		and _2dAudio == 'false'
 	then
-		SetConvarReplicated('voice_useNativeAudio', 'true')
-		if GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
-			SetConvarReplicated('voice_useSendingRangeOnly', 'true')
+		if gameVersion == 'fivem' then
+			SetConvarReplicated('voice_useNativeAudio', 'true')
+			if sendingRangeOnly == 'false' then
+				SetConvarReplicated('voice_useSendingRangeOnly', 'true')
+			end
+			logger.info('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
+		else
+			SetConvarReplicated('voice_use3dAudio', 'true')
+			if sendingRangeOnly == 'false' then
+				SetConvarReplicated('voice_useSendingRangeOnly', 'true')
+			end
+			logger.info('No convars detected for voice mode, defaulting to \'setr voice_use3dAudio true\' and \'setr voice_useSendingRangeOnly true\'')
 		end
-		logger.info('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
-	elseif GetConvar('voice_useSendingRangeOnly', 'false') == 'false' then
+	elseif sendingRangeOnly == 'false' then
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
+	end
+
+	if GetConvar('gamename', 'fivem') == 'rdr3' then
+		if nativeAudio == 'true' then
+			logger.warn("RedM doesn't currently support native audio, automatically switching to 3d audio. This also means that submixes will not work.")
+			SetConvarReplicated('voice_useNativeAudio', 'false')
+			SetConvarReplicated('voice_use3dAudio', 'true')
+		end
 	end
 end)
 
