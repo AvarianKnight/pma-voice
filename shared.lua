@@ -29,7 +29,7 @@ if not IsDuplicityVersion() then
 
 	function setVoiceChannel(channel)
 		if gameVersion == 'fivem' then
-			setVoiceChannel(channel)
+			NetworkSetVoiceChannel(channel)
 		else
 			MumbleSetVoiceChannel(channel)
 		end
