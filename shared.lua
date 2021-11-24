@@ -26,6 +26,14 @@ if not IsDuplicityVersion() then
 			MumbleSetTalkerProximity(distance)
 		end
 	end
+
+	function setVoiceChannel(channel)
+		if gameVersion == 'fivem' then
+			setVoiceChannel(channel)
+		else
+			MumbleSetVoiceChannel(channel)
+		end
+	end
 end
 Player = Player
 Entity = Entity
