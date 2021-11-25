@@ -24,6 +24,7 @@ A clear and concise description of what you expected to happen.
  - Server Version: [e.g. 3456]
 - Client Version: [e.g. production|canary]
 - Client Build: [e.g. b1604|b2060|b2189|b2372]
+- Game: [e.g. FiveM|RedM]
 
 **Additional context**
 Add any other context about the problem here.
