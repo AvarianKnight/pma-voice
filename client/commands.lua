@@ -24,7 +24,7 @@ RegisterCommand('cycleproximity', function()
 
 	voiceMode = (newMode <= #Cfg.voiceModes and newMode) or 1
 	local voiceModeData = Cfg.voiceModes[voiceMode]
-	setTalkerProximity(voiceModeData[1] + 0.0)
+	MumbleSetTalkerProximity(voiceModeData[1] + 0.0)
 	mode = voiceMode
 	LocalPlayer.state:set('proximity', {
 		index = voiceMode,

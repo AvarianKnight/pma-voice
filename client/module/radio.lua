@@ -37,7 +37,7 @@ function addPlayerToRadio(plySource)
 	radioData[plySource] = false
 	if radioPressed then
 		logger.info('[radio] %s joined radio %s while we were talking, adding them to targets', plySource, radioChannel)
-		playerTargets(radioData, isPlayerTalking(PlayerId()) and callData or {})
+		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		logger.info('[radio] %s joined radio %s', plySource, radioChannel)
 	end
@@ -56,13 +56,13 @@ function removePlayerFromRadio(plySource)
 			end
 		end
 		radioData = {}
-		playerTargets(isPlayerTalking(PlayerId()) and callData or {})
+		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		radioData[plySource] = nil
 		toggleVoice(plySource, false)
 		if radioPressed then
 			logger.info('[radio] %s left radio %s while we were talking, updating targets.', plySource, radioChannel)
-			playerTargets(radioData, isPlayerTalking(PlayerId()) and callData or {})
+			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 		else
 			logger.info('[radio] %s has left radio %s', plySource, radioChannel)
 		end
@@ -128,7 +128,7 @@ RegisterCommand('+radiotalk', function()
 	if not radioPressed and radioEnabled then
 		if radioChannel > 0 then
 			logger.info('[radio] Start broadcasting, update targets and notify server.')
-			playerTargets(radioData, isPlayerTalking(PlayerId()) and callData or {})
+			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			radioPressed = true
 			playMicClicks(true)
@@ -156,7 +156,7 @@ RegisterCommand('-radiotalk', function()
 	if radioChannel > 0 or radioEnabled and radioPressed then
 		radioPressed = false
 		MumbleClearVoiceTargetPlayers(voiceTarget)
-		playerTargets(isPlayerTalking(PlayerId()) and callData or {})
+		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
 		if GetConvarInt('voice_enableRadioAnim', 0) == 1 then
