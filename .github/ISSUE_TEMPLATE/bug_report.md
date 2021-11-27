@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+**Did you read the README?**: There's a lot of information in the README, if you ask a question that is answered in the README, you will be told to "Read the README"
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
