@@ -10,7 +10,7 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 		index = mode,
 		distance =  voiceModeData[1],
 		mode = voiceModeData[2],
-	}, GetConvarInt('voice_syncData', 1) == 1)
+	}, true)
 
 	MumbleSetTalkerProximity(voiceModeData[1] + 0.0)
 	MumbleClearVoiceTarget(voiceTarget)
