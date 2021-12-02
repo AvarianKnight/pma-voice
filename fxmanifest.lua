@@ -41,7 +41,10 @@ provides {
     -- why does it use so many different names
     'tokovoip',
     'toko-voip',
-    'tokovoip_script'
+    'tokovoip_script',
+    'saltychat-fivem',
+    'saltyhud-fivem',
+    'saltychat-redm'
 }
 
 convar_category 'PMA-Voice' {
