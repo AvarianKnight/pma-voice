@@ -2,7 +2,8 @@ voiceData = {}
 radioData = {}
 callData = {}
 
-function defaultTable()
+function defaultTable(source)
+	handleStateBagInitilization(source)
 	return {
 		radio = 0,
 		call = 0,
@@ -26,8 +27,7 @@ Citizen.CreateThreadNow(function()
 	local plyTbl = GetPlayers()
 	for i = 1, #plyTbl do
 		local ply = tonumber(plyTbl[i])
-		voiceData[ply] = defaultTable()
-		handleStateBagInitilization(ply)
+		voiceData[ply] = defaultTable(plyTbl[i])
 	end
 
 	Wait(5000)
@@ -72,8 +72,7 @@ end)
 
 AddEventHandler('playerJoining', function()
 	if not voiceData[source] then
-		voiceData[source] = defaultTable()
-		handleStateBagInitilization(source)
+		voiceData[source] = defaultTable(source)
 	end
 end)
 

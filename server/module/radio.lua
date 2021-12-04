@@ -21,7 +21,7 @@ function removePlayerFromRadio(source, radioChannel)
 		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source)
 	end
 	radioData[radioChannel][source] = nil
-	voiceData[source] = voiceData[source] or defaultTable()
+	voiceData[source] = voiceData[source] or defaultTable(source)
 	voiceData[source].radio = 0
 end
 

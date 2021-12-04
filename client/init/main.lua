@@ -59,18 +59,21 @@ end)
 -- o_freq_lo = 348.0
 -- 0_freq_hi = 4900.0
 
--- radio submix
-local radioEffectId = CreateAudioSubmix('Radio')
-SetAudioSubmixEffectRadioFx(radioEffectId, 0)
-SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
-AddAudioSubmixOutput(radioEffectId, 0)
 
-local phoneEffectId = CreateAudioSubmix('Phone')
-SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
-SetAudioSubmixEffectParamInt(phoneEffectId, 1, GetHashKey('default'), 1)
-SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 300.0)
-SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_hi'), 6000.0)
-AddAudioSubmixOutput(phoneEffectId, 1)
+if gameVersion == 'fivem' then
+	-- radio submix
+	radioEffectId = CreateAudioSubmix('Radio')
+	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
+	SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
+	AddAudioSubmixOutput(radioEffectId, 0)
+
+	phoneEffectId = CreateAudioSubmix('Phone')
+	SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
+	SetAudioSubmixEffectParamInt(phoneEffectId, 1, GetHashKey('default'), 1)
+	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 300.0)
+	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_hi'), 6000.0)
+	AddAudioSubmixOutput(phoneEffectId, 1)
+end
 
 local submixFunctions = {
 	['radio'] = function(plySource)
@@ -93,7 +96,7 @@ function toggleVoice(plySource, enabled, moduleType)
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	if enabled then
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
-		if GetConvarInt('voice_enableSubmix', 0) == 1 then
+		if GetConvarInt('voice_enableSubmix', 0) == 1 and gameVersion == 'fivem' then
 			if moduleType then
 				disableSubmixReset[plySource] = true
 				submixFunctions[moduleType](plySource)
@@ -102,7 +105,7 @@ function toggleVoice(plySource, enabled, moduleType)
 			end
 		end
 	else
-		if GetConvarInt('voice_enableSubmix', 0) == 1 then
+		if GetConvarInt('voice_enableSubmix', 0) == 1 and gameVersion == 'fivem' then
 			-- garbage collect it
 			disableSubmixReset[plySource] = nil
 			SetTimeout(250, function()

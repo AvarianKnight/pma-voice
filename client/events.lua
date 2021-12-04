@@ -12,10 +12,10 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 		mode = voiceModeData[2],
 	}, GetConvarInt('voice_syncData', 1) == 1)
 
-	setTalkerProximity(voiceModeData[1] + 0.0)
+	MumbleSetTalkerProximity(voiceModeData[1] + 0.0)
 	MumbleClearVoiceTarget(voiceTarget)
 	MumbleSetVoiceTarget(voiceTarget)
-	setVoiceChannel(playerServerId)
+	MumbleSetVoiceChannel(playerServerId)
 
 	while MumbleGetVoiceChannelFromServerId(playerServerId) ~= playerServerId do
 		Wait(250)
