@@ -16,11 +16,8 @@ callData = {}
 ---@param volume number between 0 and 100
 ---@param volumeType string the volume type (currently radio & call) to set the volume of (opt)
 function setVolume(volume, volumeType)
-	local volume = tonumber(volume)
-	local checkType = type(volume)
-	if checkType ~= 'number' then
-		return error(('setVolume expected type number, got %s'):format(checkType))
-	end
+	type_check({volume, "number"})
+	local volume = volume
 	volume = volume / 100
 	if volumeType then
 		local volumeTbl = volumes[volumeType]

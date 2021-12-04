@@ -94,3 +94,26 @@ function tPrint(tbl, indent)
 		end
 	end
 end
+
+local function types(args)
+    local argType = type(args[1])
+    for i = 2, #args do
+        local arg = args[i]
+        if argType == arg then
+            return true, argType
+        end
+    end
+    return false, argType
+end
+
+function type_check(...)
+    local vars = {...}
+    for i = 1, #vars do
+        local var = vars[i]
+        local matchesType, varType = types(var)
+        if not matchesType then
+            table.remove(var, 1)
+            error(("Invalid type sent to argument #%s, expected %s, got %s"):format(i, table.concat(var, "|"), varType))
+        end
+    end
+end
