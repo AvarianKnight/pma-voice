@@ -2,13 +2,13 @@
 local disableUpdates = false
 local isListenerEnabled = false
 
-local currentVoiceTargets = {}
-
 function addNearbyPlayers()
 	if disableUpdates then return end
 	local coords = GetEntityCoords(PlayerPedId())
 	local voiceModeData = Cfg.voiceModes[mode]
 	local distance = GetConvar('voice_useNativeAudio', 'false') == 'true' and voiceModeData[1] * 3 or voiceModeData[1]
+
+	MumbleClearVoiceTargetChannels(voiceTarget)
 	local players = GetActivePlayers()
 	for i = 1, #players do
 		local ply = players[i]
@@ -17,18 +17,11 @@ function addNearbyPlayers()
 		if serverId == playerServerId then goto skip_loop end
 
 		local ped = GetPlayerPed(ply)
-		local isTarget = currentVoiceTargets[serverId]
 		if #(coords - GetEntityCoords(ped)) < distance then
-			local voiceChannel = MumbleGetVoiceChannelFromServerId(serverId)
 			if isTarget then goto skip_loop end
 
-			logger.info('Added %s as a voice target', serverId)
+			logger.verbose('Added %s as a voice target', serverId)
 			MumbleAddVoiceTargetChannel(voiceTarget, serverId)
-			currentVoiceTargets[serverId] = true
-		elseif isTarget then
-			logger.info('Removed %s from voice targets', serverId)
-			MumbleRemoveVoiceTargetChannel(voiceTarget, serverId)
-			currentVoiceTargets[serverId] = nil
 		end
 
 		::skip_loop::
@@ -71,10 +64,6 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
 	if isListenerEnabled then
 		MumbleRemoveVoiceChannelListen(serverId)
 		logger.verbose("Removing %s from listen table", serverId)
-	end
-	if currentVoiceTargets[serverId] then
-		currentVoiceTargets[serverId] = nil
-		MumbleRemoveVoiceChannelListen(serverId)
 	end
 end)
 
