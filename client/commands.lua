@@ -37,6 +37,6 @@ RegisterCommand('cycleproximity', function()
 	})
 	TriggerEvent('pma-voice:setTalkingMode', voiceMode)
 end, false)
-if gameVersion == 'fivem' then
+if gameVersion == 'gta5' then
 	RegisterKeyMapping('cycleproximity', 'Cycle Proximity', 'keyboard', GetConvar('voice_defaultCycle', 'F11'))
 end

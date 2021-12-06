@@ -36,7 +36,7 @@ Citizen.CreateThreadNow(function()
 	local _3dAudio = GetConvar('voice_use3dAudio', 'false')
 	local _2dAudio = GetConvar('voice_use2dAudio', 'false')
 	local sendingRangeOnly = GetConvar('voice_useSendingRangeOnly', 'false')
-	local gameVersion = GetConvar('gamename', 'fivem')
+	local gameVersion = GetConvar('gamename', 'gta5')
 
 	-- handle no convars being set (default drag n' drop)
 	if
@@ -44,7 +44,7 @@ Citizen.CreateThreadNow(function()
 		and _3dAudio == 'false'
 		and _2dAudio == 'false'
 	then
-		if gameVersion == 'fivem' then
+		if gameVersion == 'gta5' then
 			SetConvarReplicated('voice_useNativeAudio', 'true')
 			if sendingRangeOnly == 'false' then
 				SetConvarReplicated('voice_useSendingRangeOnly', 'true')
@@ -61,7 +61,7 @@ Citizen.CreateThreadNow(function()
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
 
-	if GetConvar('gamename', 'fivem') == 'rdr3' then
+	if GetConvar('gamename', 'gta5') == 'rdr3' then
 		if nativeAudio == 'true' then
 			logger.warn("RedM doesn't currently support native audio, automatically switching to 3d audio. This also means that submixes will not work.")
 			SetConvarReplicated('voice_useNativeAudio', 'false')

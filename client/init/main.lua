@@ -60,7 +60,7 @@ end)
 -- 0_freq_hi = 4900.0
 
 
-if gameVersion == 'fivem' then
+if gameVersion == 'gta5' then
 	-- radio submix
 	radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)

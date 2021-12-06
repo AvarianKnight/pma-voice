@@ -165,7 +165,7 @@ RegisterCommand('-radiotalk', function()
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
 	end
 end, false)
-if gameVersion == 'fivem' then
+if gameVersion == 'gta5' then
 	RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
 end
 
