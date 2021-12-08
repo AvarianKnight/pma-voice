@@ -1,9 +1,11 @@
 local radioChannel = 0
+local radioNames = {}
 
 --- event syncRadioData
 --- syncs the current players on the radio to the client
 ---@param radioTable table the table of the current players on the radio
-function syncRadioData(radioTable)
+---@param localPlyRadioName string the local players name
+function syncRadioData(radioTable, localPlyRadioName)
 	radioData = radioTable
 	logger.info('[radio] Syncing radio table.')
 	if GetConvarInt('voice_debugMode', 0) >= 4 then
@@ -16,6 +18,7 @@ function syncRadioData(radioTable)
 			toggleVoice(tgt, enabled, 'radio')
 		end
 	end
+	radioNames[playerServerId] = localPlyRadioName
 end
 RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 
@@ -33,8 +36,9 @@ RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 --- event addPlayerToRadio
 --- adds a player onto the radio.
 ---@param plySource number the players server id to add to the radio.
-function addPlayerToRadio(plySource)
+function addPlayerToRadio(plySource, plyRadioName)
 	radioData[plySource] = false
+	radioNames[plySource] = plyRadioName
 	if radioPressed then
 		logger.info('[radio] %s joined radio %s while we were talking, adding them to targets', plySource, radioChannel)
 		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
@@ -55,10 +59,10 @@ function removePlayerFromRadio(plySource)
 				toggleVoice(tgt, false, 'radio')
 			end
 		end
+		radioNames = {}
 		radioData = {}
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
-		radioData[plySource] = nil
 		toggleVoice(plySource, false)
 		if radioPressed then
 			logger.info('[radio] %s left radio %s while we were talking, updating targets.', plySource, radioChannel)
@@ -66,6 +70,8 @@ function removePlayerFromRadio(plySource)
 		else
 			logger.info('[radio] %s has left radio %s', plySource, radioChannel)
 		end
+		radioData[plySource] = nil
+		radioNames[plySourse] = nil
 	end
 end
 RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
