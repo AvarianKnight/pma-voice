@@ -76,6 +76,10 @@ export default {
 				click.play().catch((e) => {});
 			}
 		});
+		
+		fetch('https://pma-voice/getVoiceModes', {
+            method: 'POST'
+        })
 
 		return { voice };
 	},

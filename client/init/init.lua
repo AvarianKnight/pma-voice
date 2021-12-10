@@ -25,11 +25,20 @@ AddEventHandler('onClientResourceStart', function(resource)
 		micClicks = 'true'
 	end
 	Wait(1000)
+	sendVoiceModes()
+	print('Script initialization finished.')
+end)
+
+function sendVoiceModes()
 	if GetConvarInt('voice_enableUi', 1) == 1 then
 		SendNUIMessage({
 			voiceModes = json.encode(Cfg.voiceModes),
 			voiceMode = mode - 1
 		})
 	end
-	print('Script initialization finished.')
+end
+
+RegisterNUICallback('getVoiceModes', function(data, cb)
+	sendVoiceModes()
+	cb()
 end)
