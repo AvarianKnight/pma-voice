@@ -1,4 +1,4 @@
-### NOTICE: pma-voice 6.1.0+ requires you to use server build 4837+. It will fail to start on older builds.
+# NOTICE: pma-voice 6.1.0+ requires you to use server build 4837+. It will fail to start on older builds
 
 # pma-voice
 A voice system designed around the use of FiveM/RedM internal mumble server.
