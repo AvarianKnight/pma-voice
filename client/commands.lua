@@ -12,7 +12,7 @@ end)
 -- TODO: Better implementation of this?
 RegisterCommand('vol', function(_, args)
 	if not args[1] then return end
-	setVolume(args[1])
+	setVolume(tonumber(args[1]))
 end)
 
 RegisterCommand('cycleproximity', function()
