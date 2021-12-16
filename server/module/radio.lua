@@ -150,12 +150,15 @@ AddEventHandler("onResourceStop", function(resource)
 			logger.warn('Channel %s had its radio check removed because the resource that gave the checks stopped', channel)
 		end
 	end
-	local radioRef = radioNameGetter.__cfx_functionReference
-	if radioRef then
-		local isResource = string.match(functionRef, resource)
-		if isResource then
-			radioNameGetter = radioNameGetter_orig
-			logger.warn('Radio name getter is resetting to default because the resource that gave the cb got turned off')
+
+	if type(radioNameGetter) == "table" then
+		local radioRef = radioNameGetter.__cfx_functionReference
+		if radioRef then
+			local isResource = string.match(functionRef, resource)
+			if isResource then
+				radioNameGetter = radioNameGetter_orig
+				logger.warn('Radio name getter is resetting to default because the resource that gave the cb got turned off')
+			end
 		end
 	end
 
