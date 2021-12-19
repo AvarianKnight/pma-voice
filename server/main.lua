@@ -15,7 +15,7 @@ end
 function handleStateBagInitilization(source)
 	local plyState = Player(source).state
 	plyState:set('radio', tonumber(GetConvar('voice_defaultRadioVolume', '0.3')), true)
-	plyState:set('phone', tonumber(GetConvar('voice_defaultPhoneVolume', '0.3')), true)
+	plyState:set('phone', tonumber(GetConvar('voice_defaultPhoneVolume', '0.6')), true)
 	plyState:set('proximity', {}, true)
 	plyState:set('callChannel', 0, true)
 	plyState:set('radioChannel', 0, true)

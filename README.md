@@ -34,7 +34,7 @@ Native audio will not work on RedM, you will have to use 3d audio.
 | voice_use2dAudio           |  false  | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity. | boolean      
 | voice_use3dAudio           |  false  | Uses 3d audio | boolean |
 | voice_useSendingRangeOnly  |  false  | Only allows you to hear people within your hear/send range, prevents people from connecting to your mumble server and trolling. | boolean      |
-| voice_defaultProximityMode  |  2      | Default proximity value when player enters server. | int      |
+| voice_defaultProximityMode  |  2      | Default proximity value when player joins server. | int      |
 
 
 # Config
