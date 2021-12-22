@@ -71,7 +71,7 @@ function removePlayerFromRadio(plySource)
 			logger.info('[radio] %s has left radio %s', plySource, radioChannel)
 		end
 		radioData[plySource] = nil
-		radioNames[plySourse] = nil
+		radioNames[plySource] = nil
 	end
 end
 RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
