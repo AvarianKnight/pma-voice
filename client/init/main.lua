@@ -7,7 +7,7 @@ local volumes = {
 	['phone'] = tonumber(GetConvar('voice_defaultPhoneVolume', '0.6')) + 0.0,
 }
 
-radioEnabled, radioPressed, mode = false, false, GetConvarInt('voice_defaultProximityMode', 2)
+radioEnabled, radioPressed, mode = false, false, Cfg.defaultProximityMode
 radioData = {}
 callData = {}
 
