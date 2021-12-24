@@ -29,7 +29,7 @@ else
 	}
 end
 
-Cfg.defaultProximityMode = GetConvarInt('voice_defaultProximityMode', 2)
+Cfg.defaultProximityMode = GetConvarInt('voice_defaultVoiceMode', 2)
 
 logger = {
 	['log'] = function(message, ...)
