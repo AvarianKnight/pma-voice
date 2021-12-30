@@ -16,7 +16,7 @@ RegisterCommand('vol', function(_, args)
 end)
 
 RegisterCommand('cycleproximity', function()
-	if GetConvarInt('voice_enableProximity', 1) ~= 1 then return end
+	if GetConvarInt('voice_enableProximityCycle', 1) ~= 1 then return end
 	if playerMuted then return end
 
 	local voiceMode = mode
