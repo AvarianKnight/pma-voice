@@ -6,6 +6,7 @@ RegisterCommand('setvoiceintent', function(source, args)
 		elseif intent == 'music' then
 			MumbleSetAudioInputIntent(GetHashKey('music'))
 		end
+		LocalPlayer.state:set('voiceIntent', intent, true)
 	end
 end)
 
