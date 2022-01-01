@@ -63,10 +63,9 @@ function addPlayerToRadio(source, radioChannel)
 		TriggerClientEvent('pma-voice:addPlayerToRadio', player, source, plyName)
 	end
 	voiceData[source] = voiceData[source] or defaultTable(source)
-
 	voiceData[source].radio = radioChannel
 	radioData[radioChannel][source] = false
-	TriggerClientEvent('pma-voice:syncRadioData', source, radioData[radioChannel], plyName)
+	TriggerClientEvent('pma-voice:syncRadioData', source, radioData[radioChannel], GetConvarInt("voice_syncPlayerNames", 0) == 1 and plyName)
 end
 
 --- removes a player from the specified channel

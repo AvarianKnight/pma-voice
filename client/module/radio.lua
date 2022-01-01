@@ -18,7 +18,9 @@ function syncRadioData(radioTable, localPlyRadioName)
 			toggleVoice(tgt, enabled, 'radio')
 		end
 	end
-	radioNames[playerServerId] = localPlyRadioName
+	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
+		radioNames[playerServerId] = localPlyRadioName
+	end
 end
 RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 
@@ -38,7 +40,9 @@ RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 ---@param plySource number the players server id to add to the radio.
 function addPlayerToRadio(plySource, plyRadioName)
 	radioData[plySource] = false
-	radioNames[plySource] = plyRadioName
+	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
+		radioNames[plySource] = plyRadioName
+	end
 	if radioPressed then
 		logger.info('[radio] %s joined radio %s while we were talking, adding them to targets', plySource, radioChannel)
 		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
@@ -71,7 +75,9 @@ function removePlayerFromRadio(plySource)
 			logger.info('[radio] %s has left radio %s', plySource, radioChannel)
 		end
 		radioData[plySource] = nil
-		radioNames[plySource] = nil
+		if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
+			radioNames[plySource] = nil
+		end
 	end
 end
 RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
