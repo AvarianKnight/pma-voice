@@ -56,7 +56,7 @@ export default {
 				voice.callInfo = data.callInfo;
 			}
 
-			if (data.usingRadio !== voice.usingRadio) {
+			if (data.usingRadio !== undefined && data.usingRadio !== voice.usingRadio) {
 				usingUpdated = true
 				voice.usingRadio = data.usingRadio
 				setTimeout(function(){
