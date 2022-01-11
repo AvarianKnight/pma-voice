@@ -32,7 +32,6 @@ export default {
 		});
 
 		// stops from toggling voice at the end of talking
-		let usingUpdated = false
 		window.addEventListener("message", function(event) {
 			const data = event.data;
 
@@ -56,16 +55,12 @@ export default {
 				voice.callInfo = data.callInfo;
 			}
 
-			if (data.usingRadio !== voice.usingRadio) {
-				usingUpdated = true
-				voice.usingRadio = data.usingRadio
-				setTimeout(function(){
-					usingUpdated = false
-				}, 100)
+			if (data.usingRadio !== undefined && data.usingRadio !== voice.usingRadio) {
+				voice.usingRadio = data.usingRadio;
 			}
 			
-			if ((data.talking !== undefined) && !voice.usingRadio && !usingUpdated){
-				voice.talking = data.talking
+			if ((data.talking !== undefined) && !voice.usingRadio) {
+				voice.talking = data.talking;
 			}
 
 			if (data.sound && voice.radioEnabled) {
