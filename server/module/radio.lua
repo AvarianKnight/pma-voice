@@ -129,6 +129,7 @@ function setTalkingOnRadio(talking)
 	local plyVoice = voiceData[source]
 	local radioTbl = radioData[plyVoice.radio]
 	if radioTbl then
+		radioTbl[source] = talking
 		logger.verbose('[radio] Set %s to talking: %s on radio %s',source, talking, plyVoice.radio)
 		for player, _ in pairs(radioTbl) do
 			if player ~= source then
