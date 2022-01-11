@@ -29,6 +29,8 @@ else
 	}
 end
 
+Cfg.defaultProximityMode = GetConvarInt('voice_defaultVoiceMode', 2)
+
 logger = {
 	['log'] = function(message, ...)
 		print((message):format(...))
