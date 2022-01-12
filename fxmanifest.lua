@@ -13,6 +13,7 @@ lua54 'yes'
 shared_script 'shared.lua'
 
 client_scripts {
+	'client/utils/*',
 	'client/init/proximity.lua',
 	'client/init/init.lua',
 	'client/init/main.lua',
@@ -36,7 +37,6 @@ ui_page 'ui/index.html'
 
 provides {
 	'mumble-voip',
-    -- why does it use so many different names
     'tokovoip',
     'toko-voip',
     'tokovoip_script'

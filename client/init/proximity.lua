@@ -1,12 +1,29 @@
 -- used when muted
 local disableUpdates = false
 local isListenerEnabled = false
+local plyCoords = GetEntityCoords(PlayerPedId())
+
+function orig_addProximityCheck(ply)
+	local tgtPed = GetPlayerPed(ply)
+	local voiceModeData = Cfg.voiceModes[mode]
+	local distance = GetConvar('voice_useNativeAudio', 'false') == 'true' and voiceModeData[1] * 3 or voiceModeData[1]
+
+	return #(plyCoords - GetEntityCoords(tgtPed)) < distance
+end
+local addProximityCheck = orig_addProximityCheck
+
+exports("overrideProximityCheck", function(fn)
+	addProximityCheck = fn
+end)
+
+exports("resetProximityCheck", function()
+	addProximityCheck = orig_addProximityCheck
+end)
 
 function addNearbyPlayers()
 	if disableUpdates then return end
-	local coords = GetEntityCoords(PlayerPedId())
-	local voiceModeData = Cfg.voiceModes[mode]
-	local distance = GetConvar('voice_useNativeAudio', 'false') == 'true' and voiceModeData[1] * 3 or voiceModeData[1]
+	-- update here so we don't have to update every call of addProximityCheck
+	plyCoords = GetEntityCoords(PlayerPedId())
 
 	MumbleClearVoiceTargetChannels(voiceTarget)
 	local players = GetActivePlayers()
@@ -16,8 +33,7 @@ function addNearbyPlayers()
 
 		if serverId == playerServerId then goto skip_loop end
 
-		local ped = GetPlayerPed(ply)
-		if #(coords - GetEntityCoords(ped)) < distance then
+		if addProximityCheck(ply) then
 			if isTarget then goto skip_loop end
 
 			logger.verbose('Added %s as a voice target', serverId)
@@ -80,11 +96,13 @@ Citizen.CreateThread(function()
 		while not MumbleIsConnected() do
 			Wait(100)
 		end
+		-- Leave the check here as we don't want to do any of this logic 
 		if GetConvarInt('voice_enableUi', 1) == 1 then
-			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= (MumbleIsPlayerTalking(PlayerId()) == 1) then
+			local curTalkingStatus = MumbleIsPlayerTalking(PlayerId()) == 1
+			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= curTalkingStatus then
 				lastRadioStatus = radioPressed
-				lastTalkingStatus = MumbleIsPlayerTalking(PlayerId()) == 1
-				SendNUIMessage({
+				lastTalkingStatus = curTalkingStatus
+				sendUIMessage({
 					usingRadio = lastRadioStatus,
 					talking = lastTalkingStatus
 				})
@@ -99,5 +117,19 @@ Citizen.CreateThread(function()
 		end
 
 		Wait(GetConvarInt('voice_refreshRate', 200))
+	end
+end)
+
+
+AddEventHandler("onClientResourceStop", function(resource)
+	if type(addProximityCheck) == "table" then
+		local proximityCheckRef = addProximityCheck.__cfx_functionReference
+		if proximityCheckRef then
+			local isResource = string.match(proximityCheckRef, resource)
+			if isResource then
+				addProximityCheck = orig_addProximityCheck
+				logger.warn('Reset proximity check to default, the original resource [%s] which provided the function restarted', resource)
+			end
+		end
 	end
 end)

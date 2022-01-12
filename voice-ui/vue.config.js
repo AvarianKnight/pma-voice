@@ -1,6 +1,6 @@
 module.exports = {
     publicPath: './',
-    productionSourceMap: false,
+    productionSourceMap: true,
     filenameHashing: false,
     outputDir: "../ui",
 

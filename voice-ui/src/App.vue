@@ -25,7 +25,7 @@ export default {
 			voiceModes: [],
 			voiceMode: 0,
 			radioChannel: 0,
-			radioEnabled: false,
+			radioEnabled: true,
 			usingRadio: false,
 			callInfo: 0,
 			talking: false,
@@ -37,6 +37,10 @@ export default {
 
 			if (data.voiceModes !== undefined) {
 				voice.voiceModes = JSON.parse(data.voiceModes);
+				// Push our own custom type for modes that have their range changed
+				let voiceModes = [...voice.voiceModes]
+				voiceModes.push([0.0, "Custom"])
+				voice.voiceModes = voiceModes
 			}
 
 			if (data.voiceMode !== undefined) {
@@ -63,7 +67,7 @@ export default {
 				voice.talking = data.talking;
 			}
 
-			if (data.sound && voice.radioEnabled) {
+			if (data.sound && voice.radioEnabled && voice.radioChannel !== 0) {
 				let click = document.getElementById(data.sound);
 				// discard these errors as its usually just a 'uncaught promise' from two clicks happening too fast.
 				click.load();
@@ -72,8 +76,10 @@ export default {
 			}
 		});
 
+		fetch(`https://${GetParentResourceName()}/uiReady`, { method: 'POST' });
+
 		return { voice };
-	},
+	}
 };
 </script>
 

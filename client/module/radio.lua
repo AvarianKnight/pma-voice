@@ -87,14 +87,13 @@ RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
 ---@param channel number the channel to set the player to, or 0 to remove them.
 function setRadioChannel(channel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
+	type_check({channel, "number"})
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
 	radioChannel = channel
-	if GetConvarInt('voice_enableUi', 1) == 1 then
-		SendNUIMessage({
-			radioChannel = channel,
-			radioEnabled = radioEnabled
-		})
-	end
+	sendUIMessage({
+		radioChannel = channel,
+		radioEnabled = radioEnabled
+	}, true)
 end
 
 --- exports setRadioChannel

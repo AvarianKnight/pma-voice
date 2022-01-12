@@ -7,7 +7,7 @@ local volumes = {
 	['phone'] = tonumber(GetConvar('voice_defaultPhoneVolume', '0.6')) + 0.0,
 }
 
-radioEnabled, radioPressed, mode = false, false, Cfg.defaultProximityMode
+radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
 radioData = {}
 callData = {}
 
@@ -59,9 +59,7 @@ end)
 -- o_freq_lo = 348.0
 -- 0_freq_hi = 4900.0
 
-
 if gameVersion == 'fivem' then
-	-- radio submix
 	radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
 	SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
@@ -150,7 +148,7 @@ end
 ---@param clickType boolean whether to play the 'on' or 'off' click. 
 function playMicClicks(clickType)
 	if micClicks ~= 'true' then return end
-	SendNUIMessage({
+	sendUIMessage({
 		sound = (clickType and "audio_on" or "audio_off"),
 		volume = (clickType and (volumes["radio"]) or 0.05)
 	})
@@ -176,7 +174,7 @@ exports('toggleMutePlayer', toggleMutePlayer)
 function setVoiceProperty(type, value)
 	if type == "radioEnabled" then
 		radioEnabled = value
-		SendNUIMessage({
+		sendUIMessage({
 			radioEnabled = value
 		})
 	elseif type == "micClicks" then
