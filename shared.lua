@@ -1,8 +1,6 @@
 Cfg = {}
 
 voiceTarget = 1
-radioTarget = 2
-callTarget = 3
 
 gameVersion = GetGameName()
 
@@ -28,8 +26,6 @@ else
 		{15.0, "Shouting"} -- Shout speech distance in gta distance units
 	}
 end
-
-Cfg.defaultProximityMode = GetConvarInt('voice_defaultVoiceMode', 2)
 
 logger = {
 	['log'] = function(message, ...)

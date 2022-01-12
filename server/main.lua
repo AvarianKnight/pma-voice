@@ -19,6 +19,7 @@ function handleStateBagInitilization(source)
 	plyState:set('proximity', {}, true)
 	plyState:set('callChannel', 0, true)
 	plyState:set('radioChannel', 0, true)
+	plyState:set('voiceIntent', 'speech', true)
 end
 
 -- temp fix before an actual fix is added

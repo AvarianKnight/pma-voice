@@ -1,6 +1,4 @@
-game {'gta5', 'rdr3'}
-
-rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aware my resources *will* become incompatible once RedM ships.'
+game 'common'
 
 fx_version 'cerulean'
 author 'AvarianKnight'
@@ -15,6 +13,7 @@ lua54 'yes'
 shared_script 'shared.lua'
 
 client_scripts {
+	'client/utils/*',
 	'client/init/proximity.lua',
 	'client/init/init.lua',
 	'client/init/main.lua',
@@ -38,7 +37,6 @@ ui_page 'ui/index.html'
 
 provides {
 	'mumble-voip',
-    -- why does it use so many different names
     'tokovoip',
     'toko-voip',
     'tokovoip_script'

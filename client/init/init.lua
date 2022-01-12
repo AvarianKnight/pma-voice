@@ -24,12 +24,9 @@ AddEventHandler('onClientResourceStart', function(resource)
 		SetResourceKvp('pma-voice_enableMicClicks', tostring(true))
 		micClicks = 'true'
 	end
-	Wait(1000)
-	if GetConvarInt('voice_enableUi', 1) == 1 then
-		SendNUIMessage({
-			voiceModes = json.encode(Cfg.voiceModes),
-			voiceMode = mode - 1
-		})
-	end
+	sendUIMessage({
+		voiceModes = json.encode(Cfg.voiceModes),
+		voiceMode = mode - 1
+	}, true)
 	print('Script initialization finished.')
 end)
