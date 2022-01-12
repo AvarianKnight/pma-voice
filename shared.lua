@@ -1,8 +1,6 @@
 Cfg = {}
 
 voiceTarget = 1
-radioTarget = 2
-callTarget = 3
 
 gameVersion = GetGameName()
 

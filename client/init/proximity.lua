@@ -86,6 +86,7 @@ end)
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
 local lastRadioStatus = false
+local voiceState = "proximity"
 Citizen.CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/muteply', 'Mutes the player with the specified id', {
 		{ name = "player id", help = "the player to toggle mute" },
@@ -108,15 +109,37 @@ Citizen.CreateThread(function()
 				})
 			end
 		end
-		addNearbyPlayers()
-		local isSpectating = NetworkIsInSpectatorMode()
-		if isSpectating and not isListenerEnabled then
-			setSpectatorMode(true)
-		elseif not isSpectating and isListenerEnabled then
-			setSpectatorMode(false)
+
+		if voiceState == "proximity" then
+			addNearbyPlayers()
+			local isSpectating = NetworkIsInSpectatorMode()
+			if isSpectating and not isListenerEnabled then
+				setSpectatorMode(true)
+			elseif not isSpectating and isListenerEnabled then
+				setSpectatorMode(false)
+			end
 		end
 
 		Wait(GetConvarInt('voice_refreshRate', 200))
+	end
+end)
+
+exports("setVoiceState", function(_voiceState, channel)
+	if _voiceState ~= "proximity" and _voiceState ~= "channel" then
+		logger.error("Didn't get a proper voice state, expected proximity or channel, got %s", _voiceState)
+	end
+	voiceState = _voiceState
+	if voiceState == "channel" then
+		type_check({channel, "number"})
+		-- 65535 is the highest a client id can go, so we add that to the base channel so we don't manage to get onto a players channel
+		channel = channel + 65535
+		MumbleSetVoiceChannel(channel)
+		while MumbleGetVoiceChannelFromServerId(playerServerId) ~= channel do
+			Wait(250)
+		end
+		MumbleAddVoiceTargetChannel(voiceTarget, channel)
+	elseif voiceState == "proximity" then
+		handleInitialState()
 	end
 end)
 
