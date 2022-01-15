@@ -25,8 +25,10 @@ AddEventHandler('onClientResourceStart', function(resource)
 		micClicks = 'true'
 	end
 	sendUIMessage({
+		uiEnabled = GetConvarInt("voice_enableUi", 1) == 1,
 		voiceModes = json.encode(Cfg.voiceModes),
 		voiceMode = mode - 1
-	}, true)
+	})
+
 	print('Script initialization finished.')
 end)
