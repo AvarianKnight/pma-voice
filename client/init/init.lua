@@ -30,5 +30,13 @@ AddEventHandler('onClientResourceStart', function(resource)
 		voiceMode = mode - 1
 	})
 
+	-- Reinitialize channels if they're set.
+	if LocalPlayer.state.radioChannel ~= 0 then
+		setRadioChannel(LocalPlayer.state.radioChannel)
+	end
+
+	if LocalPlayer.state.callChannel ~= 0 then
+		setCallChannel(LocalPlayer.state.callChannel)
+	end
 	print('Script initialization finished.')
 end)
