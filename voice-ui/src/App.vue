@@ -2,7 +2,7 @@
 	<body>
 		<audio id="audio_on" src="mic_click_on.ogg"></audio>
 		<audio id="audio_off" src="mic_click_off.ogg"></audio>
-		<div class="voiceInfo">
+		<div v-if="voice.uiEnabled" class="voiceInfo">
 			<p v-if="voice.callInfo !== 0" :class="{ talking: voice.talking }">
 				[Call]
 			</p>
@@ -22,6 +22,7 @@ export default {
 	name: "App",
 	setup() {
 		const voice = reactive({
+			uiEnabled: true,
 			voiceModes: [],
 			voiceMode: 0,
 			radioChannel: 0,
@@ -34,6 +35,10 @@ export default {
 		// stops from toggling voice at the end of talking
 		window.addEventListener("message", function(event) {
 			const data = event.data;
+
+			if (data.uiEnabled !== undefined) {
+				voice.uiEnabled = data.uiEnabled
+			}
 
 			if (data.voiceModes !== undefined) {
 				voice.voiceModes = JSON.parse(data.voiceModes);

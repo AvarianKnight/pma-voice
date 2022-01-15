@@ -93,7 +93,7 @@ function setRadioChannel(channel)
 	sendUIMessage({
 		radioChannel = channel,
 		radioEnabled = radioEnabled
-	}, true)
+	})
 end
 
 --- exports setRadioChannel

@@ -67,7 +67,7 @@ function setCallChannel(channel)
 	callChannel = channel
 	sendUIMessage({
 		callInfo = channel
-	}, true)
+	})
 	createPhoneThread()
 end
 

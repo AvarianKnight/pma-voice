@@ -25,8 +25,18 @@ AddEventHandler('onClientResourceStart', function(resource)
 		micClicks = 'true'
 	end
 	sendUIMessage({
+		uiEnabled = GetConvarInt("voice_enableUi", 1) == 1,
 		voiceModes = json.encode(Cfg.voiceModes),
 		voiceMode = mode - 1
-	}, true)
+	})
+
+	-- Reinitialize channels if they're set.
+	if LocalPlayer.state.radioChannel ~= 0 then
+		setRadioChannel(LocalPlayer.state.radioChannel)
+	end
+
+	if LocalPlayer.state.callChannel ~= 0 then
+		setCallChannel(LocalPlayer.state.callChannel)
+	end
 	print('Script initialization finished.')
 end)

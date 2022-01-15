@@ -1,7 +1,6 @@
 local uiReady = promise.new()
-function sendUIMessage(message, respectConvar)
+function sendUIMessage(message)
 	Citizen.Await(uiReady)
-	if respectConvar and GetConvarInt('voice_enableUi', 1) ~= 1 then return end
 	SendNUIMessage(message)
 end
 
