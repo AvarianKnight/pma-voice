@@ -54,8 +54,8 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_enableUi               |    1    | Enables the built in user interface                            | int          |
 | voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity. You can find a list of valid keys [in the Cfx docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                | string       |
-| voice_defaultRadioVolume          |   0.3   | The default volume to set the radio to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
-| voice_defaultPhoneVolume          |   0.6   | The default volume to set the phone to (has to be between 0.0 and 1.0) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
+| voice_defaultRadioVolume          |   30   | The default volume to set the radio to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
+| voice_defaultPhoneVolume          |   60   | The default volume to set the phone to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
 | voice_defaultVoiceMode  |  2      | Default proximity voice value when player joins server. (Voice Modes; 1:Whisper, 2:Normal, 3:Shouting) | int      |
 
 ### Phone & Radio
@@ -64,7 +64,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 |-------------------------|---------|--------------------------------------------------------------------|--------------|
 | voice_enableRadios           |    1    | Enables the radio sub-modules                                 | int          |
 | voice_enablePhones           |    1    | Enables the phone sub-modules                                 | int          |
-| voice_enableSubmix      |    0    | Enables the submix which adds a radio/phone style submix to their voice **NOTE: Submixs require native audio** | int          |
+| voice_enableSubmix      |    1    | Enables the submix which adds a radio/phone style submix to their voice **NOTE: Submixs require native audio** | int          |
 | voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
 | voice_defaultRadio           |   LALT  | The default key to use the radio. You can find a list of valid keys [in the FiveM docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                             | string       |
 
