@@ -3,8 +3,8 @@ local mutedPlayers = {}
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
 	-- people are setting this to 1 instead of 1.0 and expecting it to work.
-	['radio'] = GetConvarInt('voice_defaultRadioVolume', 30),
-	['phone'] = GetConvarInt('voice_defaultPhoneVolume', 60),
+	['radio'] = GetConvarInt('voice_defaultRadioVolume', 30) / 100,
+	['phone'] = GetConvarInt('voice_defaultPhoneVolume', 60) / 100,
 }
 
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
@@ -147,10 +147,10 @@ end
 ---plays the mic click if the player has them enabled.
 ---@param clickType boolean whether to play the 'on' or 'off' click. 
 function playMicClicks(clickType)
-	if micClicks ~= 'true' then return end
+	if micClicks ~= 'true' then return logger.verbose("Not playing mic clicks because client has them disabled") end
 	sendUIMessage({
 		sound = (clickType and "audio_on" or "audio_off"),
-		volume = (clickType and (volumes["radio"] / 100) or 0.05)
+		volume = (clickType and volumes["radio"] or 0.05)
 	})
 end
 
