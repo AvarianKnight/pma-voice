@@ -111,7 +111,7 @@ end)
 
 --- exports addPlayerToRadio
 --- sets the local players current radio channel and updates the server
----@param radio number the channel to set the player to, or 0 to remove them.
+---@param _radio number the channel to set the player to, or 0 to remove them.
 exports('addPlayerToRadio', function(_radio)
 	local radio = tonumber(_radio)
 	if radio then

@@ -62,14 +62,14 @@ end)
 if gameVersion == 'fivem' then
 	radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
-	SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
+	SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
 	AddAudioSubmixOutput(radioEffectId, 0)
 
 	phoneEffectId = CreateAudioSubmix('Phone')
 	SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
-	SetAudioSubmixEffectParamInt(phoneEffectId, 1, GetHashKey('default'), 1)
-	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_low'), 300.0)
-	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, GetHashKey('freq_hi'), 6000.0)
+	SetAudioSubmixEffectParamInt(phoneEffectId, 1, `default`, 1)
+	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, `freq_low`, 300.0)
+	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, `freq_hi`, 6000.0)
 	AddAudioSubmixOutput(phoneEffectId, 1)
 end
 
@@ -119,6 +119,7 @@ end
 --- function playerTargets
 ---Adds players voices to the local players listen channels allowing
 ---Them to communicate at long range, ignoring proximity range.
+---@diagnostic disable-next-line: undefined-doc-param
 ---@param targets table expects multiple tables to be sent over
 function playerTargets(...)
 	local targets = {...}

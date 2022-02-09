@@ -4,9 +4,9 @@ RegisterCommand('setvoiceintent', function(source, args)
 	if GetConvarInt('voice_allowSetIntent', 1) == 1 then
 		local intent = args[1]
 		if intent == 'speech' then
-			MumbleSetAudioInputIntent(GetHashKey('speech'))
+			MumbleSetAudioInputIntent(`speech`)
 		elseif intent == 'music' then
-			MumbleSetAudioInputIntent(GetHashKey('music'))
+			MumbleSetAudioInputIntent(`music`)
 		end
 		LocalPlayer.state:set('voiceIntent', intent, true)
 	end
