@@ -31,8 +31,6 @@ function addNearbyPlayers()
 		local ply = players[i]
 		local serverId = GetPlayerServerId(ply)
 
-		if serverId == playerServerId then goto skip_loop end
-
 		if addProximityCheck(ply) then
 			if isTarget then goto skip_loop end
 
