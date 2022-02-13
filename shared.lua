@@ -12,20 +12,15 @@ end
 Player = Player
 Entity = Entity
 
-if GetConvar('voice_useNativeAudio', 'false') == 'true' then
-	-- native audio distance seems to be larger then regular gta units
-	Cfg.voiceModes = {
-		{1.5, "Whisper"}, -- Whisper speech distance in gta distance units
-		{3.0, "Normal"}, -- Normal speech distance in gta distance units
-		{6.0, "Shouting"} -- Shout speech distance in gta distance units
-	}
-else
-	Cfg.voiceModes = {
-		{3.0, "Whisper"}, -- Whisper speech distance in gta distance units
-		{7.0, "Normal"}, -- Normal speech distance in gta distance units
-		{15.0, "Shouting"} -- Shout speech distance in gta distance units
-	}
-end
+-- The attenuation curve for 3d audio and native audio are different, so if users are using 3d audio (RedM) we should multiply the curve by 2
+local voiceMultiplication = GetConvar("voice_useNativeAudio", "false") == "true" and 1.0 or 2.0
+
+-- These can have a third option, which will be used for a permission check with FiveM's ACE permission system 
+Cfg.voiceModes = {
+    {1.5 * voiceMultiplication, "Whisper"},
+    {3.0 * voiceMultiplication, "Normal"},
+    {6.0 * voiceMultiplication, "Shouting"}
+}
 
 logger = {
 	log = function(message, ...)

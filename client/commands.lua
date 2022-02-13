@@ -54,10 +54,9 @@ exports("clearProximityOverride", function()
 	end
 end)
 
-RegisterCommand('cycleproximity', function()
-	-- Proximity is either disabled, or manually overwritten.
-	if GetConvarInt('voice_enableProximityCycle', 1) ~= 1 or disableProximityCycle then return end
-	local newMode = mode + 1
+---tick up the current voice mode index
+function updateVoiceModeIndex()
+    local newMode = mode + 1
 
 	-- If we're within the range of our voice modes, allow the increase, otherwise reset to the first state
 	if newMode <= #Cfg.voiceModes then
@@ -65,6 +64,29 @@ RegisterCommand('cycleproximity', function()
 	else
 		mode = 1
 	end
+end
+
+RegisterCommand('cycleproximity', function()
+	-- Proximity is either disabled, or manually overwritten.
+	if GetConvarInt('voice_enableProximityCycle', 1) ~= 1 then return end
+	if disableProximityCycle then return end
+    updateVoiceModeIndex()
+    local voiceModeCount = #Cfg.voiceModes
+    local voiceMode = Cfg.voiceModes[mode][3]
+    if voiceMode then
+        local timesTicked = 0
+        -- tick through voice modes until we find one that either doesn't have a permission check, or one that we're allowed to use
+        while not IsAceAllowed(voiceMode) do
+            updateVoiceModeIndex()
+            voiceMode = Cfg.voiceModes[mode][3]
+            if not voiceMode then break end
+            timesTicked += 1
+            -- If we've ticked more times then there are voice modes, then we should error as there is no default voice mode
+            if timesTicked > voiceModeCount then
+                logger.error("Tried to cycle proximity but didn't get any valid voice modes, make sure there's a default voice mode without permission or if this is intentional, just ignore this error.")
+            end
+        end
+    end
 
 	setProximityState(Cfg.voiceModes[mode][1], false)
 	TriggerEvent('pma-voice:setTalkingMode', mode)
