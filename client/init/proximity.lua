@@ -32,13 +32,9 @@ function addNearbyPlayers()
 		local serverId = GetPlayerServerId(ply)
 
 		if addProximityCheck(ply) then
-			if isTarget then goto skip_loop end
-
 			logger.verbose('Added %s as a voice target', serverId)
 			MumbleAddVoiceTargetChannel(voiceTarget, serverId)
 		end
-
-		::skip_loop::
 	end
 end
 
