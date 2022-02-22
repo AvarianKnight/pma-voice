@@ -118,6 +118,7 @@ This would only allow the superadmin group to mute players.
 | Export              | Description                                            | Parameter(s) |
 |---------------------|--------------------------------------------------------|--------------|
 | toggleMutePlayer    | Toggles the selected player muted for the local client | int          |
+| toggleUndercover    | Toggles the radio animation when talking on the radio  |              |
 
 Supported from mumble-voip / toko-voip
 
