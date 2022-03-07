@@ -1,6 +1,6 @@
 local radioChannel = 0
 local radioNames = {}
-local isUndercover = false
+local disableRadioAnim = false
 
 --- event syncRadioData
 --- syncs the current players on the radio to the client
@@ -120,17 +120,17 @@ exports('addPlayerToRadio', function(_radio)
 	end
 end)
 
---- exports toggleUndercover
---- toggles whether the client is undercover or not, if the animation should be played or notvaliddance
-exports('toggleUndercover', function()
-	isUndercover = not isUndercover
-	TriggerEvent('pma-voice:toggleUndercover', isUndercover)
+--- exports toggleRadioAnim
+--- toggles whether the client should play radio anim or not, if the animation should be played or notvaliddance
+exports('toggleRadioAnim', function()
+	disableRadioAnim = not disableRadioAnim
+	TriggerEvent('pma-voice:toggleUndercover', disableRadioAnim)
 end)
 
--- exports isUndercover
+-- exports disableRadioAnim
 --- returns whether the client is undercover or not
-exports('isUndercover', function()
-	return isUndercover
+exports('getRadioAnimState', function()
+	return toggleRadioAnim
 end)
 
 --- check if the player is dead
@@ -158,7 +158,7 @@ RegisterCommand('+radiotalk', function()
 			radioPressed = true
 			playMicClicks(true)
 			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) then
-				if not isUndercover then
+				if not disableRadioAnim then
 					RequestAnimDict('random@arrests')
 					while not HasAnimDictLoaded('random@arrests') do
 						Citizen.Wait(10)
