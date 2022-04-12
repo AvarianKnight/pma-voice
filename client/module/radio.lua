@@ -121,12 +121,12 @@ end)
 
 --- check if the player is dead
 --- seperating this so if people use different methods they can customize
---- it to their need as this will likely never be changed.
+--- it to their need as this will likely never be changed
+--- but you can integrate the below state bag to your death resources.
+--- LocalPlayer.state:set('isDead', true or false, false)
 function isDead()
-	if GetResourceState("pma-ambulance") ~= "missing" then
-		if LocalPlayer.state.isDead then
-			return true
-		end
+	if LocalPlayer.state.isDead then
+		return true
 	elseif IsPlayerDead(PlayerId()) then
 		return true
 	end
