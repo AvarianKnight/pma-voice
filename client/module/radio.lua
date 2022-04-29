@@ -18,6 +18,10 @@ function syncRadioData(radioTable, localPlyRadioName)
 			toggleVoice(tgt, enabled, 'radio')
 		end
 	end
+	sendUIMessage({
+		radioChannel = radioChannel,
+		radioEnabled = radioEnabled
+	})
 	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
 		radioNames[playerServerId] = localPlyRadioName
 	end
@@ -55,13 +59,19 @@ RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 --- event removePlayerFromRadio
 --- removes the player (or self) from the radio
 ---@param plySource number the players server id to remove from the radio.
-function removePlayerFromRadio(plySource)
+function removePlayerFromRadio(plySource, updateUi)
 	if plySource == playerServerId then
 		logger.info('[radio] Left radio %s, cleaning up.', radioChannel)
 		for tgt, _ in pairs(radioData) do
 			if tgt ~= playerServerId then
 				toggleVoice(tgt, false, 'radio')
 			end
+		end
+		if updateUi then
+			sendUIMessage({
+				radioChannel = 0,
+				radioEnabled = radioEnabled
+			})
 		end
 		radioNames = {}
 		radioData = {}
@@ -90,10 +100,6 @@ function setRadioChannel(channel)
 	type_check({channel, "number"})
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
 	radioChannel = channel
-	sendUIMessage({
-		radioChannel = channel,
-		radioEnabled = radioEnabled
-	})
 end
 
 --- exports setRadioChannel
