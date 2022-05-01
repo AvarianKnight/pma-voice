@@ -1,5 +1,6 @@
 local radioChannel = 0
 local radioNames = {}
+local disableRadioAnim = false
 
 --- event syncRadioData
 --- syncs the current players on the radio to the client
@@ -123,6 +124,19 @@ exports('addPlayerToRadio', function(_radio)
 	end
 end)
 
+--- exports toggleRadioAnim
+--- toggles whether the client should play radio anim or not, if the animation should be played or notvaliddance
+exports('toggleRadioAnim', function()
+	disableRadioAnim = not disableRadioAnim
+	TriggerEvent('pma-voice:toggleUndercover', disableRadioAnim)
+end)
+
+-- exports disableRadioAnim
+--- returns whether the client is undercover or not
+exports('getRadioAnimState', function()
+	return toggleRadioAnim
+end)
+
 --- check if the player is dead
 --- seperating this so if people use different methods they can customize
 --- it to their need as this will likely never be changed
@@ -148,11 +162,13 @@ RegisterCommand('+radiotalk', function()
 			radioPressed = true
 			playMicClicks(true)
 			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) then
-				RequestAnimDict('random@arrests')
-				while not HasAnimDictLoaded('random@arrests') do
-					Citizen.Wait(10)
+				if not disableRadioAnim then
+					RequestAnimDict('random@arrests')
+					while not HasAnimDictLoaded('random@arrests') do
+						Citizen.Wait(10)
+					end
+					TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
 				end
-				TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
 			end
 			Citizen.CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
