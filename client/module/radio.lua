@@ -18,6 +18,10 @@ function syncRadioData(radioTable, localPlyRadioName)
 			toggleVoice(tgt, enabled, 'radio')
 		end
 	end
+	sendUIMessage({
+		radioChannel = radioChannel,
+		radioEnabled = radioEnabled
+	})
 	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
 		radioNames[playerServerId] = localPlyRadioName
 	end
@@ -63,6 +67,10 @@ function removePlayerFromRadio(plySource)
 				toggleVoice(tgt, false, 'radio')
 			end
 		end
+		sendUIMessage({
+			radioChannel = 0,
+			radioEnabled = radioEnabled
+		})
 		radioNames = {}
 		radioData = {}
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
@@ -90,10 +98,6 @@ function setRadioChannel(channel)
 	type_check({channel, "number"})
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
 	radioChannel = channel
-	sendUIMessage({
-		radioChannel = channel,
-		radioEnabled = radioEnabled
-	})
 end
 
 --- exports setRadioChannel
