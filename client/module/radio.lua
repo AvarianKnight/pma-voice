@@ -59,7 +59,7 @@ RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 --- event removePlayerFromRadio
 --- removes the player (or self) from the radio
 ---@param plySource number the players server id to remove from the radio.
-function removePlayerFromRadio(plySource, updateUi)
+function removePlayerFromRadio(plySource)
 	if plySource == playerServerId then
 		logger.info('[radio] Left radio %s, cleaning up.', radioChannel)
 		for tgt, _ in pairs(radioData) do
@@ -67,12 +67,10 @@ function removePlayerFromRadio(plySource, updateUi)
 				toggleVoice(tgt, false, 'radio')
 			end
 		end
-		if updateUi then
-			sendUIMessage({
-				radioChannel = 0,
-				radioEnabled = radioEnabled
-			})
-		end
+		sendUIMessage({
+			radioChannel = 0,
+			radioEnabled = radioEnabled
+		})
 		radioNames = {}
 		radioData = {}
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
