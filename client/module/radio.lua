@@ -128,7 +128,7 @@ end)
 --- toggles whether the client should play radio anim or not, if the animation should be played or notvaliddance
 exports('toggleRadioAnim', function()
 	disableRadioAnim = not disableRadioAnim
-	TriggerEvent('pma-voice:toggleUndercover', disableRadioAnim)
+	TriggerEvent('pma-voice:toggleRadioAnim', disableRadioAnim)
 end)
 
 -- exports disableRadioAnim
