@@ -15,7 +15,7 @@ Sets the local players radio channel.
 exports['pma-voice']:setRadioChannel(1)
 
 -- This will remove the player from all radio channels
-expots ['pma-voice']:setRadioChannel(0)
+exports ['pma-voice']:setRadioChannel(0)
 ```
 
 addPlayerToRadio is provided as a 'easier to read' alternative to setRadioChannel.
