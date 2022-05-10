@@ -85,7 +85,7 @@ end)
 local lastTalkingStatus = false
 local lastRadioStatus = false
 local voiceState = "proximity"
-Citizen.CreateThread(function()
+CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/muteply', 'Mutes the player with the specified id', {
 		{ name = "player id", help = "the player to toggle mute" },
 		{ name = "duration", help = "(opt) the duration the mute in seconds (default: 900)" }
