@@ -1,6 +1,6 @@
 local uiReady = promise.new()
 function sendUIMessage(message)
-	Await(uiReady)
+	Citizen.Await(uiReady)
 	SendNUIMessage(message)
 end
 
