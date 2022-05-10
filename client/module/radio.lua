@@ -143,7 +143,6 @@ end)
 --- but you can integrate the below state bag to your death resources.
 --- LocalPlayer.state:set('isDead', true or false, false)
 function isDead()
-	local playerPed = PlayerPedId()
 	if LocalPlayer.state.isDead then
 		return true
 	elseif IsPlayerDead(PlayerId()) then
