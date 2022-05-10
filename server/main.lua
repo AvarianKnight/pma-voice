@@ -16,7 +16,7 @@ function handleStateBagInitilization(source)
 	local plyState = Player(source).state
 	if not plyState.pmaVoiceInit then 
 		plyState:set('radio', GetConvarInt('voice_defaultRadioVolume', 30), true)
-		plyState:set('phone', GetConvarInt('voice_defaultPhoneVolume', 60), true)
+		plyState:set('call', GetConvarInt('voice_defaultCallVolume', 60), true)
 		plyState:set('proximity', {}, true)
 		plyState:set('callChannel', 0, true)
 		plyState:set('radioChannel', 0, true)
@@ -26,7 +26,7 @@ function handleStateBagInitilization(source)
 	end
 end
 
-Citizen.CreateThread(function()
+CreateThread(function()
 
 	local plyTbl = GetPlayers()
 	for i = 1, #plyTbl do
@@ -74,18 +74,18 @@ Citizen.CreateThread(function()
 	end
 
 	local radioVolume = GetConvarInt("voice_defaultRadioVolume", 30)
-	local phoneVolume = GetConvarInt("voice_defaultPhoneVolume", 60)
+	local callVolume = GetConvarInt("voice_defaultCallVolume", 60)
 
 	-- When casted to an integer these get set to 0 or 1, so warn on these values that they don't work
 	if
 		radioVolume == 0 or radioVolume == 1 or
-		phoneVolume == 0 or phoneVolume == 1
+		callVolume == 0 or callVolume == 1
 	then
 		SetConvarReplicated("voice_defaultRadioVolume", 30)
-		SetConvarReplicated("voice_defaultPhoneVolume", 60)
+		SetConvarReplicated("voice_defaultCallVolume", 60)
 		for i = 1, 5 do
 			Wait(5000)
-			logger.warn("`voice_defaultRadioVolume` or `voice_defaultPhoneVolume` have their value set as a float, this is going to automatically be fixed but please update your convars.")
+			logger.warn("`voice_defaultRadioVolume` or `voice_defaultCallVolume` have their value set as a float, this is going to automatically be fixed but please update your convars.")
 		end
 	end
 end)

@@ -143,9 +143,14 @@ end)
 --- but you can integrate the below state bag to your death resources.
 --- LocalPlayer.state:set('isDead', true or false, false)
 function isDead()
+	local playerPed = PlayerPedId()
 	if LocalPlayer.state.isDead then
 		return true
 	elseif IsPlayerDead(PlayerId()) then
+		return true
+	elseif IsEntityPlayingAnim(playerPed, 'dead', 'dead_a', 3) then
+		return true
+	elseif IsEntityPlayingAnim(playerPed, 'combat@damage@writhe', 'writhe_loop', 3) then
 		return true
 	end
 end
@@ -165,12 +170,12 @@ RegisterCommand('+radiotalk', function()
 				if not disableRadioAnim then
 					RequestAnimDict('random@arrests')
 					while not HasAnimDictLoaded('random@arrests') do
-						Citizen.Wait(10)
+						Wait(10)
 					end
 					TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
 				end
 			end
-			Citizen.CreateThread(function()
+			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
 				while radioPressed do
 					Wait(0)
