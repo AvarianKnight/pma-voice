@@ -166,14 +166,12 @@ RegisterCommand('+radiotalk', function()
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			radioPressed = true
 			playMicClicks(true)
-			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) then
-				if not disableRadioAnim then
-					RequestAnimDict('random@arrests')
-					while not HasAnimDictLoaded('random@arrests') do
-						Wait(10)
-					end
-					TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
+			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) and not disableRadioAnim then
+				RequestAnimDict('random@arrests')
+				while not HasAnimDictLoaded('random@arrests') do
+					Wait(10)
 				end
+				TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
