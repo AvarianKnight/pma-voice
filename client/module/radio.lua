@@ -1,6 +1,6 @@
 local radioChannel = 0
 local radioNames = {}
-local disableRadioAnim = false
+local radioAnimState = GetConvarInt('voice_enableRadioAnim', 0) == 1
 
 --- event syncRadioData
 --- syncs the current players on the radio to the client
@@ -124,17 +124,17 @@ exports('addPlayerToRadio', function(_radio)
 	end
 end)
 
---- exports toggleRadioAnim
---- toggles whether the client should play radio anim or not, if the animation should be played or notvaliddance
-exports('toggleRadioAnim', function()
-	disableRadioAnim = not disableRadioAnim
-	TriggerEvent('pma-voice:toggleRadioAnim', disableRadioAnim)
+--- exports setRadioAnim
+--- sets whether the client should play the radio animation or not
+exports('setRadioAnim', function(setRadioAnim)
+	radioAnimState = setRadioAnim
+	TriggerEvent('pma-voice:setRadioAnim', radioAnimState)
 end)
 
--- exports disableRadioAnim
---- returns whether the client is undercover or not
+-- exports getRadioAnimState
+--- returns whether the client can play the radio animation or not
 exports('getRadioAnimState', function()
-	return toggleRadioAnim
+	return radioAnimState
 end)
 
 --- check if the player is dead
@@ -161,12 +161,15 @@ RegisterCommand('+radiotalk', function()
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			radioPressed = true
 			playMicClicks(true)
-			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) and not disableRadioAnim then
-				RequestAnimDict('random@arrests')
-				while not HasAnimDictLoaded('random@arrests') do
-					Wait(10)
+			local playerPed = PlayerPedId()
+			if radioAnimState and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(playerPed, true)) then
+				if not HasAnimDictLoaded('random@arrests') then
+					RequestAnimDict('random@arrests')
+					while not HasAnimDictLoaded('random@arrests') do
+						Wait(10)
+					end
 				end
-				TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
+				TaskPlayAnim(playerPed, "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
@@ -188,7 +191,7 @@ RegisterCommand('-radiotalk', function()
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
-		if GetConvarInt('voice_enableRadioAnim', 0) == 1 then
+		if radioAnimState then
 			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
 		end
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
