@@ -134,7 +134,7 @@ end)
 -- exports disableRadioAnim
 --- returns whether the client is undercover or not
 exports('getRadioAnimState', function()
-	return toggleRadioAnim
+	return disableRadioAnim
 end)
 
 --- check if the player is dead
