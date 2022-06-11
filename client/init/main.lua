@@ -73,6 +73,18 @@ if gameVersion == 'fivem' then
 	AddAudioSubmixOutput(callEffectId, 1)
 end
 
+--- export setEffectSubmix
+--- Sets a user defined audio submix for radio and phonecall effects
+---@param type string either "call" or "radio"
+---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
+exports("setEffectSubmix", function(type, effectId)
+	if type == "call" then
+		callEffectId = effectId
+	elseif type == "radio" then
+	  	radioEffectId = effectId
+	end
+end)
+
 local submixFunctions = {
 	['radio'] = function(plySource)
 		MumbleSetSubmixForServerId(plySource, radioEffectId)
