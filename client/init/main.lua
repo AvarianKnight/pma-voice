@@ -167,6 +167,11 @@ function playMicClicks(clickType)
 	})
 end
 
+--- getter for mutedPlayers
+exports('getMutedPlayers', function()
+	return mutedPlayers
+end)
+
 --- toggles the targeted player muted
 ---@param source number the player to mute
 function toggleMutePlayer(source)
