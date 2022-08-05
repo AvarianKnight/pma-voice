@@ -63,6 +63,16 @@ if gameVersion == 'fivem' then
 	radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
 	SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
+	SetAudioSubmixOutputVolumes(
+		radioEffectId, 
+		0 , 
+		1.0 --[[ frontLeftVolume ]],
+		0.25 --[[ frontRightVolume ]],
+		0.0 --[[ rearLeftVolume ]],
+		0.0 --[[ rearRightVolume ]],
+		1.0 --[[ channel5Volume ]],
+		1.0 --[[ channel6Volume ]]
+	)
 	AddAudioSubmixOutput(radioEffectId, 0)
 
 	callEffectId = CreateAudioSubmix('Call')
@@ -70,6 +80,16 @@ if gameVersion == 'fivem' then
 	SetAudioSubmixEffectParamInt(callEffectId, 1, `default`, 1)
 	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_low`, 300.0)
 	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_hi`, 6000.0)
+	SetAudioSubmixOutputVolumes(
+		callEffectId,
+		0,
+		0.25 --[[ frontLeftVolume ]],
+		1.0 --[[ frontRightVolume ]],
+		0.0 --[[ rearLeftVolume ]],
+		0.0 --[[ rearRightVolume ]],
+		1.0 --[[ channel5Volume ]],
+		1.0 --[[ channel6Volume ]]
+	)
 	AddAudioSubmixOutput(callEffectId, 1)
 end
 
