@@ -2,11 +2,11 @@
 local disableUpdates = false
 local isListenerEnabled = false
 local plyCoords = GetEntityCoords(PlayerPedId())
+proximity = MumbleGetTalkerProximity()
 
 function orig_addProximityCheck(ply)
 	local tgtPed = GetPlayerPed(ply)
-	local voiceModeData = Cfg.voiceModes[mode]
-	local distance = GetConvar('voice_useNativeAudio', 'false') == 'true' and voiceModeData[1] * 3 or voiceModeData[1]
+	local distance = GetConvar('voice_useNativeAudio', 'false') == 'true' and proximity * 3 or proximity
 
 	return #(plyCoords - GetEntityCoords(tgtPed)) < distance
 end
@@ -24,6 +24,8 @@ function addNearbyPlayers()
 	if disableUpdates then return end
 	-- update here so we don't have to update every call of addProximityCheck
 	plyCoords = GetEntityCoords(PlayerPedId())
+
+	proximity = MumbleGetTalkerProximity()
 
 	MumbleClearVoiceTargetChannels(voiceTarget)
 	local players = GetActivePlayers()
