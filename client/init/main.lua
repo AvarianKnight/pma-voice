@@ -4,7 +4,7 @@ local mutedPlayers = {}
 local volumes = {
 	-- people are setting this to 1 instead of 1.0 and expecting it to work.
 	['radio'] = GetConvarInt('voice_defaultRadioVolume', 30) / 100,
-	['phone'] = GetConvarInt('voice_defaultPhoneVolume', 60) / 100,
+	['call'] = GetConvarInt('voice_defaultCallVolume', 60) / 100,
 }
 
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
@@ -43,10 +43,10 @@ exports('getRadioVolume', function()
 	return volumes['radio']
 end)
 exports("setCallVolume", function(vol)
-	setVolume(vol, 'phone')
+	setVolume(vol, 'call')
 end)
 exports('getCallVolume', function()
-	return volumes['phone']
+	return volumes['call']
 end)
 
 
@@ -65,20 +65,32 @@ if gameVersion == 'fivem' then
 	SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
 	AddAudioSubmixOutput(radioEffectId, 0)
 
-	phoneEffectId = CreateAudioSubmix('Phone')
-	SetAudioSubmixEffectRadioFx(phoneEffectId, 1)
-	SetAudioSubmixEffectParamInt(phoneEffectId, 1, `default`, 1)
-	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, `freq_low`, 300.0)
-	SetAudioSubmixEffectParamFloat(phoneEffectId, 1, `freq_hi`, 6000.0)
-	AddAudioSubmixOutput(phoneEffectId, 1)
+	callEffectId = CreateAudioSubmix('Call')
+	SetAudioSubmixEffectRadioFx(callEffectId, 1)
+	SetAudioSubmixEffectParamInt(callEffectId, 1, `default`, 1)
+	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_low`, 300.0)
+	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_hi`, 6000.0)
+	AddAudioSubmixOutput(callEffectId, 1)
 end
+
+--- export setEffectSubmix
+--- Sets a user defined audio submix for radio and phonecall effects
+---@param type string either "call" or "radio"
+---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
+exports("setEffectSubmix", function(type, effectId)
+	if type == "call" then
+		callEffectId = effectId
+	elseif type == "radio" then
+	  	radioEffectId = effectId
+	end
+end)
 
 local submixFunctions = {
 	['radio'] = function(plySource)
 		MumbleSetSubmixForServerId(plySource, radioEffectId)
 	end,
-	['phone'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, phoneEffectId)
+	['call'] = function(plySource)
+		MumbleSetSubmixForServerId(plySource, callEffectId)
 	end
 }
 
@@ -154,6 +166,11 @@ function playMicClicks(clickType)
 		volume = (clickType and volumes["radio"] or 0.05)
 	})
 end
+
+--- getter for mutedPlayers
+exports('getMutedPlayers', function()
+	return mutedPlayers
+end)
 
 --- toggles the targeted player muted
 ---@param source number the player to mute
