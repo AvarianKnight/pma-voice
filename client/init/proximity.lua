@@ -3,6 +3,7 @@ local disableUpdates = false
 local isListenerEnabled = false
 local plyCoords = GetEntityCoords(PlayerPedId())
 proximity = MumbleGetTalkerProximity()
+currentTargets = {}
 
 function orig_addProximityCheck(ply)
 	local tgtPed = GetPlayerPed(ply)
@@ -25,7 +26,7 @@ function addNearbyPlayers()
 	-- update here so we don't have to update every call of addProximityCheck
 	plyCoords = GetEntityCoords(PlayerPedId())
 	proximity = MumbleGetTalkerProximity()
-
+	currentTargets = {}
 	MumbleClearVoiceTargetChannels(voiceTarget)
 	if LocalPlayer.state.disableProximity then return end
 	local players = GetActivePlayers()
@@ -34,8 +35,7 @@ function addNearbyPlayers()
 		local serverId = GetPlayerServerId(ply)
 
 		if addProximityCheck(ply) then
-			if isTarget then goto skip_loop end
-
+			currentTargets[serverId] = true
 			logger.verbose('Added %s as a voice target', serverId)
 			MumbleAddVoiceTargetChannel(voiceTarget, serverId)
 		end

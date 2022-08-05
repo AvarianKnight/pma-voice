@@ -124,7 +124,7 @@ local disableSubmixReset = {}
 function toggleVoice(plySource, enabled, moduleType)
 	if mutedPlayers[plySource] then return end
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
-	if enabled then
+	if enabled and not currentTargets[plySource] then
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableSubmix', 1) == 1 and gameVersion == 'fivem' then
 			if moduleType then
@@ -134,7 +134,7 @@ function toggleVoice(plySource, enabled, moduleType)
 				MumbleSetSubmixForServerId(plySource, -1)
 			end
 		end
-	else
+	elseif not enabled then
 		if GetConvarInt('voice_enableSubmix', 1) == 1 and gameVersion == 'fivem' then
 			-- garbage collect it
 			disableSubmixReset[plySource] = nil
@@ -181,9 +181,10 @@ end
 ---@param clickType boolean whether to play the 'on' or 'off' click. 
 function playMicClicks(clickType)
 	if micClicks ~= 'true' then return logger.verbose("Not playing mic clicks because client has them disabled") end
+	-- TODO: Add customizable radio click volumes
 	sendUIMessage({
 		sound = (clickType and "audio_on" or "audio_off"),
-		volume = (clickType and volumes["radio"] or 0.05)
+		volume = (clickType and 0.1 or 0.03)
 	})
 end
 
