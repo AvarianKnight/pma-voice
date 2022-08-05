@@ -134,7 +134,7 @@ end
 
 RegisterCommand('+radiotalk', function()
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
-	if isDead() then return end
+	if isDead() or LocalPlayer.state.disableRadio then return end
 
 	if not radioPressed and radioEnabled then
 		if radioChannel > 0 then
@@ -152,7 +152,7 @@ RegisterCommand('+radiotalk', function()
 			end
 			Citizen.CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
-				while radioPressed do
+				while radioPressed and not LocalPlayer.state.disableRadio do
 					Wait(0)
 					SetControlNormal(0, 249, 1.0)
 					SetControlNormal(1, 249, 1.0)
@@ -164,7 +164,7 @@ RegisterCommand('+radiotalk', function()
 end, false)
 
 RegisterCommand('-radiotalk', function()
-	if radioChannel > 0 or radioEnabled and radioPressed then
+	if (radioChannel > 0 or radioEnabled) and radioPressed then
 		radioPressed = false
 		MumbleClearVoiceTargetPlayers(voiceTarget)
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
