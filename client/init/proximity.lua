@@ -24,10 +24,10 @@ function addNearbyPlayers()
 	if disableUpdates then return end
 	-- update here so we don't have to update every call of addProximityCheck
 	plyCoords = GetEntityCoords(PlayerPedId())
-
 	proximity = MumbleGetTalkerProximity()
 
 	MumbleClearVoiceTargetChannels(voiceTarget)
+	if LocalPlayer.state.disableProximity then return end
 	local players = GetActivePlayers()
 	for i = 1, #players do
 		local ply = players[i]
