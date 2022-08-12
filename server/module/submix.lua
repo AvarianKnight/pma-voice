@@ -17,7 +17,6 @@ addPlayerToSubmix = function(source, submix)
 			submix = submix
 		}
 		SubmixData[source] = PlayerData
-		Player(source).state.radioChannel = radioChannel
 		TriggerClientEvent("pma-voice:addPlayerToSubmix", -1, source, PlayerData)
 	end
 end
