@@ -10,6 +10,7 @@ local volumes = {
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
 radioData = {}
 callData = {}
+SubmixTable = {}
 
 --- function setVolume
 --- Toggles the players volume
@@ -50,6 +51,8 @@ exports('getCallVolume', function()
 end)
 
 
+local submixIndexs = {}
+
 -- default submix incase people want to fiddle with it.
 -- freq_low = 389.0
 -- freq_hi = 3248.0
@@ -60,11 +63,11 @@ end)
 -- 0_freq_hi = 4900.0
 
 if gameVersion == 'fivem' then
-	radioEffectId = CreateAudioSubmix('Radio')
-	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
-	SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
+	submixIndexs['radio'] = CreateAudioSubmix('Radio')
+	SetAudioSubmixEffectRadioFx(submixIndexs['radio'], 0)
+	SetAudioSubmixEffectParamInt(submixIndexs['radio'], 0, `default`, 1)
 	SetAudioSubmixOutputVolumes(
-		radioEffectId, 
+		submixIndexs['radio'], 
 		0 , 
 		1.0 --[[ frontLeftVolume ]],
 		0.25 --[[ frontRightVolume ]],
@@ -73,15 +76,15 @@ if gameVersion == 'fivem' then
 		1.0 --[[ channel5Volume ]],
 		1.0 --[[ channel6Volume ]]
 	)
-	AddAudioSubmixOutput(radioEffectId, 0)
+	AddAudioSubmixOutput(submixIndexs['radio'], 0)
 
-	callEffectId = CreateAudioSubmix('Call')
-	SetAudioSubmixEffectRadioFx(callEffectId, 1)
-	SetAudioSubmixEffectParamInt(callEffectId, 1, `default`, 1)
-	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_low`, 300.0)
-	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_hi`, 6000.0)
+	submixIndexs['call'] = CreateAudioSubmix('Call')
+	SetAudioSubmixEffectRadioFx(submixIndexs['call'], 1)
+	SetAudioSubmixEffectParamInt(submixIndexs['call'], 1, `default`, 1)
+	SetAudioSubmixEffectParamFloat(submixIndexs['call'], 1, `freq_low`, 300.0)
+	SetAudioSubmixEffectParamFloat(submixIndexs['call'], 1, `freq_hi`, 6000.0)
 	SetAudioSubmixOutputVolumes(
-		callEffectId,
+		submixIndexs['call'],
 		0,
 		0.25 --[[ frontLeftVolume ]],
 		1.0 --[[ frontRightVolume ]],
@@ -90,29 +93,42 @@ if gameVersion == 'fivem' then
 		1.0 --[[ channel5Volume ]],
 		1.0 --[[ channel6Volume ]]
 	)
-	AddAudioSubmixOutput(callEffectId, 1)
+	AddAudioSubmixOutput(submixIndexs['call'], 1)
 end
-
---- export setEffectSubmix
---- Sets a user defined audio submix for radio and phonecall effects
----@param type string either "call" or "radio"
----@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
-exports("setEffectSubmix", function(type, effectId)
-	if type == "call" then
-		callEffectId = effectId
-	elseif type == "radio" then
-	  	radioEffectId = effectId
-	end
-end)
 
 local submixFunctions = {
 	['radio'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, radioEffectId)
+		MumbleSetSubmixForServerId(plySource, submixIndexs['radio'])
 	end,
 	['call'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, callEffectId)
+		MumbleSetSubmixForServerId(plySource, submixIndexs['call'])
 	end
 }
+
+--- export setEffectSubmix
+--- Sets a user defined audio submix for radio and phonecall effects
+---@param type string that index already exists in submixIndexs
+---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
+exports("setEffectSubmix", function(type, effectId)
+	type_check({effectId, "number"}, {type, "string"})
+	if submixIndexs[type] then
+		submixIndexs[type] = effectId
+	else
+		logger.warn('setEffectSubmix got a invalid type %s to %s.', type, effectId)
+	end
+end)
+
+--- export registerNewEffectSubmix
+--- Register New audio submix for audio effects
+---@param effectIndex string the indes it should call the effect
+---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
+exports("registerNewEffectSubmix", function(effectIndex, effectId)
+	type_check({effectId, "number"}, {effectIndex, "string"})
+	submixIndexs[effectIndex] = effectId
+	submixFunctions[effectIndex] = function(plySource)
+		MumbleSetSubmixForServerId(plySource, submixIndexs[effectIndex])
+	end
+end)
 
 -- used to prevent a race condition if they talk again afterwards, which would lead to their voice going to default.
 local disableSubmixReset = {}
@@ -128,8 +144,13 @@ function toggleVoice(plySource, enabled, moduleType)
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableSubmix', 1) == 1 and gameVersion == 'fivem' then
 			if moduleType then
-				disableSubmixReset[plySource] = true
-				submixFunctions[moduleType](plySource)
+				if submixFunctions[moduleType] then
+					disableSubmixReset[plySource] = true
+					submixFunctions[moduleType](plySource)
+				else
+					logger.warn('toggleVoice got a invalid type %s', moduleType)
+					MumbleSetSubmixForServerId(plySource, -1)
+				end
 			else
 				MumbleSetSubmixForServerId(plySource, -1)
 			end

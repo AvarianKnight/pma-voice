@@ -1,6 +1,7 @@
 voiceData = {}
 radioData = {}
 callData = {}
+SubmixData = {}
 
 function defaultTable(source)
 	handleStateBagInitilization(source)
@@ -107,6 +108,10 @@ AddEventHandler("playerDropped", function()
 
 		if plyData.call ~= 0 then
 			removePlayerFromCall(source, plyData.call)
+		end
+
+		if SubmixData[source] then
+			removePlayerFromSubmix(source)
 		end
 
 		voiceData[source] = nil
