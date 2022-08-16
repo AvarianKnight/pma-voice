@@ -69,6 +69,10 @@ function setSpectatorMode(enabled)
 	end
 end
 
+exports("setListenerMode", function(value)
+	setSpectatorMode(value)
+end)
+
 RegisterNetEvent('onPlayerJoining', function(serverId)
 	if isListenerEnabled then
 		MumbleAddVoiceChannelListen(serverId)
@@ -87,6 +91,7 @@ end)
 local lastTalkingStatus = false
 local lastRadioStatus = false
 local voiceState = "proximity"
+local wasSpectating = false
 CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/muteply', 'Mutes the player with the specified id', {
 		{ name = "player id", help = "the player to toggle mute" },
@@ -113,10 +118,9 @@ CreateThread(function()
 		if voiceState == "proximity" then
 			addNearbyPlayers()
 			local isSpectating = NetworkIsInSpectatorMode()
-			if isSpectating and not isListenerEnabled then
-				setSpectatorMode(true)
-			elseif not isSpectating and isListenerEnabled then
-				setSpectatorMode(false)
+			if wasSpectating ~= isSpectating then
+				wasSpectating = isSpectating
+				setSpectatorMode(isSpectating)
 			end
 		end
 
