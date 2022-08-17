@@ -63,11 +63,11 @@ local submixIndexs = {}
 -- 0_freq_hi = 4900.0
 
 if gameVersion == 'fivem' then
-	submixIndexs['radio'] = CreateAudioSubmix('Radio')
-	SetAudioSubmixEffectRadioFx(submixIndexs['radio'], 0)
-	SetAudioSubmixEffectParamInt(submixIndexs['radio'], 0, `default`, 1)
+	radioEffectId = CreateAudioSubmix('Radio')
+	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
+	SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
 	SetAudioSubmixOutputVolumes(
-		submixIndexs['radio'], 
+		radioEffectId, 
 		0 , 
 		1.0 --[[ frontLeftVolume ]],
 		0.25 --[[ frontRightVolume ]],
@@ -76,15 +76,16 @@ if gameVersion == 'fivem' then
 		1.0 --[[ channel5Volume ]],
 		1.0 --[[ channel6Volume ]]
 	)
-	AddAudioSubmixOutput(submixIndexs['radio'], 0)
+	AddAudioSubmixOutput(radioEffectId, 0)
+	submixIndexs['radio'] = radioEffectId
 
-	submixIndexs['call'] = CreateAudioSubmix('Call')
-	SetAudioSubmixEffectRadioFx(submixIndexs['call'], 1)
-	SetAudioSubmixEffectParamInt(submixIndexs['call'], 1, `default`, 1)
-	SetAudioSubmixEffectParamFloat(submixIndexs['call'], 1, `freq_low`, 300.0)
-	SetAudioSubmixEffectParamFloat(submixIndexs['call'], 1, `freq_hi`, 6000.0)
+	callEffectId = CreateAudioSubmix('Call')
+	SetAudioSubmixEffectRadioFx(callEffectId, 1)
+	SetAudioSubmixEffectParamInt(callEffectId, 1, `default`, 1)
+	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_low`, 300.0)
+	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_hi`, 6000.0)
 	SetAudioSubmixOutputVolumes(
-		submixIndexs['call'],
+		callEffectId,
 		0,
 		0.25 --[[ frontLeftVolume ]],
 		1.0 --[[ frontRightVolume ]],
@@ -93,7 +94,8 @@ if gameVersion == 'fivem' then
 		1.0 --[[ channel5Volume ]],
 		1.0 --[[ channel6Volume ]]
 	)
-	AddAudioSubmixOutput(submixIndexs['call'], 1)
+	AddAudioSubmixOutput(callEffectId, 1)
+	submixIndexs['call'] = callEffectId
 end
 
 local submixFunctions = {
@@ -107,7 +109,7 @@ local submixFunctions = {
 
 --- export setEffectSubmix
 --- Sets a user defined audio submix for radio and phonecall effects
----@param type string that index already exists in submixIndexs
+---@param type string that index already exists in submixIndexs and also "call" and "radio" are exist on defaults
 ---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
 exports("setEffectSubmix", function(type, effectId)
 	type_check({effectId, "number"}, {type, "string"})
@@ -118,11 +120,11 @@ exports("setEffectSubmix", function(type, effectId)
 	end
 end)
 
---- export registerNewEffectSubmix
+--- export registerNewSubmixEffect
 --- Register New audio submix for audio effects
 ---@param effectIndex string the indes it should call the effect
 ---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
-exports("registerNewEffectSubmix", function(effectIndex, effectId)
+exports("registerNewSubmixEffect", function(effectIndex, effectId)
 	type_check({effectId, "number"}, {effectIndex, "string"})
 	submixIndexs[effectIndex] = effectId
 	submixFunctions[effectIndex] = function(plySource)
