@@ -98,15 +98,6 @@ if gameVersion == 'fivem' then
 	submixIndexs['call'] = callEffectId
 end
 
-local submixFunctions = {
-	['radio'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, submixIndexs['radio'])
-	end,
-	['call'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, submixIndexs['call'])
-	end
-}
-
 --- export setEffectSubmix
 --- Sets a user defined audio submix for radio and phonecall effects
 ---@param type string that index already exists in submixIndexs and also "call" and "radio" are exist on defaults
@@ -127,9 +118,6 @@ end)
 exports("registerNewSubmixEffect", function(effectIndex, effectId)
 	type_check({effectId, "number"}, {effectIndex, "string"})
 	submixIndexs[effectIndex] = effectId
-	submixFunctions[effectIndex] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, submixIndexs[effectIndex])
-	end
 end)
 
 -- used to prevent a race condition if they talk again afterwards, which would lead to their voice going to default.
@@ -146,9 +134,9 @@ function toggleVoice(plySource, enabled, moduleType)
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableSubmix', 1) == 1 and gameVersion == 'fivem' then
 			if moduleType then
-				if submixFunctions[moduleType] then
+				if submixIndexs[moduleType] then
 					disableSubmixReset[plySource] = true
-					submixFunctions[moduleType](plySource)
+					MumbleSetSubmixForServerId(plySource, submixIndexs[moduleType])
 				else
 					logger.warn('toggleVoice got a invalid type %s', moduleType)
 					MumbleSetSubmixForServerId(plySource, -1)
