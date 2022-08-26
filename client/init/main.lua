@@ -33,7 +33,9 @@ function setVolume(volume, volumeType)
 			end
 
 			for plySource, talking in pairs(typeData)
-				MumbleSetVolumeOverrideByServerId(plySource, volume)
+				if talking then
+					MumbleSetVolumeOverrideByServerId(plySource, volume)
+				end
 			end
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
