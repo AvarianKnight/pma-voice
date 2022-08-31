@@ -7,9 +7,9 @@ currentTargets = {}
 
 function orig_addProximityCheck(ply)
 	local tgtPed = GetPlayerPed(ply)
-	local distance = GetConvar('voice_useNativeAudio', 'false') == 'true' and proximity * 3 or proximity
-
-	return #(plyCoords - GetEntityCoords(tgtPed)) < distance
+	local voiceRange = GetConvar('voice_useNativeAudio', 'false') == 'true' and proximity * 3 or proximity
+	local distance = #(plyCoords - GetEntityCoords(tgtPed))
+	return distance < voiceRange, distance 
 end
 local addProximityCheck = orig_addProximityCheck
 
@@ -29,18 +29,23 @@ function addNearbyPlayers()
 	currentTargets = {}
 	MumbleClearVoiceTargetChannels(voiceTarget)
 	if LocalPlayer.state.disableProximity then return end
+	MumbleAddVoiceChannelListen(playerServerId)
+	MumbleAddVoiceTargetChannel(voiceTarget, playerServerId)
 	local players = GetActivePlayers()
 	for i = 1, #players do
 		local ply = players[i]
 		local serverId = GetPlayerServerId(ply)
-
-		if addProximityCheck(ply) then
-			currentTargets[serverId] = true
-			logger.verbose('Added %s as a voice target', serverId)
+		local shouldAdd, distance = addProximityCheck(ply)
+		if shouldAdd then
+			-- if distance then
+			-- 	currentTargets[serverId] = distance
+			-- else
+			-- 	-- backwards compat, maybe remove in v7 
+			-- 	currentTargets[serverId] = 15.0
+			-- end
+			-- logger.verbose('Added %s as a voice target', serverId)
 			MumbleAddVoiceTargetChannel(voiceTarget, serverId)
 		end
-
-		::skip_loop::
 	end
 end
 

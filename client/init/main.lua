@@ -76,15 +76,11 @@ if gameVersion == 'fivem' then
 	AddAudioSubmixOutput(radioEffectId, 0)
 
 	callEffectId = CreateAudioSubmix('Call')
-	SetAudioSubmixEffectRadioFx(callEffectId, 1)
-	SetAudioSubmixEffectParamInt(callEffectId, 1, `default`, 1)
-	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_low`, 300.0)
-	SetAudioSubmixEffectParamFloat(callEffectId, 1, `freq_hi`, 6000.0)
 	SetAudioSubmixOutputVolumes(
 		callEffectId,
-		0,
-		0.25 --[[ frontLeftVolume ]],
-		1.0 --[[ frontRightVolume ]],
+		1,
+		0.10 --[[ frontLeftVolume ]],
+		0.50 --[[ frontRightVolume ]],
 		0.0 --[[ rearLeftVolume ]],
 		0.0 --[[ rearRightVolume ]],
 		1.0 --[[ channel5Volume ]],
@@ -124,7 +120,8 @@ local disableSubmixReset = {}
 function toggleVoice(plySource, enabled, moduleType)
 	if mutedPlayers[plySource] then return end
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
-	if enabled and not currentTargets[plySource] then
+	local distance = currentTargets[plySource]
+	if enabled and (not distance or distance > 4.0) then
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableSubmix', 1) == 1 and gameVersion == 'fivem' then
 			if moduleType then
