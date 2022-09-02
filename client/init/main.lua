@@ -24,28 +24,16 @@ function setVolume(volume, volumeType)
 		if volumeTbl then
 			LocalPlayer.state:set(volumeType, volume, true)
 			volumes[volumeType] = volume
-			local typeData = {}
-
-			if volumeType == "radio" then
-				typeData = radioData
-			elseif volumeType == "call" then
-				typeData = callData
-			end
-
-			for plySource, talking in pairs(typeData)
-				if talking then
-					MumbleSetVolumeOverrideByServerId(plySource, volume)
-				end
-			end
+			resyncVolume(volumeType, volume)
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
 	else
-		-- _ is here to not mess with global 'type' function
-		for _type, vol in pairs(volumes) do
-			volumes[_type] = volume
-			LocalPlayer.state:set(_type, volume, true)
+		for volumeType, _ in pairs(volumes) do
+			volumes[volumeType] = volume
+			LocalPlayer.state:set(volumeType, volume, true)
 		end
+		resyncVolume("all", volume)
 	end
 end
 
@@ -156,6 +144,27 @@ function toggleVoice(plySource, enabled, moduleType)
 			end)
 		end
 		MumbleSetVolumeOverrideByServerId(plySource, -1.0)
+	end
+end
+
+local function updateVolumes(voiceTable, override)
+	for serverId, talking in pairs(voiceTable) do
+		if serverId == playerServerId then goto skip_iter end
+		MumbleSetVolumeOverrideByServerId(serverId, talking and override or -1.0)
+		::skip_iter::
+	end
+end
+
+--- resyncs the call/radio/etc volume to the new volume
+---@param volumeType any
+function resyncVolume(volumeType, newVolume)
+	if volumeType == "all" then
+		resyncVolume("radio", newVolume)
+		resyncVolume("call", newVolume)
+	elseif volumeType == "radio" then
+		updateVolumes(radioData, newVolume)
+	elseif volumeType == "call" then
+		updateVolumes(callData, newVolume)
 	end
 end
 
