@@ -24,6 +24,19 @@ function setVolume(volume, volumeType)
 		if volumeTbl then
 			LocalPlayer.state:set(volumeType, volume, true)
 			volumes[volumeType] = volume
+			local typeData = {}
+
+			if volumeType == "radio" then
+				typeData = radioData
+			elseif volumeType == "call" then
+				typeData = callData
+			end
+
+			for plySource, talking in pairs(typeData)
+				if talking then
+					MumbleSetVolumeOverrideByServerId(plySource, volume)
+				end
+			end
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
