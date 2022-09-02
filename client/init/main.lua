@@ -62,10 +62,11 @@ end)
 if gameVersion == 'fivem' then
 	radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
-	SetAudioSubmixEffectParamInt(radioEffectId, 0, `default`, 1)
+	-- This is a GetHashKey on purpose, backticks break treesitter in nvim :|
+	SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
 	SetAudioSubmixOutputVolumes(
-		radioEffectId, 
-		0 , 
+		radioEffectId,
+		0,
 		1.0 --[[ frontLeftVolume ]],
 		0.25 --[[ frontRightVolume ]],
 		0.0 --[[ rearLeftVolume ]],

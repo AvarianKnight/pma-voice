@@ -80,6 +80,8 @@ local function types(args)
     return false, argType
 end
 
+--- does a type check and errors if an invalid type is sent
+---@param ... table a table with the variable being the first argument and the expected type being the second 
 function type_check(...)
     local vars = {...}
     for i = 1, #vars do

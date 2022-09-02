@@ -88,6 +88,12 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
 	end
 end)
 
+local listenerOverride = false
+exports("setListenerOverride", function(enabled)
+	type_check({enabled, "boolean"})
+	listenerOverride = enabled
+end)
+
 -- cache talking status so we only send a nui message when its not the same as what it was before
 local lastTalkingStatus = false
 local lastRadioStatus = false
@@ -117,10 +123,12 @@ CreateThread(function()
 
 		if voiceState == "proximity" then
 			addNearbyPlayers()
-			local isSpectating = NetworkIsInSpectatorMode()
-			if isSpectating and not isListenerEnabled then
+			-- What a name, wowza
+			local cam = GetConvarInt("voice_disableAutomaticListenerOnCamera", 0) ~= 1 and GetRenderingCam() or -1
+			local isSpectating = NetworkIsInSpectatorMode() or cam ~= -1
+			if not isListenerEnabled and (isSpectating or listenerOverride) then
 				setSpectatorMode(true)
-			elseif not isSpectating and isListenerEnabled then
+			elseif isListenerEnabled and not isSpectating and not listenerOverride then
 				setSpectatorMode(false)
 			end
 		end
