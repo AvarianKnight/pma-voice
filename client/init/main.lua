@@ -3,14 +3,14 @@ local mutedPlayers = {}
 -- we can't use GetConvarInt because its not a integer, and theres no way to get a float... so use a hacky way it is!
 local volumes = {
 	-- people are setting this to 1 instead of 1.0 and expecting it to work.
-	['radio'] = GetConvarInt('voice_defaultRadioVolume', 30) / 100,
+	['radio'] = GetConvarInt('voice_defaultRadioVolume', 60) / 100,
 	['call'] = GetConvarInt('voice_defaultCallVolume', 60) / 100,
 }
 
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
 radioData = {}
 callData = {}
-
+submixIndicies = {}
 --- function setVolume
 --- Toggles the players volume
 ---@param volume number between 0 and 100
@@ -61,7 +61,8 @@ end)
 -- 0_freq_hi = 4900.0
 
 if gameVersion == 'fivem' then
-	radioEffectId = CreateAudioSubmix('Radio')
+	-- local lastEffectId = LocalPlayer.state.lastEffectId or 1
+	local radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
 	-- This is a GetHashKey on purpose, backticks break treesitter in nvim :|
 	SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
@@ -76,8 +77,9 @@ if gameVersion == 'fivem' then
 		1.0 --[[ channel6Volume ]]
 	)
 	AddAudioSubmixOutput(radioEffectId, 0)
+	submixIndicies['radio'] = radioEffectId
 
-	callEffectId = CreateAudioSubmix('Call')
+	local callEffectId = CreateAudioSubmix('Call')
 	SetAudioSubmixOutputVolumes(
 		callEffectId,
 		1,
@@ -89,6 +91,19 @@ if gameVersion == 'fivem' then
 		1.0 --[[ channel6Volume ]]
 	)
 	AddAudioSubmixOutput(callEffectId, 1)
+	submixIndicies['call'] = callEffectId
+
+	-- Callback is expected to return data in an array, this is for compatibility sake with js, index 0 should be the name and index 1 should be the submixId
+	-- the callback is sent the effectSlot it can register to, not sure if this is needed, but its here for safety
+	exports("registerCustomSubmix", function(callback)
+		local submixTable = callback()
+		type_check({submixTable, "table"})
+		local submixName, submixId = submixTable[1], submixTable[2]
+		type_check({submixName, "string"}, {submixId, "number"})
+		logger.info("Creating submix %s with submixId %s", submixName, submixId)
+		submixIndicies[submixName] = submixId
+	end)
+	TriggerEvent("pma-voice:registerCustomSubmixes")
 end
 
 --- export setEffectSubmix
@@ -96,21 +111,21 @@ end
 ---@param type string either "call" or "radio"
 ---@param effectId number submix id returned from CREATE_AUDIO_SUBMIX
 exports("setEffectSubmix", function(type, effectId)
-	if type == "call" then
-		callEffectId = effectId
-	elseif type == "radio" then
-	  	radioEffectId = effectId
+	type_check({type, "string"}, {effectId, "number"})
+	if submixIndicies[type] then
+		submixIndicies[type] = effectId
 	end
 end)
 
-local submixFunctions = {
-	['radio'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, radioEffectId)
-	end,
-	['call'] = function(plySource)
-		MumbleSetSubmixForServerId(plySource, callEffectId)
+function restoreDefaultSubmix(plyServerId)
+	local submix = Player(plyServerId).state.submix
+	local submixEffect = submixIndicies[submix]
+	if not submix or not submixEffect then
+		MumbleSetSubmixForServerId(plyServerId, -1)
+		return
 	end
-}
+	MumbleSetSubmixForServerId(plyServerId, submixEffect)
+end
 
 -- used to prevent a race condition if they talk again afterwards, which would lead to their voice going to default.
 local disableSubmixReset = {}
@@ -128,9 +143,11 @@ function toggleVoice(plySource, enabled, moduleType)
 		if GetConvarInt('voice_enableSubmix', 1) == 1 and gameVersion == 'fivem' then
 			if moduleType then
 				disableSubmixReset[plySource] = true
-				submixFunctions[moduleType](plySource)
+				if submixIndicies[moduleType] then
+					MumbleSetSubmixForServerId(plySource, submixIndicies[moduleType])
+				end
 			else
-				MumbleSetSubmixForServerId(plySource, -1)
+				restoreDefaultSubmix(plySource)
 			end
 		end
 	elseif not enabled then
@@ -139,7 +156,7 @@ function toggleVoice(plySource, enabled, moduleType)
 			disableSubmixReset[plySource] = nil
 			SetTimeout(250, function()
 				if not disableSubmixReset[plySource] then
-					MumbleSetSubmixForServerId(plySource, -1)
+					restoreDefaultSubmix(plySource)
 				end
 			end)
 		end

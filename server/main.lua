@@ -17,6 +17,7 @@ function handleStateBagInitilization(source)
 	if not plyState.pmaVoiceInit then 
 		plyState:set('radio', GetConvarInt('voice_defaultRadioVolume', 30), true)
 		plyState:set('call', GetConvarInt('voice_defaultCallVolume', 60), true)
+		plyState:set('submix', nil, true)
 		plyState:set('proximity', {}, true)
 		plyState:set('callChannel', 0, true)
 		plyState:set('radioChannel', 0, true)

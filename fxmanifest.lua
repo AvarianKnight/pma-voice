@@ -17,6 +17,7 @@ client_scripts {
 	'client/init/proximity.lua',
 	'client/init/init.lua',
 	'client/init/main.lua',
+	'client/init/submix.lua',
 	'client/module/*.lua',
     'client/*.lua',
 }
