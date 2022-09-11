@@ -166,8 +166,8 @@ end
 
 local function updateVolumes(voiceTable, override)
 	for serverId, talking in pairs(voiceTable) do
-		if serverId == playerServerId then goto skip_iter end
-		MumbleSetVolumeOverrideByServerId(serverId, talking and override or -1.0)
+		if not talking or serverId == playerServerId then goto skip_iter end
+		MumbleSetVolumeOverrideByServerId(serverId, override)
 		::skip_iter::
 	end
 end
