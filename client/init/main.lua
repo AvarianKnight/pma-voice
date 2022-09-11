@@ -61,7 +61,6 @@ end)
 -- 0_freq_hi = 4900.0
 
 if gameVersion == 'fivem' then
-	-- local lastEffectId = LocalPlayer.state.lastEffectId or 1
 	local radioEffectId = CreateAudioSubmix('Radio')
 	SetAudioSubmixEffectRadioFx(radioEffectId, 0)
 	-- This is a GetHashKey on purpose, backticks break treesitter in nvim :|
@@ -94,7 +93,6 @@ if gameVersion == 'fivem' then
 	submixIndicies['call'] = callEffectId
 
 	-- Callback is expected to return data in an array, this is for compatibility sake with js, index 0 should be the name and index 1 should be the submixId
-	-- the callback is sent the effectSlot it can register to, not sure if this is needed, but its here for safety
 	exports("registerCustomSubmix", function(callback)
 		local submixTable = callback()
 		type_check({submixTable, "table"})
@@ -103,6 +101,9 @@ if gameVersion == 'fivem' then
 		logger.info("Creating submix %s with submixId %s", submixName, submixId)
 		submixIndicies[submixName] = submixId
 	end)
+
+	-- Trigger an event so resources can know when to register their submix
+	-- Implementers will still have to do custom logic if their script has to restart during runtime
 	TriggerEvent("pma-voice:registerCustomSubmixes")
 end
 
