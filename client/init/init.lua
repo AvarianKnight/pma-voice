@@ -39,7 +39,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 	end
 
 	if callChannel ~= 0 then
-		setCallChannel(radioChannel)
+		setCallChannel(callChannel)
 	end
 
 	print('Script initialization finished.')
