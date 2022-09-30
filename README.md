@@ -1,3 +1,10 @@
+## PLEASE NOTE: Currently master branch has some breaking changes
+
+If you previously used `voice_defaultPhoneVolume` you will instead need to use `voice_defaultCallVolume`
+If you previously used `voice_enablePhones` you will instead need to use `voice_enableCalls`
+
+If you were previously using the state bag getter `Player(source).state.phone` you will instead need to use `Player(source).state.call`
+
 # pma-voice
 A voice system designed around the use of FiveM/RedM internal mumble server.
 
@@ -11,7 +18,7 @@ Please report any issues you have in the GitHub [Issues](https://github.com/Avar
 
 This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
 
-Please do not override `NetworkSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` or `NetworkSetVoiceActive` in any of your other scripts as there have been cases where it breaks pma-voice.
+Please do not override `NetworkSetTalkerProximity`, `MumbleSetTalkerProximity`, `MumbleSetAudioInputDistance`, `MumbleSetAudioOutputDistance` or `NetworkSetVoiceActive` in any of your other scripts as there have been cases where it breaks pma-voice.
 
 # Credits
 
