@@ -5,9 +5,11 @@ callData = {}
 function defaultTable(source)
 	handleStateBagInitilization(source)
 	return {
-		radio = 0,
+		radio = -10,
+		secondaryRadio = -20,
 		call = 0,
 		lastRadio = 0,
+		lastSecondaryRadio = 0,
 		lastCall = 0
 	}
 end
@@ -20,7 +22,8 @@ function handleStateBagInitilization(source)
 		plyState:set('submix', nil, true)
 		plyState:set('proximity', {}, true)
 		plyState:set('callChannel', 0, true)
-		plyState:set('radioChannel', 0, true)
+		plyState:set('RadioChannel', -10, true)
+		plyState:set('SecondaryRadioChannel', -20, true)
 		plyState:set('voiceIntent', 'speech', true)
 		-- We want to save voice inits because we'll automatically reinitalize calls and channels
 		plyState:set('pmaVoiceInit', true, false)

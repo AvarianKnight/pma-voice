@@ -9,6 +9,7 @@ local volumes = {
 
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
 radioData = {}
+secondaryRadioData = {}
 callData = {}
 submixIndicies = {}
 --- function setVolume
@@ -217,12 +218,28 @@ end
 --- function playMicClicks
 ---plays the mic click if the player has them enabled.
 ---@param clickType boolean whether to play the 'on' or 'off' click. 
-function playMicClicks(clickType)
+function playMicClicks(clickType, secondary)
 	if micClicks ~= 'true' then return logger.verbose("Not playing mic clicks because client has them disabled") end
 	-- TODO: Add customizable radio click volumes
 	sendUIMessage({
-		sound = (clickType and "audio_on" or "audio_off"),
-		volume = (clickType and 0.1 or 0.03)
+		sound = not secondary and (clickType and "audio_on" or "audio_off") or (clickType and "audio_on_secondary" or "audio_off_secondary"),
+		volume = (volumes["radio"] or 0.05)
+	})
+end
+
+function playMicDeny()
+	if micClicks ~= 'true' then return logger.verbose("Not playing mic clicks because client has them disabled") end
+	sendUIMessage({
+		sound = "audio_deny",
+		volume = (volumes["radio"] or 0.05)
+	})
+end
+
+function playExternalEnd(secondary)
+	if micClicks ~= 'true' then return logger.verbose("Not playing mic clicks because client has them disabled") end
+	sendUIMessage({
+		sound = (not secondary and "audio_external_end" or "audio_external_end_secondary"),
+		volume = 0.15
 	})
 end
 

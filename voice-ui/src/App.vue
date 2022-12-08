@@ -2,6 +2,11 @@
 	<body>
 		<audio id="audio_on" src="mic_click_on.ogg"></audio>
 		<audio id="audio_off" src="mic_click_off.ogg"></audio>
+		<audio id="audio_on_secondary" src="secondary_mic_click_on.ogg"></audio>
+		<audio id="audio_off_secondary" src="secondary_mic_click_off.ogg"></audio>
+		<audio id="audio_deny" src="mic_deny.ogg"></audio>
+		<audio id="audio_external_end" src="external_end.ogg"></audio>
+		<audio id="audio_external_end_secondary" src="secondary_external_end.ogg"></audio>
 		<div v-if="voice.uiEnabled" class="voiceInfo">
 			<p v-if="voice.callInfo !== 0" :class="{ talking: voice.talking }">
 				[Call]
@@ -72,7 +77,7 @@ export default {
 				voice.talking = data.talking;
 			}
 
-			if (data.sound && voice.radioEnabled && voice.radioChannel !== 0) {
+			if (data.sound && voice.radioEnabled) {
 				let click = document.getElementById(data.sound);
 				// discard these errors as its usually just a 'uncaught promise' from two clicks happening too fast.
 				click.load();

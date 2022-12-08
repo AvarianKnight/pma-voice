@@ -1,17 +1,25 @@
-local radioChannel = 0
-local radioNames = {}
+local radioChannel = -10
+local secondaryRadioChannel = -20
 local disableRadioAnim = false
+local talkingOnRadio = false
+local CurrentRequestId = 0
+local ServerCallbacks = {}
 
 --- event syncRadioData
 --- syncs the current players on the radio to the client
 ---@param radioTable table the table of the current players on the radio
----@param localPlyRadioName string the local players name
-function syncRadioData(radioTable, localPlyRadioName)
-	radioData = radioTable
+---@param secondary boolean secondary
+function syncRadioData(radioTable, secondary)
+	if not secondary then
+		radioData = radioTable
+	else
+		secondaryRadioData = radioData
+	end
+
 	logger.info('[radio] Syncing radio table.')
 	if GetConvarInt('voice_debugMode', 0) >= 4 then
 		print('-------- RADIO TABLE --------')
-		tPrint(radioData)
+		tPrint(radioTable)
 		print('-----------------------------')
 	end
 	for tgt, enabled in pairs(radioTable) do
@@ -33,24 +41,34 @@ RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 --- sets the players talking status, triggered when a player starts/stops talking.
 ---@param plySource number the players server id.
 ---@param enabled boolean whether the player is talking or not.
-function setTalkingOnRadio(plySource, enabled)
+function setTalkingOnRadio(plySource, channel, enabled)
 	toggleVoice(plySource, enabled, 'radio')
-	radioData[plySource] = enabled
-	playMicClicks(enabled)
+
+	if channel == radioChannel then
+		radioData[plySource] = enabled
+	else
+		secondaryRadioData[plySource] = enabled
+	end
+
+	if not enabled then
+		playExternalEnd(channel == secondaryRadioChannel)
+	end
 end
 RegisterNetEvent('pma-voice:setTalkingOnRadio', setTalkingOnRadio)
 
 --- event addPlayerToRadio
 --- adds a player onto the radio.
----@param plySource number the players server id to add to the radio.
-function addPlayerToRadio(plySource, plyRadioName)
-	radioData[plySource] = false
-	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
-		radioNames[plySource] = plyRadioName
+---@param channel number channel number
+function addPlayerToRadio(plySource, channel)
+	if channel == radioChannel then
+		radioData[plySource] = false
+	else
+		secondaryRadioData[plySource] = false
 	end
+
 	if radioPressed then
-		logger.info('[radio] %s joined radio %s while we were talking, adding them to targets', plySource, radioChannel)
-		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
+		logger.info('[radio] %s joined radio %s while we were talking, adding them to targets', plySource, channel == radioChannel and radioChannel or secondaryRadioChannel)
+		playerTargets(channel == radioChannel and radioData or secondaryRadioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		logger.info('[radio] %s joined radio %s', plySource, radioChannel)
 	end
@@ -59,11 +77,11 @@ RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 
 --- event removePlayerFromRadio
 --- removes the player (or self) from the radio
----@param plySource number the players server id to remove from the radio.
-function removePlayerFromRadio(plySource)
+---@param channel number channel id
+function removePlayerFromRadio(plySource, channel)
 	if plySource == playerServerId then
 		logger.info('[radio] Left radio %s, cleaning up.', radioChannel)
-		for tgt, _ in pairs(radioData) do
+		for tgt, _ in pairs(channel == radioChannel and radioData or secondaryRadioData) do
 			if tgt ~= playerServerId then
 				toggleVoice(tgt, false, 'radio')
 			end
@@ -72,20 +90,24 @@ function removePlayerFromRadio(plySource)
 			radioChannel = 0,
 			radioEnabled = radioEnabled
 		})
-		radioNames = {}
-		radioData = {}
+		if channel == radioChannel then
+			radioData = {}
+		else
+			secondaryRadioData = {}
+		end
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		toggleVoice(plySource, false)
 		if radioPressed then
 			logger.info('[radio] %s left radio %s while we were talking, updating targets.', plySource, radioChannel)
-			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
+			playerTargets(channel == radioChannel and radioData or secondaryRadioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 		else
 			logger.info('[radio] %s has left radio %s', plySource, radioChannel)
 		end
-		radioData[plySource] = nil
-		if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
-			radioNames[plySource] = nil
+		if channel == radioChannel then
+			radioData[plySource] = nil
+		else
+			secondaryRadioData[plySource] = nil
 		end
 	end
 end
@@ -94,11 +116,16 @@ RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
 --- function setRadioChannel
 --- sets the local players current radio channel and updates the server
 ---@param channel number the channel to set the player to, or 0 to remove them.
-function setRadioChannel(channel)
+function setRadioChannel(channel, secondary)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	type_check({channel, "number"})
-	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
-	radioChannel = channel
+	TriggerServerEvent('pma-voice:setPlayerRadio', channel, secondary or false)
+
+	if not secondary then
+		radioChannel = channel
+	else
+		secondaryRadioChannel = channel
+	end
 end
 
 --- exports setRadioChannel
@@ -150,52 +177,96 @@ function isDead()
 	end
 end
 
-RegisterCommand('+radiotalk', function()
-	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
-	if isDead() or LocalPlayer.state.disableRadio then return end
+function TriggerServerCallback(name, cb, ...)
+    ServerCallbacks[CurrentRequestId] = cb
 
-	if not radioPressed and radioEnabled then
-		if radioChannel > 0 then
-			logger.info('[radio] Start broadcasting, update targets and notify server.')
-			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
-			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
-			radioPressed = true
-			playMicClicks(true)
-			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) and not disableRadioAnim then
-				RequestAnimDict('random@arrests')
-				while not HasAnimDictLoaded('random@arrests') do
-					Wait(10)
-				end
-				TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
-			end
-			CreateThread(function()
-				TriggerEvent("pma-voice:radioActive", true)
-				while radioPressed and not LocalPlayer.state.disableRadio do
-					Wait(0)
-					SetControlNormal(0, 249, 1.0)
-					SetControlNormal(1, 249, 1.0)
-					SetControlNormal(2, 249, 1.0)
-				end
-			end)
-		end
-	end
+    TriggerServerEvent('pma-voice:triggerServerCallback', name, CurrentRequestId, ...)
+    CurrentRequestId = CurrentRequestId < 65535 and CurrentRequestId + 1 or 0
+end
+
+RegisterCommand('+radiotalk', function()
+	startTalkingOnRadio(false)
 end, false)
+
+RegisterCommand('+radiotalksecondary', function()
+	startTalkingOnRadio(true)
+end, false)
+
+function startTalkingOnRadio(secondary)
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
+	if isDead() then return end
+	if radioPressed or not radioEnabled then return end
+	if (not secondary and radioChannel < 1) or (secondary and secondaryRadioChannel < 1) then return end
+
+	radioPressed = true
+
+	TriggerServerCallback('pma-voice:tryTalkingOnRadio', function(success)
+		if success then
+			playMicClicks(true, secondary)
+
+			talkingOnRadio = true
+
+			logger.info('[radio] Start broadcasting, update targets and notify server.')
+
+			playerTargets(not secondary and radioData or secondaryRadioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
+
+			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) then
+				if not disableRadioAnim then
+					RequestAnimDict('random@arrests')
+					while not HasAnimDictLoaded('random@arrests') do
+						Citizen.Wait(10)
+					end
+					TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, 0, 0, 0)
+				end
+			end
+		else
+			playMicDeny()
+		end
+	end, secondary)
+
+	Citizen.CreateThread(function()
+		while radioPressed do
+			Wait(0)
+			SetControlNormal(0, 249, 1.0)
+			SetControlNormal(1, 249, 1.0)
+			SetControlNormal(2, 249, 1.0)
+		end
+	end)
+end
 
 RegisterCommand('-radiotalk', function()
-	if (radioChannel > 0 or radioEnabled) and radioPressed then
-		radioPressed = false
-		MumbleClearVoiceTargetPlayers(voiceTarget)
-		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
-		TriggerEvent("pma-voice:radioActive", false)
-		playMicClicks(false)
-		if GetConvarInt('voice_enableRadioAnim', 0) == 1 then
-			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
-		end
-		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
-	end
+	stopTalkingOnRadio(false)
 end, false)
+
+RegisterCommand('-radiotalksecondary', function()
+	stopTalkingOnRadio(true)
+end, false)
+
+function stopTalkingOnRadio(secondary)
+	if ((not secondary and radioChannel < 1) or (secondary and secondaryRadioChannel < 1)) or not radioEnabled or not radioPressed then return end
+
+	radioPressed = false
+
+	if GetConvarInt('voice_enableRadioAnim', 0) == 1 then
+		StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
+	end
+
+	if not talkingOnRadio then return end
+
+	talkingOnRadio = false
+
+	playMicClicks(false, secondary)
+
+	MumbleClearVoiceTargetPlayers(voiceTarget)
+
+	playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
+
+	TriggerServerEvent('pma-voice:setNotTalkingOnRadio', secondary)
+end
+
 if gameVersion == 'fivem' then
 	RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
+	RegisterKeyMapping('+radiotalksecondary', 'Talk over Radio (Secondary)', 'keyboard', GetConvar('voice_defaultSecondaryRadio', 'RMENU'))
 end
 
 --- event syncRadio
@@ -207,3 +278,11 @@ function syncRadio(_radioChannel)
 	radioChannel = _radioChannel
 end
 RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)
+
+-- https://github.com/esx-framework/esx-legacy/blob/7b3cd152542520e83d0a01d9efe8448490860d1a/%5Besx%5D/es_extended/client/functions.lua
+
+RegisterNetEvent('pma-voice:serverCallback')
+AddEventHandler('pma-voice:serverCallback', function(requestId, ...)
+    ServerCallbacks[requestId](...)
+    ServerCallbacks[requestId] = nil
+end)

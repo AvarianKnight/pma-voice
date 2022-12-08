@@ -30,15 +30,21 @@ AddEventHandler('onClientResourceStart', function(resource)
 		voiceMode = mode - 1
 	})
 
-	local radioChannel = LocalPlayer.state.radioChannel or 0
-	local callChannel = LocalPlayer.state.callChannel or 0
+	local state = LocalPlayer.state
+	local radioChannel = state.RadioChannel
+	local secondaryRadioChannel = state.SecondaryRadioChannel
+	local callChannel = state.callChannel
 
 	-- Reinitialize channels if they're set.
-	if radioChannel ~= 0 then
+	if radioChannel ~= 1 and radioChannel ~= nil then
 		setRadioChannel(radioChannel)
 	end
 
-	if callChannel ~= 0 then
+	if secondaryRadioChannel ~= 1 and secondaryRadioChannel ~= nil then
+		setRadioChannel(secondaryRadioChannel, true)
+	end
+
+	if callChannel ~= 0 and callChannel ~= 0 then
 		setCallChannel(callChannel)
 	end
 

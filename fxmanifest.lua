@@ -59,6 +59,7 @@ convar_category 'PMA-Voice' {
 	{ "Enable submix", "$voice_enableSubmix", "CV_INT", "1" },
         { "Enable radio animation", "$voice_enableRadioAnim", "CV_INT", "0" },
 	{ "Radio key", "$voice_defaultRadio", "CV_STRING", "LMENU" },
+	{ "Secondary Radio key", "$voice_defaultSecondaryRadio", "CV_STRING", "RMENU" },
 	{ "UI refresh rate", "$voice_uiRefreshRate", "CV_INT", "200" },
 	{ "Allow players to set audio intent", "$voice_allowSetIntent", "CV_INT", "1" },
 	{ "External mumble server address", "$voice_externalAddress", "CV_STRING", "" },
