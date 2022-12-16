@@ -76,7 +76,7 @@ function removePlayerFromRadio(plySource)
 		radioData = {}
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
-		toggleVoice(plySource, false)
+		toggleVoice(plySource, false , 'radio')
 		if radioPressed then
 			logger.info('[radio] %s left radio %s while we were talking, updating targets.', plySource, radioChannel)
 			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
