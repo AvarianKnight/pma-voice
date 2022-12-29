@@ -32,10 +32,10 @@ function addNearbyPlayers()
 	MumbleAddVoiceChannelListen(playerServerId)
 	MumbleAddVoiceTargetChannel(voiceTarget, playerServerId)
 
-    for source, _ in pairs(callData) do 
+    for source, _ in pairs(callData) do
         if source ~= playerServerId then
             MumbleAddVoiceTargetChannel(voiceTarget, source)
-        end
+		end
     end
 
 

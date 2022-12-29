@@ -10,7 +10,8 @@ RegisterNetEvent('pma-voice:syncCallData', function(callTable, channel)
 end)
 
 RegisterNetEvent('pma-voice:addPlayerToCall', function(plySource)
-	callData[plySource] = true 
+	toggleVoice(plySource, true, 'call')
+	callData[plySource] = true
 end)
 
 RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
