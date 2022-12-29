@@ -93,6 +93,7 @@ if gameVersion == 'fivem' then
 	submixIndicies['call'] = callEffectId
 
 	-- Callback is expected to return data in an array, this is for compatibility sake with js, index 0 should be the name and index 1 should be the submixId
+	-- the callback is sent the effectSlot it can register to, not sure if this is needed, but its here for safety
 	exports("registerCustomSubmix", function(callback)
 		local submixTable = callback()
 		type_check({submixTable, "table"})
@@ -101,9 +102,6 @@ if gameVersion == 'fivem' then
 		logger.info("Creating submix %s with submixId %s", submixName, submixId)
 		submixIndicies[submixName] = submixId
 	end)
-
-	-- Trigger an event so resources can know when to register their submix
-	-- Implementers will still have to do custom logic if their script has to restart during runtime
 	TriggerEvent("pma-voice:registerCustomSubmixes")
 end
 
@@ -167,8 +165,8 @@ end
 
 local function updateVolumes(voiceTable, override)
 	for serverId, talking in pairs(voiceTable) do
-		if not talking or serverId == playerServerId then goto skip_iter end
-		MumbleSetVolumeOverrideByServerId(serverId, override)
+		if serverId == playerServerId then goto skip_iter end
+		MumbleSetVolumeOverrideByServerId(serverId, talking and override or -1.0)
 		::skip_iter::
 	end
 end

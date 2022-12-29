@@ -27,7 +27,7 @@ function addPlayerToCall(source, callChannel)
             TriggerClientEvent('pma-voice:addPlayerToCall', player, source)
         end
     end
-    callData[callChannel][source] = false
+    callData[callChannel][source] = true
     voiceData[source] = voiceData[source] or defaultTable(source)
     voiceData[source].call = callChannel
     TriggerClientEvent('pma-voice:syncCallData', source, callData[callChannel])
@@ -72,23 +72,3 @@ exports('setPlayerCall', setPlayerCall)
 RegisterNetEvent('pma-voice:setPlayerCall', function(callChannel)
     setPlayerCall(source, callChannel)
 end)
-
-function setTalkingOnCall(talking)
-	if GetConvarInt('voice_enableCalls', 1) ~= 1 then return end
-    local source = source
-    voiceData[source] = voiceData[source] or defaultTable(source)
-    local plyVoice = voiceData[source]
-    local callTbl = callData[plyVoice.call]
-    if callTbl then
-        logger.verbose('[call] %s %s talking in call %s', source, talking and 'started' or 'stopped', plyVoice.call)
-        for player, _ in pairs(callTbl) do
-            if player ~= source then
-                logger.verbose('[call] Sending event to %s to tell them that %s is talking', player, source)
-                TriggerClientEvent('pma-voice:setTalkingOnCall', player, source, talking)
-            end
-        end
-    else
-        logger.verbose('[call] %s tried to talk in call %s, but it doesnt exist.', source, plyVoice.call)
-    end
-end
-RegisterNetEvent('pma-voice:setTalkingOnCall', setTalkingOnCall)

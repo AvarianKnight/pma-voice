@@ -31,6 +31,14 @@ function addNearbyPlayers()
 	if LocalPlayer.state.disableProximity then return end
 	MumbleAddVoiceChannelListen(playerServerId)
 	MumbleAddVoiceTargetChannel(voiceTarget, playerServerId)
+
+    for source, _ in pairs(callData) do 
+        if source ~= playerServerId then
+            MumbleAddVoiceTargetChannel(voiceTarget, source)
+        end
+    end
+
+
 	local players = GetActivePlayers()
 	for i = 1, #players do
 		local ply = players[i]
@@ -168,4 +176,34 @@ AddEventHandler("onClientResourceStop", function(resource)
 			end
 		end
 	end
+end)
+
+exports("addVoiceMode", function(distance, name)
+	for i = 1, #Cfg.voiceModes do
+		local voiceMode = Cfg.voiceModes[i]
+		if voiceMode[2] == name then
+			logger.verbose("Already had %s, overwritting instead", name)
+			voiceMode[1] = distance
+			return
+		end
+	end
+	Cfg.voiceModes[#Cfg.voiceModes + 1] = {distance, name}
+end)
+
+exports("removeVoiceMode", function(name)
+	for i = 1, #Cfg.voiceModes do
+		local voiceMode = Cfg.voiceModes[i]
+		if voiceMode[2] == name then
+			table.remove(Cfg.voiceModes, i)
+			-- Reset our current range if we had it
+			if mode == i then
+				local newMode = Cfg.voiceModes[1]
+				mode = 1
+				setProximityState(newMode[i], false)
+			end
+			return true
+		end
+	end
+
+	return false
 end)
