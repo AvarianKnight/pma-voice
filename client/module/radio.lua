@@ -34,7 +34,10 @@ RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 ---@param plySource number the players server id.
 ---@param enabled boolean whether the player is talking or not.
 function setTalkingOnRadio(plySource, enabled)
-	toggleVoice(plySource, enabled, 'radio')
+    -- If we're on a call we don't want to toggle their voice disabled this will break calls.
+    if not callData[plySource] then
+        toggleVoice(plySource, enabled, 'radio')
+    end
 	radioData[plySource] = enabled
 	playMicClicks(enabled)
 end
