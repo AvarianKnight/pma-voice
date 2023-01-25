@@ -199,7 +199,7 @@ exports("removeVoiceMode", function(name)
 			if mode == i then
 				local newMode = Cfg.voiceModes[1]
 				mode = 1
-				setProximityState(newMode[i], false)
+				setProximityState(newMode[mode], false)
 			end
 			return true
 		end
