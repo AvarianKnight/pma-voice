@@ -58,7 +58,7 @@ end)
 -- rm_mod_freq = 0.0
 -- rm_mix = 0.16
 -- o_freq_lo = 348.0
--- 0_freq_hi = 4900.0
+-- o_freq_hi = 4900.0
 
 if gameVersion == 'fivem' then
 	local radioEffectId = CreateAudioSubmix('Radio')
