@@ -226,7 +226,7 @@ end
 
 --- check if player is muted
 exports('isPlayerMuted', function(source)
-	return mutedPlayers[source] ~= nil
+	return mutedPlayers[source]
 end)
 
 --- getter for mutedPlayers
