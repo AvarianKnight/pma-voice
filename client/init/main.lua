@@ -224,6 +224,11 @@ function playMicClicks(clickType)
 	})
 end
 
+--- check if player is muted
+exports('isPlayerMuted', function(source)
+	return mutedPlayers[source] ~= nil
+end)
+
 --- getter for mutedPlayers
 exports('getMutedPlayers', function()
 	return mutedPlayers
