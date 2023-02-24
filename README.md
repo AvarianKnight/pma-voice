@@ -37,7 +37,7 @@ Native audio will not work on RedM, you will have to use 3d audio.
 
 | ConVar                     | Default | Description                                                   | Parameter(s) |
 |----------------------------|---------|---------------------------------------------------------------|--------------|
-| voice_useNativeAudio       |  false  | **This will not work for RedM** Uses the games native audio, will add 3d sound, echo, reverb, and more. **Required for submixs**   | boolean      |
+| voice_useNativeAudio       |  false  | Uses the games native audio, will add 3d sound, echo, reverb, and more. **Required for submixs**   | boolean      |
 | voice_use2dAudio           |  false  | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity. | boolean      
 | voice_use3dAudio           |  false  | Uses 3d audio | boolean |
 | voice_useSendingRangeOnly  |  false  | Only allows you to hear people within your hear/send range, prevents people from connecting to your mumble server and trolling. | boolean      |

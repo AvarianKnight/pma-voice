@@ -49,19 +49,11 @@ CreateThread(function()
 		and _3dAudio == 'false'
 		and _2dAudio == 'false'
 	then
-		if gameVersion == 'fivem' then
-			SetConvarReplicated('voice_useNativeAudio', 'true')
-			if sendingRangeOnly == 'false' then
-				SetConvarReplicated('voice_useSendingRangeOnly', 'true')
-			end
-			logger.info('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
-		else
-			SetConvarReplicated('voice_use3dAudio', 'true')
-			if sendingRangeOnly == 'false' then
-				SetConvarReplicated('voice_useSendingRangeOnly', 'true')
-			end
-			logger.info('No convars detected for voice mode, defaulting to \'setr voice_use3dAudio true\' and \'setr voice_useSendingRangeOnly true\'')
-		end
+        SetConvarReplicated('voice_useNativeAudio', 'true')
+        if sendingRangeOnly == 'false' then
+            SetConvarReplicated('voice_useSendingRangeOnly', 'true')
+            logger.info('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
+        end
 	elseif sendingRangeOnly == 'false' then
 		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
 	end
