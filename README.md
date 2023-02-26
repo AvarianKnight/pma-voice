@@ -64,6 +64,7 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_defaultRadioVolume          |   30   | The default volume to set the radio to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
 | voice_defaultCallVolume          |   60   | The default volume to set the call to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
 | voice_defaultVoiceMode  |  2      | Default proximity voice value when player joins server. (Voice Modes; 1:Whisper, 2:Normal, 3:Shouting) | int      |
+| voice_enableIsTalkingEvent  |  0      | Enables the `pma-voice:isTalking` event. | int      |
 
 ### Call & Radio
 
@@ -155,6 +156,7 @@ These are events designed for third-party resource integration. These are emitte
 | [pma-voice:settingsCallback](docs/client-getters/events.md) | When emited it will return the current pma-voice settings. | cb(voiceSettings) |
 | [pma-voice:radioActive](docs/client-getters/events.md) | Triggered when the radio is activated / deactivated | boolean |
 | [pma-voice:setTalkingMode](docs/client-getters/events.md) | Triggered on proximity mode change with the voice mode id | int |
+| [pma-voice:isTalking](docs/client-getters/events.md) | Triggered when the local player is talking | boolean |
 
 
 #### Server

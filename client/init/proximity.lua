@@ -116,16 +116,24 @@ CreateThread(function()
 		while not MumbleIsConnected() do
 			Wait(100)
 		end
+
 		-- Leave the check here as we don't want to do any of this logic 
-		if GetConvarInt('voice_enableUi', 1) == 1 then
+    local isTalkingEventEnabled = GetConvarInt('voice_enableIsTalkingEvent', 0) == 1
+    local isUiEnabled = GetConvarInt('voice_enableUi', 1) == 1
+    if isUiEnabled or isTalkingEventEnabled then
 			local curTalkingStatus = MumbleIsPlayerTalking(PlayerId()) == 1
 			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= curTalkingStatus then
 				lastRadioStatus = radioPressed
 				lastTalkingStatus = curTalkingStatus
-				sendUIMessage({
-					usingRadio = lastRadioStatus,
-					talking = lastTalkingStatus
-				})
+        if isTalkingEventEnabled then
+          TriggerEvent('pma-voice:isTalking', lastTalkingStatus)
+        end
+        if isUiEnabled then
+          sendUIMessage({
+            usingRadio = lastRadioStatus,
+            talking = lastTalkingStatus
+          })
+        end
 			end
 		end
 

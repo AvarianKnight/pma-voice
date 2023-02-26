@@ -9,6 +9,7 @@ These event is designed to allow third part applications (like a hud) use the cu
 local voiceMode = 2
 local voiceModes = {}
 local usingRadio = false
+local isLocalPlayerTalking = false
 -- sets the current radio state boolean
 AddEventHandler("pma-voice:radioActive", function(radioTalking) usingRadio = radioTalking end)
 -- changes the current voice range index
@@ -24,4 +25,6 @@ TriggerEvent("pma-voice:settingsCallback", function(voiceSettings)
 		voiceModes[i] = ("%s"):format(distance)
 	end
 end)
+-- sets the current local player's talking state boolean
+AddEventHandler("pma-voice:isTalking", function(isTalking) isLocalPlayerTalking = isTalking end)
 ```

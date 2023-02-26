@@ -54,6 +54,8 @@ convar_category 'PMA-Voice' {
 	{ "Proximity cycle key", "$voice_defaultCycle", "CV_STRING", "F11" },
 	{ "Voice radio volume", "$voice_defaultRadioVolume", "CV_INT", "30" },
 	{ "Voice call volume", "$voice_defaultCallVolume", "CV_INT", "60" },
+	{ "Proximity voice value", "$voice_defaultVoiceMode", "CV_INT", "2" },
+	{ "Enable isTalking event", "$voice_enableIsTalkingEvent", "CV_INT", "0" },
 	{ "Enable radios", "$voice_enableRadios", "CV_INT", "1" },
 	{ "Enable calls", "$voice_enableCalls", "CV_INT", "1" },
 	{ "Enable submix", "$voice_enableSubmix", "CV_INT", "1" },
