@@ -11,7 +11,7 @@ function DrawVoiceDistanceMarker(distance, color, alpha)
 
     for i = alpha, 0, -5 do
       local a = math.floor((i * alpha) / 150)
-        DrawMarker(28, pedCoords.x, pedCoords.y, pedCoords.z - 0.825, 0, 0, 0, 0, 0, 0, distance, distance, 0.02, r, g, b, a, false, true, 2, nil, nil, false)
+        DrawMarker(25, pedCoords.x, pedCoords.y, pedCoords.z - 0.825, 0, 0, 0, 0, 0, 0, distance, distance, 0.25, r, g, b, a, false, true, 2, nil, nil, false)
         Citizen.Wait(750 / alpha)
     end
 end
