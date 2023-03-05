@@ -45,18 +45,18 @@ Player = Player
 Entity = Entity
 
 if GetConvar('voice_useNativeAudio', 'false') == 'true' then
-    -- native audio distance seems to be larger then regular gta units
-    Cfg.voiceModes = {
-        { 1.5, "Whisper" }, -- Whisper speech distance in gta distance units
-        { 3.0, "Normal" }, -- Normal speech distance in gta distance units
-        { 6.0, "Shouting" } -- Shout speech distance in gta distance units
-    }
+	-- native audio distance seems to be larger then regular gta units
+	Cfg.voiceModes = {
+		{1.5, "Whisper", {158, 245, 66}}, -- Whisper speech distance in gta distance units
+		{3.0, "Normal", {245, 188, 66}}, -- Normal speech distance in gta distance units
+		{6.0, "Shouting", {245, 84, 66}} -- Shout speech distance in gta distance units
+	}
 else
-    Cfg.voiceModes = {
-        { 3.0,  "Whisper" }, -- Whisper speech distance in gta distance units
-        { 7.0,  "Normal" }, -- Normal speech distance in gta distance units
-        { 15.0, "Shouting" } -- Shout speech distance in gta distance units
-    }
+	Cfg.voiceModes = {
+		{3.0, "Whisper", {158, 245, 66}}, -- Whisper speech distance in gta distance units
+		{7.0, "Normal", {245, 188, 66}}, -- Normal speech distance in gta distance units
+		{15.0, "Shouting", {245, 84, 66}} -- Shout speech distance in gta distance units
+	}
 end
 
 logger = {
