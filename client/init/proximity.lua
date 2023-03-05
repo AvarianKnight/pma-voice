@@ -178,7 +178,7 @@ AddEventHandler("onClientResourceStop", function(resource)
 	end
 end)
 
-exports("addVoiceMode", function(distance, name)
+exports("addVoiceMode", function(distance, name, color)
 	for i = 1, #Cfg.voiceModes do
 		local voiceMode = Cfg.voiceModes[i]
 		if voiceMode[2] == name then
@@ -187,7 +187,7 @@ exports("addVoiceMode", function(distance, name)
 			return
 		end
 	end
-	Cfg.voiceModes[#Cfg.voiceModes + 1] = {distance, name}
+	Cfg.voiceModes[#Cfg.voiceModes + 1] = {distance, name, color or {255, 255, 255}}
 end)
 
 exports("removeVoiceMode", function(name)
