@@ -14,7 +14,7 @@ function removePlayerFromCall(source, callChannel)
 end
 
 --- adds a player to a call
----@param source number the player to add to the call 
+---@param source number the player to add to the call
 ---@param callChannel number the call channel to add them to
 function addPlayerToCall(source, callChannel)
     logger.verbose('[call] Added %s to call %s', source, callChannel)
@@ -37,24 +37,25 @@ end
 ---@param source number the player to set the call off
 ---@param _callChannel number the channel to set the player to (or 0 to remove them from any call channel)
 function setPlayerCall(source, _callChannel)
-	if GetConvarInt('voice_enableCalls', 1) ~= 1 then return end
+    if GetConvarInt('voice_enableCalls', 1) ~= 1 then return end
     voiceData[source] = voiceData[source] or defaultTable(source)
     local isResource = GetInvokingResource()
     local plyVoice = voiceData[source]
     local callChannel = tonumber(_callChannel)
     if not callChannel then
-		-- only full error if its sent from another server-side resource
-		if isResource then
-			error(("'callChannel' expected 'number', got: %s"):format(type(_callChannel)))
-		else
-			return logger.warn("%s sent a invalid call, 'callChannel' expected 'number', got: %s", source,type(_callChannel))
-		end
-	end
-	if isResource then
-		-- got set in a export, need to update the client to tell them that their call
-		-- changed
-		TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
-	end
+        -- only full error if its sent from another server-side resource
+        if isResource then
+            error(("'callChannel' expected 'number', got: %s"):format(type(_callChannel)))
+        else
+            return logger.warn("%s sent a invalid call, 'callChannel' expected 'number', got: %s", source,
+            type(_callChannel))
+        end
+    end
+    if isResource then
+        -- got set in a export, need to update the client to tell them that their call
+        -- changed
+        TriggerClientEvent('pma-voice:clSetPlayerCall', source, callChannel)
+    end
 
     Player(source).state.callChannel = callChannel
 
@@ -67,6 +68,7 @@ function setPlayerCall(source, _callChannel)
         addPlayerToCall(source, callChannel)
     end
 end
+
 exports('setPlayerCall', setPlayerCall)
 
 RegisterNetEvent('pma-voice:setPlayerCall', function(callChannel)
