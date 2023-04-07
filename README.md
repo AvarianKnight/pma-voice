@@ -35,12 +35,12 @@ All of the configs here are set using `setr [voice_configOption] [boolean]`
 
 Native audio will not work on RedM, you will have to use 3d audio.
 
-| ConVar                     | Default | Description                                                   | Parameter(s) |
-|----------------------------|---------|---------------------------------------------------------------|--------------|
-| voice_useNativeAudio       |  false  | Uses the games native audio, will add 3d sound, echo, reverb, and more. **Required for submixs**   | boolean      |
-| voice_use2dAudio           |  false  | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity. | boolean      
-| voice_use3dAudio           |  false  | Uses 3d audio | boolean |
-| voice_useSendingRangeOnly  |  false  | Only allows you to hear people within your hear/send range, prevents people from connecting to your mumble server and trolling. | boolean      |
+| ConVar                    | Default | Description                                                                                                                     | Parameter(s) |
+|---------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------|--------------|
+| voice_useNativeAudio      | false   | Uses the games native audio, will add 3d sound, echo, reverb, and more. **Required for submixs**                                | boolean      |
+| voice_use2dAudio          | false   | Uses 2d audio, will result in same volume sound no matter where they're at until they leave proximity.                          | boolean      |
+| voice_use3dAudio          | false   | Uses 3d audio                                                                                                                   | boolean      |
+| voice_useSendingRangeOnly | false   | Only allows you to hear people within your hear/send range, prevents people from connecting to your mumble server and trolling. | boolean      |
 
 # Config
 
@@ -56,40 +56,51 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 
 ### General Voice Settings
 
-| ConVar                  | Default | Description                                                        | Parameter(s) |
-|-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_enableUi               |    1    | Enables the built in user interface                            | int          |
-| voice_enableProximityCycle   |    1    | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity  | int          |
-| voice_defaultCycle           |   F11   | The default key to cycle the players proximity. You can find a list of valid keys [in the Cfx docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                | string       |
-| voice_defaultRadioVolume          |   30   | The default volume to set the radio to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
-| voice_defaultCallVolume          |   60   | The default volume to set the call to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
-| voice_defaultVoiceMode  |  2      | Default proximity voice value when player joins server. (Voice Modes; 1:Whisper, 2:Normal, 3:Shouting) | int      |
+| ConVar                     | Default | Description                                                                                                                                                                           | Parameter(s) |
+|----------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| voice_enableUi             | 1       | Enables the built in user interface                                                                                                                                                   | int          |
+| voice_enableProximityCycle | 1       | Enables the usage of the F11 proximity key, if disabled players are stuck on the first proximity                                                                                      | int          |
+| voice_defaultCycle         | F11     | The default key to cycle the players proximity. You can find a list of valid keys [in the Cfx docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/) | string       |
+| voice_defaultRadioVolume   | 30      | The default volume to set the radio to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.*                            | float        |
+| voice_defaultCallVolume    | 60      | The default volume to set the call to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.*                             | float        |
+| voice_defaultVoiceMode     | 2       | Default proximity voice value when player joins server. (Voice Modes; 1:Whisper, 2:Normal, 3:Shouting)                                                                                | int          |
 
 ### Call & Radio
 
-| ConVar                  | Default | Description                                                        | Parameter(s) |
-|-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_enableRadios           |    1    | Enables the radio sub-modules                                 | int          |
-| voice_enableCalls           |    1    | Enables the call sub-modules                                 | int          |
-| voice_enableSubmix      |    1    | Enables the submix which adds a radio/call style submix to their voice **NOTE: Submixs require native audio** | int          |
-| voice_enableRadioAnim        |   0     | Enables (grab shoulder mic) animation while talking on the radio.          | int          |
-| voice_defaultRadio           |   LMENU  | The default key to use the radio. You can find a list of valid keys [in the FiveM docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                             | string       |
+| ConVar                | Default | Description                                                                                                                                                               | Parameter(s) |
+|-----------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| voice_enableRadios    | 1       | Enables the radio sub-modules                                                                                                                                             | int          |
+| voice_enableCalls     | 1       | Enables the call sub-modules                                                                                                                                              | int          |
+| voice_enableSubmix    | 1       | Enables the submix which adds a radio/call style submix to their voice **NOTE: Submixs require native audio**                                                             | int          |
+| voice_enableRadioAnim | 0       | Enables (grab shoulder mic) animation while talking on the radio.                                                                                                         | int          |
+| voice_defaultRadio    | LMENU   | The default key to use the radio. You can find a list of valid keys [in the FiveM docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/) | string       |
 
 ### Sync
 
-| ConVar                  | Default | Description                                                        | Parameter(s) |
-|-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_refreshRate   |   200    | How often the UI/Proximity is refreshed | int     |
+| ConVar            | Default | Description                             | Parameter(s) |
+|-------------------|---------|-----------------------------------------|--------------|
+| voice_refreshRate | 200     | How often the UI/Proximity is refreshed | int          |
+
+### Audio Occlusion
+
+| ConVar                                   | Default | Description                                                                                                                                                        | Parameter(s) |
+|------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| voice_enableAudioOcclusion               | 1       | Enables the audio occlusion sub-module                                                                                                                             | int          |
+| voice_enableInteriorsAudioOcclusion      | 1       | Enable audio occlusion within interiors                                                                                                                            | int          |
+| voice_enableVehicleAudioOcclusion        | 1       | Enable audio occlusion from vehicles                                                                                                                               | int          |
+| voice_audioOcclusionLight                | 0       | Disable the expensive algorithm if there is only 1 room in the interior with lighter but less precise algorithm                                                    | int          |
+| voice_audioOcclusionRefreshRate          | 500     | How often is the audio occlusion refreshed                                                                                                                         | int          |
+| voice_audioOcclusionExpensiveCheckOffset | 0.5     | (float) The offset for the expensive algorithm of audio occlusion, this check is done ONLY IF THE INTERIOR HAS ONLY 1 ROOM (poorly made interiors or single rooms) | float        |
 
 ### External Server & Misc.
-| ConVar                  | Default | Description                                                        | Parameter(s) |
-|-------------------------|---------|--------------------------------------------------------------------|--------------|
-| voice_allowSetIntent         |   1  | Whether or not to allow players to set their audio intents (you can see more [here](https://docs.fivem.net/natives/?_0x6383526B))  | int       |
-| voice_externalAddress        |   none  | The external address to use to connect to the mumble server   | string       |
-| voice_externalPort           |   0     | The external port to use                                      | int          |
-| voice_debugMode              |   0     | 1 for basic logs, 4 for verbose logs                          | int          |
-| voice_externalDisallowJoin   |   0     | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server. | int          |
-| voice_hideEndpoints     | 1   | Hides the mumble address in logs *NOTE: You should only care to hide this for a external server.* | int        |
+| ConVar                     | Default | Description                                                                                                                       | Parameter(s) |
+|----------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------|--------------|
+| voice_allowSetIntent       | 1       | Whether or not to allow players to set their audio intents (you can see more [here](https://docs.fivem.net/natives/?_0x6383526B)) | int          |
+| voice_externalAddress      | none    | The external address to use to connect to the mumble server                                                                       | string       |
+| voice_externalPort         | 0       | The external port to use                                                                                                          | int          |
+| voice_debugMode            | 0       | 1 for basic logs, 4 for verbose logs                                                                                              | int          |
+| voice_externalDisallowJoin | 0       | Disables players being allowed to join the server, should only be used if you're using a FXServer as a external mumble server.    | int          |
+| voice_hideEndpoints        | 1       | Hides the mumble address in logs *NOTE: You should only care to hide this for a external server.*                                 | int          |
 
 
 
@@ -108,64 +119,77 @@ This would only allow the superadmin group to mute players.
 
 ##### Setters
  
-| Export              | Description                 | Parameter(s) |
-|---------------------|-----------------------------|--------------|
-| [setVoiceProperty](docs/client-setters/setVoiceProperty.md)    | Set config options          | string, any  |
-| [setRadioChannel](docs/client-setters/setRadioChannel.md)     | Set radio channel           | int          |
-| [setCallChannel](docs/client-setters/setCallChannel.md)      | Set call channel            | int          |
-| [setRadioVolume](docs/client-setters/setRadioVolume.md)      | Set radio volume for player | int          |
-| [setCallVolume](docs/client-setters/setCallVolume.md)        | Set call volume for player  | int          |
-| [addPlayerToRadio](docs/client-setters/setRadioChannel.md)      | Set radio channel        | int          |
-| [addPlayerToCall](docs/client-setters/setCallChannel.md)       | Set call channel         | int          |
-| [removePlayerFromRadio](docs/client-setters/removePlayerFromRadio.md) | Remove player from radio |              |
-| [removePlayerFromCall](docs/client-setters/removePlayerFromCall.md)  | Remove player from call  |              |
+| Export                                                                                        | Description                                            | Parameter(s) |
+|-----------------------------------------------------------------------------------------------|--------------------------------------------------------|--------------|
+| [setAudioOcclusion](docs/client-setters/setAudioOcclusion.md)                                 | Set audio occlusion status                             | boolean      |
+| [setInteriorAudioOcclusionDisabled](docs/client-setters/setInteriorAudioOcclusionDisabled.md) | Sets whether the interior has audio occlusion disabled | int          |
+| [setVoiceProperty](docs/client-setters/setVoiceProperty.md)                                   | Set config options                                     | string, any  |
+| [setRadioChannel](docs/client-setters/setRadioChannel.md)                                     | Set radio channel                                      | int          |
+| [setCallChannel](docs/client-setters/setCallChannel.md)                                       | Set call channel                                       | int          |
+| [setRadioVolume](docs/client-setters/setRadioVolume.md)                                       | Set radio volume for player                            | int          |
+| [setCallVolume](docs/client-setters/setCallVolume.md)                                         | Set call volume for player                             | int          |
+| [addPlayerToRadio](docs/client-setters/setRadioChannel.md)                                    | Set radio channel                                      | int          |
+| [addPlayerToCall](docs/client-setters/setCallChannel.md)                                      | Set call channel                                       | int          |
+| [removePlayerFromRadio](docs/client-setters/removePlayerFromRadio.md)                         | Remove player from radio                               |              |
+| [removePlayerFromCall](docs/client-setters/removePlayerFromCall.md)                           | Remove player from call                                |              |
 
 ##### Toggles
 
-| Export              | Description                                            | Parameter(s) |
-|---------------------|--------------------------------------------------------|--------------|
-| toggleMutePlayer    | Toggles the selected player muted for the local client | int          |
+| Export           | Description                                            | Parameter(s) |
+|------------------|--------------------------------------------------------|--------------|
+| toggleMutePlayer | Toggles the selected player muted for the local client | int          |
 
 Supported from mumble-voip / toko-voip
 
-| Export                | Description              | Parameter(s) |
-|-----------------------|--------------------------|--------------|
-| [SetMumbleProperty](docs/client-setters/setVoiceProperty.md)     | Set config options       | string, any  |
-| [SetTokoProperty](docs/client-setters/setVoiceProperty.md)       | Set config options       | string, any  |
-| [SetRadioChannel](docs/client-setters/setRadioChannel.md)       | Set radio channel        | int          |
-| [SetCallChannel](docs/client-setters/setCallChannel.md)        | Set call channel         | int          |
+| Export                                                       | Description        | Parameter(s) |
+|--------------------------------------------------------------|--------------------|--------------|
+| [SetMumbleProperty](docs/client-setters/setVoiceProperty.md) | Set config options | string, any  |
+| [SetTokoProperty](docs/client-setters/setVoiceProperty.md)   | Set config options | string, any  |
+| [SetRadioChannel](docs/client-setters/setRadioChannel.md)    | Set radio channel  | int          |
+| [SetCallChannel](docs/client-setters/setCallChannel.md)      | Set call channel   | int          |
 
 #### Getters
 
-The majority of setters are done through player states, while a small 
+###### State Bags
+You can access the state with `LocalPlayer.state['state bag here']` for the local player or with `Player(serverId).state['state bag here']` for other players
+
+| State Bag                                             | Description                                                  | Return Type |
+|-------------------------------------------------------|--------------------------------------------------------------|-------------|
+| [proximity](docs/state-getters/stateBagGetters.md)    | Returns a table with the mode index, distance, and mode name | table       |
+| [radioChannel](docs/state-getters/stateBagGetters.md) | Returns the players current radio channel, or 0 for none     | int         |
+| [callChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current call channel, or 0 for none      | int         |
+
+###### Exports
+
+| Export                                                                                                  | Description                                                              | Return Type | Parameter(s) |
+|---------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|-------------|--------------|
+| [getMuffledPlayers](docs/client-getters/getMuffledPlayers.md)                                           | Returns a table with all current muffled players                         | table       |              |
+| [getInteriorsWithDisabledAudioOcclusion](docs/client-getters/getInteriorsWithDisabledAudioOcclusion.md) | Returns a table with all the interiors with the disabled audio occlusion | table       |              |
+| [isPlayerMuffled](docs/client-getters/isPlayerMuffled.md)                                               | Returns true if the player is muffled                                    | boolean     | int          |
+| [isInteriorAudioOcclusionDisabled](docs/client-getters/isInteriorAudioOcclusionDisabled.md)             | Returns true if the interior as the audio occlusion disabled             | boolean     | int          |
 
 
-| State Bag     | Description                                                  | Return Type  |
-|---------------|--------------------------------------------------------------|--------------|
-| [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
-| [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
-| [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
 
 #### Events
 
 These are events designed for third-party resource integration. These are emitted only to the current client.
 
-| Event                    | Description                                                  | Event Params   |
-|--------------------------|--------------------------------------------------------------|----------------|
+| Event                                                       | Description                                                | Event Params      |
+|-------------------------------------------------------------|------------------------------------------------------------|-------------------|
 | [pma-voice:settingsCallback](docs/client-getters/events.md) | When emited it will return the current pma-voice settings. | cb(voiceSettings) |
-| [pma-voice:radioActive](docs/client-getters/events.md) | Triggered when the radio is activated / deactivated | boolean |
-| [pma-voice:setTalkingMode](docs/client-getters/events.md) | Triggered on proximity mode change with the voice mode id | int |
+| [pma-voice:radioActive](docs/client-getters/events.md)      | Triggered when the radio is activated / deactivated        | boolean           |
+| [pma-voice:setTalkingMode](docs/client-getters/events.md)   | Triggered on proximity mode change with the voice mode id  | int               |
 
 
 #### Server
 
 ##### Setters
 
-| Export               | Description                          | Parameter(s) |
-|----------------------|--------------------------------------|--------------|
-| [setPlayerRadio](docs/server-setters/setPlayerRadio.md)       | Sets the players radio channel       | int, int     |
-| [setPlayerCall](docs/server-setters/setPlayerCall.md)        | Sets the players call channel        | int, int     |
-| [addChannelCheck](docs/server-setters/addChannelCheck.md)      | Adds a channel check to the players radio channel | int, function |
+| Export                                                    | Description                                       | Parameter(s)  |
+|-----------------------------------------------------------|---------------------------------------------------|---------------|
+| [setPlayerRadio](docs/server-setters/setPlayerRadio.md)   | Sets the players radio channel                    | int, int      |
+| [setPlayerCall](docs/server-setters/setPlayerCall.md)     | Sets the players call channel                     | int, int      |
+| [addChannelCheck](docs/server-setters/addChannelCheck.md) | Adds a channel check to the players radio channel | int, function |
 
 
 ##### Getters
@@ -173,15 +197,15 @@ These are events designed for third-party resource integration. These are emitte
 ###### State Bags
 You can access the state with `Player(source).state['state bag here']`
 
-| State Bag     | Description                                                  | Return Type  |
-|---------------|--------------------------------------------------------------|--------------|
-| [proximity](docs/state-getters/stateBagGetters.md)     | Returns a table with the mode index, distance, and mode name | table        |
-| [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
-| [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
-| [voiceIntent](docs/state-getters/stateBagGetters.md) | Returns the players current voice intent, either 'speech' or 'music' | string |
+| State Bag                                             | Description                                                          | Return Type |
+|-------------------------------------------------------|----------------------------------------------------------------------|-------------|
+| [proximity](docs/state-getters/stateBagGetters.md)    | Returns a table with the mode index, distance, and mode name         | table       |
+| [radioChannel](docs/state-getters/stateBagGetters.md) | Returns the players current radio channel, or 0 for none             | int         |
+| [callChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current call channel, or 0 for none              | int         |
+| [voiceIntent](docs/state-getters/stateBagGetters.md)  | Returns the players current voice intent, either 'speech' or 'music' | string      |
 
 ###### Exports
 
-| Export                       | Description                                       | Parameter(s) |
-|------------------------------|---------------------------------------------------|------|
-| [getPlayersInRadioChannel](docs/server-getters/getPlayersInRadioChannel.md)     | Gets the current players in a radio channel       | int  |
+| Export                                                                      | Description                                 | Parameter(s) |
+|-----------------------------------------------------------------------------|---------------------------------------------|--------------|
+| [getPlayersInRadioChannel](docs/server-getters/getPlayersInRadioChannel.md) | Gets the current players in a radio channel | int          |
