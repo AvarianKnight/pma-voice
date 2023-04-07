@@ -12,7 +12,7 @@ function orig_addProximityCheck(ply)
     return distance < voiceRange, distance
 end
 
-local addProximityCheck = orig_addProximityCheck
+addProximityCheck = orig_addProximityCheck
 
 exports("overrideProximityCheck", function(fn)
     addProximityCheck = fn
