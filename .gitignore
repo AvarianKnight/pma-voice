@@ -1,2 +1,4 @@
 ﻿.idea
 .vscode
+# server/custom_modules
+# client/custom_modules
