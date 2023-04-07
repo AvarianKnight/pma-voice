@@ -20,7 +20,7 @@ client_scripts {
     'client/init/submix.lua',
     'client/module/*.lua',
     'client/*.lua',
-    'client/custom_modules/*.lu'
+    'client/custom_modules/*.lua'
 }
 
 server_scripts {
