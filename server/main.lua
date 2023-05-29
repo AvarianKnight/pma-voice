@@ -2,6 +2,21 @@ voiceData = {}
 radioData = {}
 callData = {}
 
+local maxChannels = GetConvarInt('sv_maxclients', 32) + 10
+local mappedChannels = {}
+function firstFreeChannel()
+    local newMax = GetConvarInt('sv_maxclients', 32) + 10
+    if newMax > maxChannels then maxChannels = newMax end
+
+	for i = 1, maxChannels do
+		if not mappedChannels[i] then
+			return i
+		end
+	end
+
+	return 0
+end
+
 function defaultTable(source)
 	handleStateBagInitilization(source)
 	return {
@@ -14,7 +29,7 @@ end
 
 function handleStateBagInitilization(source)
 	local plyState = Player(source).state
-	if not plyState.pmaVoiceInit then 
+	if not plyState.pmaVoiceInit then
 		plyState:set('radio', GetConvarInt('voice_defaultRadioVolume', 30), true)
 		plyState:set('call', GetConvarInt('voice_defaultCallVolume', 60), true)
 		plyState:set('submix', nil, true)
@@ -24,6 +39,15 @@ function handleStateBagInitilization(source)
 		plyState:set('voiceIntent', 'speech', true)
 		-- We want to save voice inits because we'll automatically reinitalize calls and channels
 		plyState:set('pmaVoiceInit', true, false)
+	end
+
+	local assignedChannel = firstFreeChannel()
+	plyState:set('assignedChannel', assignedChannel, true)
+	if assignedChannel ~= 0 then
+		mappedChannels[assignedChannel] = source
+		logger.verbose('[reuse] Assigned %s to channel %s', source, assignedChannel)
+	else
+		logger.error('[reuse] Failed to find a free channel for %s', source)
 	end
 end
 
@@ -55,7 +79,7 @@ CreateThread(function()
             logger.info('No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
         end
 	elseif sendingRangeOnly == 'false' then
-		logger.warn('It\'s recommended to have \'voice_useSendingRangeOnly\' set to true you can do that with \'setr voice_useSendingRangeOnly true\', this prevents players who directly join the mumble server from broadcasting to players.')
+		logger.warn("It's recommended to have 'voice_useSendingRangeOnly' set to true you can do that with 'setr voice_useSendingRangeOnly true', this prevents players who directly join the mumble server from broadcasting to players.")
 	end
 
 	local radioVolume = GetConvarInt("voice_defaultRadioVolume", 30)
@@ -83,6 +107,8 @@ end)
 
 AddEventHandler("playerDropped", function()
 	local source = source
+	local mappedChannel = Player(source).state.assignedChannel
+
 	if voiceData[source] then
 		local plyData = voiceData[source]
 
@@ -95,6 +121,11 @@ AddEventHandler("playerDropped", function()
 		end
 
 		voiceData[source] = nil
+	end
+
+	if mappedChannel then
+		mappedChannels[mappedChannel] = nil
+		logger.verbose('[reuse] Unassigned %s from channel %s', source, mappedChannel)
 	end
 end)
 
