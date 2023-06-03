@@ -24,3 +24,24 @@ RegisterCommand('muteply', (source, args) => {
 		}, duration * 1000)
 	}
 }, true)
+
+
+exports('isPlayerMuted', (source) => {
+	return 	Player(source).state.muted
+})
+
+exports('mutePlayer', (source) => {
+	if (exports['pma-voice'].isValidPlayer(source) && !Player(source).state.muted){
+		Player(source).state.muted = true
+		MumbleSetPlayerMuted(source, true);
+		emit('pma-voice:playerMuted', source, 0, true, -1);
+	}
+})
+
+exports('unmutePlayer, (source)=> {
+	if (exports['pma-voice'].isValidPlayer(source) && Player(source).state.muted){
+		Player(source).state.muted = false
+		MumbleSetPlayerMuted(source, false);
+		emit('pma-voice:playerMuted', source, 0, false, 0);
+	}	
+})
