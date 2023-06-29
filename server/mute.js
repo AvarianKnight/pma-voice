@@ -4,7 +4,7 @@ let mutedPlayers = {}
 RegisterCommand('muteply', (source, args) => {
 	const mutePly = parseInt(args[0])
 	const duration = parseInt(args[1]) || 900
-	if (mutePly && exports['pma-voice'].isValidPlayer(mutePly)) {
+	if (mutePly && exports[GetCurrentResourceName()].isValidPlayer(mutePly)) {
 		const isMuted = !MumbleIsPlayerMuted(mutePly);
 		Player(mutePly).state.muted = isMuted;
 		MumbleSetPlayerMuted(mutePly, isMuted);
