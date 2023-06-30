@@ -18,7 +18,7 @@ submixIndicies = {}
 function setVolume(volume, volumeType)
 	type_check({volume, "number"})
 	local volume = volume / 100
-	
+
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
@@ -212,7 +212,7 @@ end
 
 --- function playMicClicks
 ---plays the mic click if the player has them enabled.
----@param clickType boolean whether to play the 'on' or 'off' click. 
+---@param clickType boolean whether to play the 'on' or 'off' click.
 function playMicClicks(clickType)
 	if micClicks ~= 'true' then return logger.verbose("Not playing mic clicks because client has them disabled") end
 	-- TODO: Add customizable radio click volumes
@@ -252,6 +252,7 @@ exports('toggleMutePlayer', toggleMutePlayer)
 function setVoiceProperty(type, value)
 	if type == "radioEnabled" then
 		radioEnabled = value
+        handleRadioEnabledChanged(value)
 		sendUIMessage({
 			radioEnabled = value
 		})
