@@ -175,7 +175,7 @@ RegisterCommand('+radiotalk', function()
                     Wait(10)
                 end
                 TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false, false,
-                false)
+                    false)
             end
             CreateThread(function()
                 TriggerEvent("pma-voice:radioActive", true)
