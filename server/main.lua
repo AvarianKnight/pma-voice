@@ -2,13 +2,9 @@ voiceData = {}
 radioData = {}
 callData = {}
 
-local maxChannels = GetConvarInt('sv_maxclients', 32) + 10
 local mappedChannels = {}
 function firstFreeChannel()
-    local newMax = GetConvarInt('sv_maxclients', 32) + 10
-    if newMax > maxChannels then maxChannels = newMax end
-
-    for i = 1, maxChannels do
+    for i = 1, 2048 do
         if not mappedChannels[i] then
             return i
         end
