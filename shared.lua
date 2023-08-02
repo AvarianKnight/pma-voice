@@ -44,6 +44,9 @@ end
 Player = Player
 Entity = Entity
 
+-- If set to true, players cant talk over each other
+Cfg.DisableTalkOver = true
+
 if GetConvar('voice_useNativeAudio', 'false') == 'true' then
     -- native audio distance seems to be larger then regular gta units
     Cfg.voiceModes = {

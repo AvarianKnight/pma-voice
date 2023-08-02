@@ -1,6 +1,7 @@
 local radioChannel = 0
 local radioNames = {}
 local disableRadioAnim = false
+local isAllowedToTalk = nil
 
 --- event syncRadioData
 --- syncs the current players on the radio to the client
@@ -26,6 +27,12 @@ function syncRadioData(radioTable, localPlyRadioName)
     if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
         radioNames[playerServerId] = localPlyRadioName
     end
+end
+
+if Cfg.DisableTalkOver == true then
+    RegisterNetEvent("pma-voice:isAllowedToTalk", function(val)
+        isAllowedToTalk:resolve(val)
+    end)
 end
 
 RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
@@ -164,6 +171,15 @@ RegisterCommand('+radiotalk', function()
     if isDead() or LocalPlayer.state.disableRadio then return end
     if not radioPressed and radioEnabled then
         if radioChannel > 0 then
+            if Cfg.DisableTalkOver == true then
+                isAllowedToTalk = promise.new()
+                TriggerServerEvent("pma-voice:isAllowedToTalk", radioChannel)
+            
+                Citizen.Await(isAllowedToTalk)
+
+                if isAllowedToTalk.value == false then return end
+            end
+
             logger.info('[radio] Start broadcasting, update targets and notify server.')
             playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
             TriggerServerEvent('pma-voice:setTalkingOnRadio', true)

@@ -1,4 +1,5 @@
 local radioChecks = {}
+local talkingOnRadio = {}
 
 --- checks if the player can join the channel specified
 --- @param source number the source of the player
@@ -109,6 +110,9 @@ function setPlayerRadio(source, _radioChannel)
         -- changed
         TriggerClientEvent('pma-voice:clSetPlayerRadio', source, radioChannel)
     end
+    if Cfg.DisableTalkOver == true and talkingOnRadio[tonumber(plyVoice.radio)] == source then
+        talkingOnRadio[tonumber(plyVoice.radio)] = nil
+    end
     Player(source).state.radioChannel = radioChannel
     if radioChannel ~= 0 and plyVoice.radio == 0 then
         addPlayerToRadio(source, radioChannel)
@@ -126,6 +130,13 @@ RegisterNetEvent('pma-voice:setPlayerRadio', function(radioChannel)
     setPlayerRadio(source, radioChannel)
 end)
 
+if Cfg.DisableTalkOver == true then
+    RegisterNetEvent("pma-voice:isAllowedToTalk", function()
+        local plyVoice = voiceData[source]
+        TriggerClientEvent("pma-voice:isAllowedToTalk", source, talkingOnRadio[tonumber(plyVoice.radio)] == nil)
+    end)
+end
+
 --- syncs the player talking across all radio members
 ---@param talking boolean sets if the palyer is talking.
 function setTalkingOnRadio(talking)
@@ -133,6 +144,15 @@ function setTalkingOnRadio(talking)
     voiceData[source] = voiceData[source] or defaultTable(source)
     local plyVoice = voiceData[source]
     local radioTbl = radioData[plyVoice.radio]
+
+    if Cfg.DisableTalkOver == true then
+        if talkingOnRadio[tonumber(plyVoice.radio)] == nil then
+            talkingOnRadio[tonumber(plyVoice.radio)] = source
+        elseif talking == false and talkingOnRadio[tonumber(plyVoice.radio)] == source then
+            talkingOnRadio[tonumber(plyVoice.radio)] = nil
+        end
+    end
+
     if radioTbl then
         radioTbl[source] = talking
         logger.verbose('[radio] Set %s to talking: %s on radio %s', source, talking, plyVoice.radio)
