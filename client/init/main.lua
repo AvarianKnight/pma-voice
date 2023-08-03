@@ -64,6 +64,13 @@ local radioEffectId = CreateAudioSubmix('Radio')
 SetAudioSubmixEffectRadioFx(radioEffectId, 0)
 -- This is a GetHashKey on purpose, backticks break treesitter in nvim :|
 SetAudioSubmixEffectParamInt(radioEffectId, 0, GetHashKey('default'), 1)
+SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("freq_low"), 389.0)
+SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("freq_hi"), 3248.0)
+--SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("fudge"), 0.0)
+--SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("rm_mod_freq"), 0.0)
+SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("rm_mix"), 1.16)
+--SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("o_freq_lo"), 348.0)
+--SetAudioSubmixEffectParamFloat(radioEffectId, 0, GetHashKey("o_freq_hi"), 4900.0)
 SetAudioSubmixOutputVolumes(
     radioEffectId,
     0,
