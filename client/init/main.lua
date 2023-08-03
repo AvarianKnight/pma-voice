@@ -144,26 +144,22 @@ function toggleVoice(plySource, enabled, moduleType)
     local distance = currentTargets[plySource]
     if enabled and (not distance or distance > 4.0) then
         MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
-        if GetConvarInt('voice_enableSubmix', 1) == 1 then
-            if moduleType then
-                disableSubmixReset[plySource] = true
-                if submixIndicies[moduleType] then
-                    MumbleSetSubmixForServerId(plySource, submixIndicies[moduleType])
-                end
-            else
-                restoreDefaultSubmix(plySource)
+        if moduleType then
+            disableSubmixReset[plySource] = true
+            if submixIndicies[moduleType] then
+                MumbleSetSubmixForServerId(plySource, submixIndicies[moduleType])
             end
+        else
+            restoreDefaultSubmix(plySource)
         end
     elseif not enabled then
-        if GetConvarInt('voice_enableSubmix', 1) == 1 then
-            -- garbage collect it
-            disableSubmixReset[plySource] = nil
-            SetTimeout(250, function()
-                if not disableSubmixReset[plySource] then
-                    restoreDefaultSubmix(plySource)
-                end
-            end)
-        end
+        -- garbage collect it
+        disableSubmixReset[plySource] = nil
+        SetTimeout(250, function()
+            if not disableSubmixReset[plySource] then
+                restoreDefaultSubmix(plySource)
+            end
+        end)
         MumbleSetVolumeOverrideByServerId(plySource, -1.0)
     end
 end
