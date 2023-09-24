@@ -41,6 +41,9 @@ AddEventHandler('onClientResourceStart', function(resource)
     if callChannel ~= 0 then
         setCallChannel(callChannel)
     end
+	if not LocalPlayer.state.disableRadio then
+		LocalPlayer.state.set("disableRadio", 0, true)
+	end
 
     print('Script initialization finished.')
 end)

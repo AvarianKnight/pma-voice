@@ -182,9 +182,9 @@ function resyncVolume(volumeType, newVolume)
     end
 end
 
---- function playerTargets
----Adds players voices to the local players listen channels allowing
----Them to communicate at long range, ignoring proximity range.
+---Adds players voices to the local players listen channels allowing them to
+---communicate at long range, ignoring proximity range.
+---
 ---@diagnostic disable-next-line: undefined-doc-param
 ---@param targets table expects multiple tables to be sent over
 function playerTargets(...)
