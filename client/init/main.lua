@@ -5,6 +5,8 @@ local volumes = {
     -- people are setting this to 1 instead of 1.0 and expecting it to work.
     ['radio'] = GetConvarInt('voice_defaultRadioVolume', 60) / 100,
     ['call'] = GetConvarInt('voice_defaultCallVolume', 60) / 100,
+    ['click_on'] = GetConvarInt('voice_onClickVolume', 10) / 100,
+    ['click_off'] = GetConvarInt('voice_offClickVolume', 3) / 100,
 }
 
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
@@ -218,7 +220,7 @@ function playMicClicks(clickType)
     -- TODO: Add customizable radio click volumes
     sendUIMessage({
         sound = (clickType and "audio_on" or "audio_off"),
-        volume = (clickType and 0.1 or 0.03)
+        volume = (clickType and volumes['click_on'] or volumes['click_off'])
     })
 end
 
