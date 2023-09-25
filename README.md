@@ -180,6 +180,17 @@ You can access the state with `Player(source).state['state bag here']`
 | [radioChannel](docs/state-getters/stateBagGetters.md)  | Returns the players current radio channel, or 0 for none     | int          |
 | [callChannel](docs/state-getters/stateBagGetters.md)   | Returns the players current call channel, or 0 for none      | int          |
 | [voiceIntent](docs/state-getters/stateBagGetters.md) | Returns the players current voice intent, either 'speech' or 'music' | string |
+| [disableRadio](docs/state-getters/stateBagGetters.md)   | Returns if the players radio is currently disabled, or 0 if its not. This is expected to be use as a bitwise, do *not* use a bool | int          |
+
+```ts
+enum DisabledRadioStates {
+	Enabled = 0,
+	IsDead = 1,
+	IsCuffed = 2,
+	IsPdCuffed = 4,
+	IsUnderWater = 8
+}
+```
 
 ###### Exports
 
