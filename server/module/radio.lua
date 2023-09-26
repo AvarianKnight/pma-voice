@@ -54,6 +54,7 @@ exports('overrideRadioNameGetter', overrideRadioNameGetter)
 function addPlayerToRadio(source, radioChannel)
 	if not canJoinChannel(source, radioChannel) then
 		-- remove the player from the radio client side
+		TriggerClientEvent("pma-voice:radioChangeRejected", source)
 		TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source)
 		return false
 	end

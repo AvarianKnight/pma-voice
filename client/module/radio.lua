@@ -55,11 +55,9 @@ function addPlayerToRadio(plySource, plyRadioName)
 	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
 		radioNames[plySource] = plyRadioName
 	end
+	logger.info('[radio] %s joined radio %s %s', plySource, radioChannel, radioPressed and " while we were talking, adding them to targets" or "")
 	if radioPressed then
-		logger.info('[radio] %s joined radio %s while we were talking, adding them to targets', plySource, radioChannel)
 		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
-	else
-		logger.info('[radio] %s joined radio %s', plySource, radioChannel)
 	end
 end
 
@@ -68,8 +66,7 @@ RegisterNetEvent('pma-voice:addPlayerToRadio', addPlayerToRadio)
 --- event removePlayerFromRadio
 --- removes the player (or self) from the radio
 ---@param plySource number the players server id to remove from the radio.
----@param shouldKeepRadioChannel boolean? if we should keep the radio channel, only used in setVoiceProperty
-function removePlayerFromRadio(plySource, shouldKeepRadioChannel)
+function removePlayerFromRadio(plySource)
 	if plySource == playerServerId then
 		logger.info('[radio] Left radio %s, cleaning up.', radioChannel)
 		for tgt, _ in pairs(radioData) do
@@ -83,9 +80,6 @@ function removePlayerFromRadio(plySource, shouldKeepRadioChannel)
 		})
 		radioNames = {}
 		radioData = {}
-		if not shouldKeepRadioChannel then
-			radioChannel = 0
-		end
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	else
 		toggleVoice(plySource, false, 'radio')
@@ -101,8 +95,12 @@ function removePlayerFromRadio(plySource, shouldKeepRadioChannel)
 		end
 	end
 end
-
 RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
+
+RegisterNetEvent('pma-voice:radioChangeRejected', function()
+	logger.info("The server rejected your radio change.")
+	radioChannel = 0
+end)
 
 --- function setRadioChannel
 --- sets the local players current radio channel and updates the server
@@ -166,7 +164,6 @@ end
 RegisterCommand('+radiotalk', function()
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	if isDead() or LocalPlayer.state.disableRadio ~= 0 then return end
-	print(radioPressed, radioEnabled)
 	if not radioPressed and radioEnabled then
 		if radioChannel > 0 then
 			logger.info('[radio] Start broadcasting, update targets and notify server.')
@@ -184,14 +181,25 @@ RegisterCommand('+radiotalk', function()
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
-				while radioPressed and radioChannel > 0 and radioEnabled and not isDead() and LocalPlayer.state.disableRadio == 0 do
+				local checkFailed = false
+				while radioPressed  do
+					if radioChannel < 0 or not radioEnabled or isDead() or LocalPlayer.state.disableRadio ~= 0 then
+						checkFailed = true
+						break
+					end
 					SetControlNormal(0, 249, 1.0)
 					SetControlNormal(1, 249, 1.0)
 					SetControlNormal(2, 249, 1.0)
 					Wait(0)
 				end
-				radioPressed = false
+
+				if checkFailed then
+					logger.info("Canceling radio talking as the checks have failed.")
+					ExecuteCommand("-radiotalk")
+				end
 			end)
+		else
+			logger.info("Player tried to talk but was not on a radio channel")
 		end
 	end
 end, false)
@@ -226,11 +234,11 @@ RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)
 
 
 --- handles "radioEnabled" changing
----@param radioEnabledVal bool whether radio is enabled or not
-function handleRadioEnabledChanged(radioEnabledVal)
-	if radioEnabledVal then
+---@param wasRadioEnabled bool whether radio is enabled or not
+function handleRadioEnabledChanged(wasRadioEnabled)
+	if wasRadioEnabled then
 		syncRadioData(radioData, "")
 	else
-		removePlayerFromRadio(playerServerId, true)
+		removePlayerFromRadio(playerServerId)
 	end
 end
