@@ -57,7 +57,8 @@ function addPlayerToRadio(plySource, plyRadioName)
 	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
 		radioNames[plySource] = plyRadioName
 	end
-	logger.info('[radio] %s joined radio %s %s', plySource, radioChannel, radioPressed and " while we were talking, adding them to targets" or "")
+	logger.info('[radio] %s joined radio %s %s', plySource, radioChannel,
+		radioPressed and " while we were talking, adding them to targets" or "")
 	if radioPressed then
 		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 	end
@@ -97,6 +98,7 @@ function removePlayerFromRadio(plySource)
 		end
 	end
 end
+
 RegisterNetEvent('pma-voice:removePlayerFromRadio', removePlayerFromRadio)
 
 RegisterNetEvent('pma-voice:radioChangeRejected', function()
@@ -136,6 +138,7 @@ exports('addPlayerToRadio', function(_radio)
 	end
 end)
 
+-- TODO: would it not make more sense for this to be a setter?
 --- exports toggleRadioAnim
 --- toggles whether the client should play radio anim or not, if the animation should be played or notvaliddance
 exports('toggleRadioAnim', function()
@@ -163,6 +166,17 @@ function isDead()
 	return false
 end
 
+function isRadioAnimEnabled()
+	if
+		GetConvarInt('voice_enableRadioAnim', 1) == 1
+		and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1
+			and IsPedInAnyVehicle(PlayerPedId(), false))
+		and not disableRadioAnim then
+		return true
+	end
+	return false
+end
+
 RegisterCommand('+radiotalk', function()
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	if isDead() or LocalPlayer.state.disableRadio ~= 0 then return end
@@ -172,22 +186,25 @@ RegisterCommand('+radiotalk', function()
 			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			radioPressed = true
+			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
-			if GetConvarInt('voice_enableRadioAnim', 0) == 1 and not (GetConvarInt('voice_disableVehicleRadioAnim', 0) == 1 and IsPedInAnyVehicle(PlayerPedId(), false)) and not disableRadioAnim then
+			if shouldPlayAnimation then
 				RequestAnimDict('random@arrests')
-				while not HasAnimDictLoaded('random@arrests') do
-					Wait(10)
-				end
-				TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false, false,
-					false)
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
 				local checkFailed = false
-				while radioPressed  do
+				while radioPressed do
 					if radioChannel < 0 or not radioEnabled or isDead() or LocalPlayer.state.disableRadio ~= 0 then
 						checkFailed = true
 						break
+					end
+					if shouldPlayAnimation and HasAnimDictLoaded("random@arrests") then
+						if not IsEntityPlayingAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 3) then
+							TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false,
+								false,
+							false)
+						end
 					end
 					SetControlNormal(0, 249, 1.0)
 					SetControlNormal(1, 249, 1.0)
@@ -195,9 +212,13 @@ RegisterCommand('+radiotalk', function()
 					Wait(0)
 				end
 
+
 				if checkFailed then
 					logger.info("Canceling radio talking as the checks have failed.")
 					ExecuteCommand("-radiotalk")
+				end
+				if shouldPlayAnimation then
+					RemoveAnimDict('random@arrests')
 				end
 			end)
 		else
@@ -213,7 +234,7 @@ RegisterCommand('-radiotalk', function()
 		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
-		if GetConvarInt('voice_enableRadioAnim', 0) == 1 then
+		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
 			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
 		end
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
