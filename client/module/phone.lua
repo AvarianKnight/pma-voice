@@ -2,11 +2,7 @@ local callChannel = 0
 
 RegisterNetEvent('pma-voice:syncCallData', function(callTable, channel)
 	callData = callTable
-	for tgt, _ in pairs(callTable) do
-		if tgt ~= playerServerId then
-			toggleVoice(tgt, true, 'call')
-		end
-	end
+	handleRadioAndCallInit()
 end)
 
 RegisterNetEvent('pma-voice:addPlayerToCall', function(plySource)

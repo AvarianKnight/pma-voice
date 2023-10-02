@@ -16,11 +16,7 @@ function syncRadioData(radioTable, localPlyRadioName)
 	end
 
 	if not radioEnabled then return end
-	for tgt, enabled in pairs(radioTable) do
-		if tgt ~= playerServerId then
-			toggleVoice(tgt, enabled, 'radio')
-		end
-	end
+	handleRadioAndCallInit()
 	sendUIMessage({
 		radioChannel = radioChannel,
 		radioEnabled = radioEnabled

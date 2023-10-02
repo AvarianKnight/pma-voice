@@ -304,3 +304,21 @@ if gameVersion == 'redm' then
 		end
 	end)
 end
+
+
+--- handles initializiation for whenever radio or call data changes
+--- calls should always be last because they're assumed to always be enabled so
+--- theres no delay in talking.
+function handleRadioAndCallInit()
+	for tgt, enabled in pairs(radioData) do
+		if tgt ~= playerServerId then
+			toggleVoice(tgt, enabled, 'radio')
+		end
+	end
+
+	for tgt, enabled in pairs(callData) do
+		if tgt ~= playerServerId then
+			toggleVoice(tgt, true, 'call')
+		end
+	end
+end
