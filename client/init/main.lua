@@ -189,7 +189,7 @@ end
 ---
 ---@diagnostic disable-next-line: undefined-doc-param
 ---@param targets table expects multiple tables to be sent over
-function playerTargets(...)
+function addVoiceTargets(...)
 	local targets = { ... }
 	local addedPlayers = {
 		[playerServerId] = true

@@ -60,7 +60,7 @@ function addPlayerToRadio(plySource, plyRadioName)
 	logger.info('[radio] %s joined radio %s %s', plySource, radioChannel,
 		radioPressed and " while we were talking, adding them to targets" or "")
 	if radioPressed then
-		playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
+		addVoiceTargets(radioData, callData)
 	end
 end
 
@@ -83,12 +83,12 @@ function removePlayerFromRadio(plySource)
 		})
 		radioNames = {}
 		radioData = {}
-		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
+		addVoiceTargets(callData)
 	else
 		toggleVoice(plySource, false, 'radio')
 		if radioPressed then
 			logger.info('[radio] %s left radio %s while we were talking, updating targets.', plySource, radioChannel)
-			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
+			addVoiceTargets(radioData, callData)
 		else
 			logger.info('[radio] %s has left radio %s', plySource, radioChannel)
 		end
@@ -183,7 +183,7 @@ RegisterCommand('+radiotalk', function()
 	if not radioPressed and radioEnabled then
 		if radioChannel > 0 then
 			logger.info('[radio] Start broadcasting, update targets and notify server.')
-			playerTargets(radioData, MumbleIsPlayerTalking(PlayerId()) and callData or {})
+			addVoiceTargets(radioData, callData)
 			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
 			radioPressed = true
 			local shouldPlayAnimation = isRadioAnimEnabled()
@@ -231,7 +231,7 @@ RegisterCommand('-radiotalk', function()
 	if (radioChannel > 0 or radioEnabled) and radioPressed then
 		radioPressed = false
 		MumbleClearVoiceTargetPlayers(voiceTarget)
-		playerTargets(MumbleIsPlayerTalking(PlayerId()) and callData or {})
+		addVoiceTargets(callData)
 		TriggerEvent("pma-voice:radioActive", false)
 		playMicClicks(false)
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
