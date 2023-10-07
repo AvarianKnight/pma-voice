@@ -137,7 +137,7 @@ Supported from mumble-voip / toko-voip
 
 #### Getters
 
-The majority of setters are done through player states, while a small
+The majority of setters are done through player states.
 
 
 | State Bag     | Description                                                  | Return Type  |
