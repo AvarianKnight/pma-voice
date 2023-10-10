@@ -189,7 +189,8 @@ enum DisabledRadioStates {
 	IsCuffed = 2,
 	IsPdCuffed = 4,
 	IsUnderWater = 8,
-	DoesntHaveItem = 16
+	DoesntHaveItem = 16,
+	PlayerDisabledRadio = 32,
 }
 ```
 

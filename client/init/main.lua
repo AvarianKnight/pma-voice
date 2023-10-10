@@ -19,14 +19,14 @@ submixIndicies = {}
 ---@param volumeType string the volume type (currently radio & call) to set the volume of (opt)
 function setVolume(volume, volumeType)
 	type_check({ volume, "number" })
-	local volume = volume / 100
+	local volumeFraction = volume / 100
 
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
 			LocalPlayer.state:set(volumeType, volume, true)
 			volumes[volumeType] = volume
-			resyncVolume(volumeType, volume)
+			resyncVolume(volumeType, volumeFraction)
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
@@ -35,7 +35,7 @@ function setVolume(volume, volumeType)
 			volumes[volumeType] = volume
 			LocalPlayer.state:set(volumeType, volume, true)
 		end
-		resyncVolume("all", volume)
+		resyncVolume("all", volumeFraction)
 	end
 end
 

@@ -15,11 +15,14 @@ function syncRadioData(radioTable, localPlyRadioName)
 		print('-----------------------------')
 	end
 
-	if not radioEnabled then return end
-	handleRadioAndCallInit()
+	local isRadioEnabled = radioEnabled and LocalPlayer.state.disableRadio == 0
+	if isRadioEnabled then
+		handleRadioAndCallInit()
+	end
+
 	sendUIMessage({
 		radioChannel = radioChannel,
-		radioEnabled = radioEnabled
+		radioEnabled = isRadioEnabled
 	})
 	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
 		radioNames[playerServerId] = localPlyRadioName
@@ -35,7 +38,7 @@ RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 function setTalkingOnRadio(plySource, enabled)
 	radioData[plySource] = enabled
 	-- if we don't have radioEnabled don't actually set them as talking (we still want the state to enable people talking later)
-	if not radioEnabled then return end
+	if not radioEnabled or LocalPlayer.state.disableRadio ~= 0 then return end
 	-- If we're on a call we don't want to toggle their voice disabled this will break calls.
 	if not callData[plySource] then
 		toggleVoice(plySource, enabled, 'radio')
@@ -134,12 +137,15 @@ exports('addPlayerToRadio', function(_radio)
 	end
 end)
 
--- TODO: would it not make more sense for this to be a setter?
 --- exports toggleRadioAnim
 --- toggles whether the client should play radio anim or not, if the animation should be played or notvaliddance
 exports('toggleRadioAnim', function()
 	disableRadioAnim = not disableRadioAnim
 	TriggerEvent('pma-voice:toggleRadioAnim', disableRadioAnim)
+end)
+
+exports("setDisableRadioAnim", function(shouldDisable)
+	disableRadioAnim = shouldDisable
 end)
 
 -- exports disableRadioAnim
@@ -253,7 +259,7 @@ RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)
 
 
 --- handles "radioEnabled" changing
----@param wasRadioEnabled bool whether radio is enabled or not
+---@param wasRadioEnabled boolean whether radio is enabled or not
 function handleRadioEnabledChanged(wasRadioEnabled)
 	if wasRadioEnabled then
 		syncRadioData(radioData, "")
@@ -261,3 +267,22 @@ function handleRadioEnabledChanged(wasRadioEnabled)
 		removePlayerFromRadio(playerServerId)
 	end
 end
+
+--- adds the bit to the disableRadio bits
+---@param bit number the bit to add
+local function addRadioDisableBit(bit)
+	local curVal = LocalPlayer.state.disableRadio or 0
+	curVal = curVal | bit
+	LocalPlayer.state:set("disableRadio", curVal, true)
+end
+exports("addRadioDisableBit", addRadioDisableBit)
+
+--- removes the bit from disableRadio
+---@param bit number the bit to remove
+local function removeRadioDisableBit(bit)
+	local curVal = LocalPlayer.state.disableRadio or 0
+	curVal = curVal & (~bit)
+	LocalPlayer.state:set("disableRadio", curVal, true)
+end
+exports("removeRadioDisableBit", removeRadioDisableBit)
+
