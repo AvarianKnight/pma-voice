@@ -38,7 +38,7 @@ RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
 function setTalkingOnRadio(plySource, enabled)
 	radioData[plySource] = enabled
 	-- if we don't have radioEnabled don't actually set them as talking (we still want the state to enable people talking later)
-	if not radioEnabled or LocalPlayer.state.disableRadio ~= 0 then return end
+	if not radioEnabled or LocalPlayer.state.disableRadio ~= 0 then return logger.info("[radio] Ignoring setTalkingOnRadio. radioEnabled: %s disableRadio: %s", radioEnabled, LocalPlayer.state.disableRadio) end
 	-- If we're on a call we don't want to toggle their voice disabled this will break calls.
 	if not callData[plySource] then
 		toggleVoice(plySource, enabled, 'radio')
@@ -195,6 +195,7 @@ RegisterCommand('+radiotalk', function()
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
+				LocalPlayer.state:set("radioActive", true, true);
 				local checkFailed = false
 				while radioPressed do
 					if radioChannel < 0 or not radioEnabled or isDead() or LocalPlayer.state.disableRadio ~= 0 then
@@ -235,6 +236,7 @@ RegisterCommand('-radiotalk', function()
 		MumbleClearVoiceTargetPlayers(voiceTarget)
 		addVoiceTargets(callData)
 		TriggerEvent("pma-voice:radioActive", false)
+		LocalPlayer.state:set("radioActive", false, true);
 		playMicClicks(false)
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
 			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)

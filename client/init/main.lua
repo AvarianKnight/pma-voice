@@ -25,14 +25,14 @@ function setVolume(volume, volumeType)
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
 			LocalPlayer.state:set(volumeType, volume, true)
-			volumes[volumeType] = volume
+			volumes[volumeType] = volumeFraction
 			resyncVolume(volumeType, volumeFraction)
 		else
 			error(('setVolume got a invalid volume type %s'):format(volumeType))
 		end
 	else
 		for volumeType, _ in pairs(volumes) do
-			volumes[volumeType] = volume
+			volumes[volumeType] = volumeFraction
 			LocalPlayer.state:set(volumeType, volume, true)
 		end
 		resyncVolume("all", volumeFraction)
@@ -43,13 +43,13 @@ exports('setRadioVolume', function(vol)
 	setVolume(vol, 'radio')
 end)
 exports('getRadioVolume', function()
-	return volumes['radio']
+	return volumes['radio'] * 100
 end)
 exports("setCallVolume", function(vol)
 	setVolume(vol, 'call')
 end)
 exports('getCallVolume', function()
-	return volumes['call']
+	return volumes['call'] * 100
 end)
 
 
@@ -138,6 +138,7 @@ function toggleVoice(plySource, enabled, moduleType)
 	logger.verbose('[main] Updating %s to talking: %s with submix %s', plySource, enabled, moduleType)
 	local distance = currentTargets[plySource]
 	if enabled and (not distance or distance > 4.0) then
+		print(volumes[moduleType])
 		MumbleSetVolumeOverrideByServerId(plySource, enabled and volumes[moduleType])
 		if GetConvarInt('voice_enableSubmix', 1) == 1 then
 			if moduleType then
