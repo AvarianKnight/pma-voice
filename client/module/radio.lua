@@ -26,7 +26,7 @@ function syncRadioData(radioTable, localPlyRadioName)
 
 	sendUIMessage({
 		radioChannel = radioChannel,
-		radioEnabled = isRadioEnabled
+		radioEnabled = isRadioEnabled()
 	})
 	if GetConvarInt("voice_syncPlayerNames", 0) == 1 then
 		radioNames[playerServerId] = localPlyRadioName

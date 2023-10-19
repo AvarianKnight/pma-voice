@@ -306,7 +306,6 @@ if gameVersion == 'redm' then
 	end)
 end
 
-
 --- handles initializiation for whenever radio or call data changes
 --- calls should always be last because they're assumed to always be enabled so
 --- theres no delay in talking.
