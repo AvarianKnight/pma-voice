@@ -1,5 +1,4 @@
 local radioChecks = {}
-local talkingOnRadio = {}
 
 --- checks if the player can join the channel specified
 --- @param source number the source of the player
@@ -135,7 +134,18 @@ end)
 if Cfg.DisableTalkOver == true then
     RegisterNetEvent("pma-voice:isAllowedToTalk", function()
         local plyVoice = voiceData[source]
-        TriggerClientEvent("pma-voice:isAllowedToTalk", source, talkingOnRadio[tonumber(plyVoice.radio)] == nil)
+		local found = false
+
+		if radioData[tostring(plyVoice.radio)] then
+			for i in pairs(radioData[tostring(plyVoice.radio)]) do
+				if radioData[tostring(plyVoice.radio)][i] == true then
+					found = true
+					break;
+				end
+			end
+		end
+
+        TriggerClientEvent("pma-voice:isAllowedToTalk", source, found == false)
     end)
 end
 

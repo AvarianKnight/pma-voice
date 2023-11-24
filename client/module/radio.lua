@@ -38,8 +38,23 @@ end
 
 if Cfg.DisableTalkOver == true then
     RegisterNetEvent("pma-voice:isAllowedToTalk", function(val)
-        isAllowedToTalk:resolve(val)
+		if isAllowedToTalk then
+        	isAllowedToTalk:resolve(val)
+		end
     end)
+end
+
+function checkAllowedToTalk()
+	if Cfg.DisableTalkOver == true then
+		isAllowedToTalk = promise.new()
+
+		TriggerServerEvent("pma-voice:isAllowedToTalk")
+		Citizen.Await(isAllowedToTalk)
+
+		return isAllowedToTalk.value
+	else
+		return true
+	end
 end
 
 RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
@@ -193,6 +208,7 @@ RegisterCommand('+radiotalk', function()
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	if isDead() then return end
 	if not isRadioEnabled() then return end
+	if not checkAllowedToTalk() then return end
 	if not radioPressed then
 		if radioChannel > 0 then
 			logger.info('[radio] Start broadcasting, update targets and notify server.')
