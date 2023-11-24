@@ -134,16 +134,16 @@ end)
 if Cfg.DisableTalkOver == true then
     RegisterNetEvent("pma-voice:isAllowedToTalk", function()
         local plyVoice = voiceData[source]
-		local found = false
+        local found = false
 
-		if radioData[tostring(plyVoice.radio)] then
-			for i in pairs(radioData[tostring(plyVoice.radio)]) do
-				if radioData[tostring(plyVoice.radio)][i] == true then
-					found = true
-					break;
-				end
-			end
-		end
+        if radioData[tostring(plyVoice.radio)] then
+            for i in pairs(radioData[tostring(plyVoice.radio)]) do
+                if radioData[tostring(plyVoice.radio)][i] == true then
+                    found = true
+                    break;
+                end
+            end
+        end
 
         TriggerClientEvent("pma-voice:isAllowedToTalk", source, found == false)
     end)

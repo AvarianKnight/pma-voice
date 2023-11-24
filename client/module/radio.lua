@@ -38,23 +38,23 @@ end
 
 if Cfg.DisableTalkOver == true then
     RegisterNetEvent("pma-voice:isAllowedToTalk", function(val)
-		if isAllowedToTalk then
-        	isAllowedToTalk:resolve(val)
-		end
+        if isAllowedToTalk then
+            isAllowedToTalk:resolve(val)
+        end
     end)
 end
 
 function checkAllowedToTalk()
-	if Cfg.DisableTalkOver == true then
-		isAllowedToTalk = promise.new()
+    if Cfg.DisableTalkOver == true then
+        isAllowedToTalk = promise.new()
 
-		TriggerServerEvent("pma-voice:isAllowedToTalk")
-		Citizen.Await(isAllowedToTalk)
+        TriggerServerEvent("pma-voice:isAllowedToTalk")
+        Citizen.Await(isAllowedToTalk)
 
-		return isAllowedToTalk.value
-	else
-		return true
-	end
+        return isAllowedToTalk.value
+    else
+        return true
+    end
 end
 
 RegisterNetEvent('pma-voice:syncRadioData', syncRadioData)
