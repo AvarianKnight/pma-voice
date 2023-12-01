@@ -131,14 +131,14 @@ RegisterNetEvent('pma-voice:setPlayerRadio', function(radioChannel)
 	setPlayerRadio(source, radioChannel)
 end)
 
-if Cfg.DisableTalkOver == true then
+if Cfg.DisableTalkOver == true or GetConvarInt('voice_disableTalkOver', 0) == 1 then
     RegisterNetEvent("pma-voice:isAllowedToTalk", function()
         local plyVoice = voiceData[source]
         local found = false
 
-        if radioData[tostring(plyVoice.radio)] then
-            for i in pairs(radioData[tostring(plyVoice.radio)]) do
-                if radioData[tostring(plyVoice.radio)][i] == true then
+        if radioData[plyVoice.radio] ~= nil then
+            for i in pairs(radioData[plyVoice.radio]) do
+                if radioData[plyVoice.radio][i] == true then
                     found = true
                     break;
                 end

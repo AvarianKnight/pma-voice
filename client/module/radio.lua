@@ -36,7 +36,7 @@ function syncRadioData(radioTable, localPlyRadioName)
 	end
 end
 
-if Cfg.DisableTalkOver == true then
+if Cfg.DisableTalkOver == true or GetConvarInt('voice_disableTalkOver', 0) == 1 then
     RegisterNetEvent("pma-voice:isAllowedToTalk", function(val)
         if isAllowedToTalk then
             isAllowedToTalk:resolve(val)
@@ -45,7 +45,7 @@ if Cfg.DisableTalkOver == true then
 end
 
 function checkAllowedToTalk()
-    if Cfg.DisableTalkOver == true then
+    if Cfg.DisableTalkOver == true or GetConvarInt('voice_disableTalkOver', 0) == 1 then
         isAllowedToTalk = promise.new()
 
         TriggerServerEvent("pma-voice:isAllowedToTalk")
