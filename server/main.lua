@@ -56,27 +56,29 @@ CreateThread(function()
 
 	Wait(5000)
 
-	local nativeAudio = GetConvar('voice_useNativeAudio', 'false')
-	local _3dAudio = GetConvar('voice_use3dAudio', 'false')
-	local _2dAudio = GetConvar('voice_use2dAudio', 'false')
-	local sendingRangeOnly = GetConvar('voice_useSendingRangeOnly', 'false')
+	local nativeAudio = GetConvar('voice_useNativeAudio', 'not-set')
+	local _3dAudio = GetConvar('voice_use3dAudio', 'not-set')
+	local _2dAudio = GetConvar('voice_use2dAudio', 'not-set')
+	local sendingRangeOnly = GetConvar('voice_useSendingRangeOnly', 'not-set')
 	local gameVersion = GetConvar('gamename', 'fivem')
 
 	-- handle no convars being set (default drag n' drop)
 	if
-		nativeAudio == 'false'
-		and _3dAudio == 'false'
-		and _2dAudio == 'false'
+		nativeAudio == 'not-set'
+		and _3dAudio == 'not-set'
+		and _2dAudio == 'not-set'
 	then
 		SetConvarReplicated('voice_useNativeAudio', 'true')
-		if sendingRangeOnly == 'false' then
+		if sendingRangeOnly == 'not-set' then
 			SetConvarReplicated('voice_useSendingRangeOnly', 'true')
 			logger.info(
 				'No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
+		else
+			logger.info('No voice mod detected, defaulting to \'setr voice_useNativeAudio true\'')
 		end
-	elseif sendingRangeOnly == 'false' then
+	elseif sendingRangeOnly == 'not-set' then
 		logger.warn(
-			"It's recommended to have 'voice_useSendingRangeOnly' set to true you can do that with 'setr voice_useSendingRangeOnly true', this prevents players who directly join the mumble server from broadcasting to players.")
+			"It's recommended to have 'voice_useSendingRangeOnly' set to true, you can do that with 'setr voice_useSendingRangeOnly true', this prevents players who directly join the mumble server from broadcasting to players.")
 	end
 
 	local radioVolume = GetConvarInt("voice_defaultRadioVolume", 30)
