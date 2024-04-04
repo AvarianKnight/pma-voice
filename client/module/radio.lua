@@ -216,6 +216,11 @@ RegisterCommand('+radiotalk', function()
 					SetControlNormal(0, 249, 1.0)
 					SetControlNormal(1, 249, 1.0)
 					SetControlNormal(2, 249, 1.0)
+				        DisableControlAction(1, 25, true)
+                                        DisableControlAction(1, 140, true)
+                                        DisableControlAction(1, 141, true)
+                                        DisableControlAction(1, 142, true)
+                                        DisablePlayerFiring(cache.ped, true)
 					Wait(0)
 				end
 
