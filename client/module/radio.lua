@@ -2,6 +2,20 @@ local radioChannel = 0
 local radioNames = {}
 local disableRadioAnim = false
 
+
+local function dump(o)
+    if type(o) == 'table' then
+        local s = '{ '
+        for k, v in pairs(o) do
+            if type(k) ~= 'number' then k = '"' .. k .. '"' end
+            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+        end
+        return s .. '} '
+    else
+        return tostring(o)
+    end
+end
+
 ---@return boolean isEnabled if radioEnabled is true and LocalPlayer.state.disableRadio is 0 (no bits set)
 function isRadioEnabled()
 	return radioEnabled and LocalPlayer.state.disableRadio == 0
@@ -111,23 +125,39 @@ end)
 --- function setRadioChannel
 --- sets the local players current radio channel and updates the server
 ---@param channel number the channel to set the player to, or 0 to remove them.
-function setRadioChannel(channel)
+---@param freq string radio, secradio,atcradio
+function setRadioChannel(channel, freq)
+	print("Function:setRadioChannel")
+	print(dump(channel))
+	print(dump(freq))
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	type_check({ channel, "number" })
-	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
+	TriggerServerEvent('pma-voice:setPlayerRadio', channel, freq)
 	radioChannel = channel
 end
 
 --- exports setRadioChannel
 --- sets the local players current radio channel and updates the server
-exports('setRadioChannel', setRadioChannel)
+exports('setRadioChannel', function(channel, freq)
+	print("Export:setRadioChannel")
+	print(dump(channel))
+	print(dump(freq))
+	
+	setRadioChannel(channel, freq)
+
+end)
 -- mumble-voip compatability
-exports('SetRadioChannel', setRadioChannel)
+exports('SetRadioChannel', function(channel, freq)
+	setRadioChannel(channel, freq)
+
+end)
 
 --- exports removePlayerFromRadio
 --- sets the local players current radio channel and updates the server
 exports('removePlayerFromRadio', function()
-	setRadioChannel(0)
+	setRadioChannel(0, "radio")
+	setRadioChannel(0, "secradio")
+	setRadioChannel(0, "atcradio")
 end)
 
 --- exports addPlayerToRadio
@@ -136,7 +166,7 @@ end)
 exports('addPlayerToRadio', function(_radio)
 	local radio = tonumber(_radio)
 	if radio then
-		setRadioChannel(radio)
+		setRadioChannel(radio, "radio")
 	end
 end)
 
@@ -182,6 +212,9 @@ function isRadioAnimEnabled()
 	return false
 end
 
+
+
+
 RegisterCommand('+radiotalk', function()
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	if isDead() then return end
@@ -189,8 +222,10 @@ RegisterCommand('+radiotalk', function()
 	if not radioPressed then
 		if radioChannel > 0 then
 			logger.info('[radio] Start broadcasting, update targets and notify server.')
+			print("Radio Data")
+			print(dump(radioData)) 
 			addVoiceTargets(radioData, callData)
-			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
+			TriggerServerEvent('pma-voice:setTalkingOnRadio', true, "radio")
 			radioPressed = true
 			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
@@ -237,6 +272,8 @@ end, false)
 RegisterCommand('-radiotalk', function()
 	if radioChannel > 0 and radioPressed then
 		radioPressed = false
+		print("voiceTarget")
+		print(dump(voiceTarget))
 		MumbleClearVoiceTargetPlayers(voiceTarget)
 		addVoiceTargets(callData)
 		TriggerEvent("pma-voice:radioActive", false)
@@ -245,12 +282,193 @@ RegisterCommand('-radiotalk', function()
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
 			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
 		end
-		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
+		TriggerServerEvent('pma-voice:setTalkingOnRadio', false, "radio")
+	end
+end, false)
+
+
+RegisterCommand('+secradiotalk', function()
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
+	if isDead() then return end
+	if not isRadioEnabled() then return end
+	if not radioPressed then
+		if radioChannel > 0 then
+			logger.info('[radio] Start broadcasting, update targets and notify server.')
+			print("Radio Data")
+			print(dump(radioData)) 
+			addVoiceTargets(radioData, callData)
+			TriggerServerEvent('pma-voice:setTalkingOnRadio', true, "secradio")
+			radioPressed = true
+			local shouldPlayAnimation = isRadioAnimEnabled()
+			playMicClicks(true)
+			if shouldPlayAnimation then
+				RequestAnimDict('random@arrests')
+			end
+			CreateThread(function()
+				TriggerEvent("pma-voice:radioActive", true)
+				LocalPlayer.state:set("radioActive", true, true);
+				local checkFailed = false
+				while radioPressed do
+					if radioChannel < 0 or isDead() or not isRadioEnabled() then
+						checkFailed = true
+						break
+					end
+					if shouldPlayAnimation and HasAnimDictLoaded("random@arrests") then
+						if not IsEntityPlayingAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 3) then
+							TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false,
+								false,
+							false)
+						end
+					end
+					SetControlNormal(0, 249, 1.0)
+					SetControlNormal(1, 249, 1.0)
+					SetControlNormal(2, 249, 1.0)
+					Wait(0)
+				end
+
+
+				if checkFailed then
+					logger.info("Canceling radio talking as the checks have failed.")
+					ExecuteCommand("-radiotalk")
+				end
+				if shouldPlayAnimation then
+					RemoveAnimDict('random@arrests')
+				end
+			end)
+		else
+			logger.info("Player tried to talk but was not on a radio channel")
+		end
+	end
+end, false)
+
+RegisterCommand('-secradiotalk', function()
+	if radioChannel > 0 and radioPressed then
+		radioPressed = false
+		print("voiceTarget")
+		print(dump(voiceTarget))
+		MumbleClearVoiceTargetPlayers(voiceTarget)
+		addVoiceTargets(callData)
+		TriggerEvent("pma-voice:radioActive", false)
+		LocalPlayer.state:set("radioActive", false, true);
+		playMicClicks(false)
+		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
+			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
+		end
+		TriggerServerEvent('pma-voice:setTalkingOnRadio', false, "secradio")
+	end
+end, false)
+
+
+
+RegisterCommand('+atcradiotalk', function()
+	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
+	if isDead() then return end
+	if not isRadioEnabled() then return end
+	if not radioPressed then
+		if radioChannel > 0 then
+			logger.info('[radio] Start broadcasting, update targets and notify server.')
+			print("Radio Data")
+			print(dump(radioData)) 
+			addVoiceTargets(radioData, callData)
+			TriggerServerEvent('pma-voice:setTalkingOnRadio', true, "atcradio")
+			radioPressed = true
+			local shouldPlayAnimation = isRadioAnimEnabled()
+			playMicClicks(true)
+			if shouldPlayAnimation then
+				RequestAnimDict('random@arrests')
+			end
+			CreateThread(function()
+				TriggerEvent("pma-voice:radioActive", true)
+				LocalPlayer.state:set("radioActive", true, true);
+				local checkFailed = false
+				while radioPressed do
+					if radioChannel < 0 or isDead() or not isRadioEnabled() then
+						checkFailed = true
+						break
+					end
+					if shouldPlayAnimation and HasAnimDictLoaded("random@arrests") then
+						if not IsEntityPlayingAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 3) then
+							TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false,
+								false,
+							false)
+						end
+					end
+					SetControlNormal(0, 249, 1.0)
+					SetControlNormal(1, 249, 1.0)
+					SetControlNormal(2, 249, 1.0)
+					Wait(0)
+				end
+
+
+				if checkFailed then
+					logger.info("Canceling radio talking as the checks have failed.")
+					ExecuteCommand("-radiotalk")
+				end
+				if shouldPlayAnimation then
+					RemoveAnimDict('random@arrests')
+				end
+			end)
+		else
+			logger.info("Player tried to talk but was not on a radio channel")
+		end
+	end
+end, false)
+
+RegisterCommand('-atcradiotalk', function()
+	if radioChannel > 0 and radioPressed then
+		radioPressed = false
+		print("voiceTarget")
+		print(dump(voiceTarget))
+		MumbleClearVoiceTargetPlayers(voiceTarget)
+		addVoiceTargets(callData)
+		TriggerEvent("pma-voice:radioActive", false)
+		LocalPlayer.state:set("radioActive", false, true);
+		playMicClicks(false)
+		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
+			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
+		end
+		TriggerServerEvent('pma-voice:setTalkingOnRadio', false, "atcradio")
 	end
 end, false)
 if gameVersion == 'fivem' then
-	RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
+	RegisterKeyMapping('+radiotalk', 'Talk over PRI Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
+	RegisterKeyMapping('+secradiotalk', 'Talk over SEC Radio', 'keyboard', GetConvar('voice_defaultRadio', ''))
+	RegisterKeyMapping('+atcradiotalk', 'Talk over ATC Radio', 'keyboard', GetConvar('voice_defaultRadio', ''))
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 --- event syncRadio
 --- syncs the players radio, only happens if the radio was set server side.

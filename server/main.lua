@@ -19,7 +19,9 @@ function defaultTable(source)
 		radio = 0,
 		call = 0,
 		lastRadio = 0,
-		lastCall = 0
+		lastCall = 0,
+		secradio = 0,
+		atcradio = 0
 	}
 end
 
@@ -27,11 +29,15 @@ function handleStateBagInitilization(source)
 	local plyState = Player(source).state
 	if not plyState.pmaVoiceInit then
 		plyState:set('radio', GetConvarInt('voice_defaultRadioVolume', 30), true)
+		plyState:set('secradio', GetConvarInt('voice_defaultRadioVolume', 30), true)
+		plyState:set('atcradio', GetConvarInt('voice_defaultRadioVolume', 30), true)
 		plyState:set('call', GetConvarInt('voice_defaultCallVolume', 60), true)
 		plyState:set('submix', nil, true)
 		plyState:set('proximity', {}, true)
 		plyState:set('callChannel', 0, true)
 		plyState:set('radioChannel', 0, true)
+		plyState:set('secondaryRadioChannel', 0, true)
+		plyState:set('ATCRadioChannel', 0, true)
 		plyState:set('voiceIntent', 'speech', true)
 		-- We want to save voice inits because we'll automatically reinitalize calls and channels
 		plyState:set('pmaVoiceInit', true, false)
@@ -113,7 +119,13 @@ AddEventHandler("playerDropped", function()
 		local plyData = voiceData[source]
 
 		if plyData.radio ~= 0 then
-			removePlayerFromRadio(source, plyData.radio)
+			removePlayerFromRadio(source, plyData.radio, 'radio')
+		end
+		if plyData.secradio ~= 0 then
+			removePlayerFromRadio(source, plyData.secradio, 'secradio')
+		end
+		if plyData.atcradio ~= 0 then
+			removePlayerFromRadio(source, plyData.atcradio, 'atcradio')
 		end
 
 		if plyData.call ~= 0 then

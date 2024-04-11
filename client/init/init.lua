@@ -32,12 +32,18 @@ AddEventHandler('onClientResourceStart', function(resource)
 
 	local radioChannel = LocalPlayer.state.radioChannel or 0
 	local callChannel = LocalPlayer.state.callChannel or 0
-
+	local secondaryRadioChannel = LocalPlayer.state.secondaryRadioChannel or 0
+	local ATCRadioChannel = LocalPlayer.state.ATCRadioChannel or 0
 	-- Reinitialize channels if they're set.
 	if radioChannel ~= 0 then
-		setRadioChannel(radioChannel)
+		setRadioChannel(radioChannel, "radio")
 	end
-
+	if secondaryRadioChannel ~= 0 then
+		setRadioChannel(secondaryRadioChannel, "secradio")
+	end
+	if ATCRadioChannel ~= 0 then
+		setRadioChannel(ATCRadioChannel, "atcradio")
+	end
 	if callChannel ~= 0 then
 		setCallChannel(callChannel)
 	end
