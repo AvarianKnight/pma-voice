@@ -19,12 +19,17 @@ TriggerEvent('chat:addSuggestion', '/setvoiceintent', 'Sets the players voice in
 })
 
 -- TODO: Better implementation of this?
+-- Edit: There is indeed :)
 RegisterCommand('vol', function(_, args)
-	if not args[1] then return end
-	setVolume(tonumber(args[1]))
-end)
+	if not tonumber(args[1]) then return end
+	local type = tostring(args[2])
+	if type ~= 'radio' and type ~= 'call' then type = 'radio' return end
+	setVolume(args[1], type)
+end, false)
+
 TriggerEvent('chat:addSuggestion', '/vol', 'Sets the radio/phone volume', {
 	{ name = "volume", help = "A range between 1-100 on how loud you want them to be" },
+	{ name = "type", help = "radio / call (Defaults to radio)" },
 })
 
 exports('setAllowProximityCycleState', function(state)
