@@ -1,6 +1,7 @@
 local radioChannel = 0
 local radioNames = {}
 local disableRadioAnim = false
+local radioAnim = { dict = 'random@arrests', name = 'generic_radio_enter' }
 
 ---@return boolean isEnabled if radioEnabled is true and LocalPlayer.state.disableRadio is 0 (no bits set)
 function isRadioEnabled()
@@ -195,7 +196,7 @@ RegisterCommand('+radiotalk', function()
 			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
 			if shouldPlayAnimation then
-				RequestAnimDict('random@arrests')
+				RequestAnimDict(radioAnim.dict)
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
@@ -206,9 +207,9 @@ RegisterCommand('+radiotalk', function()
 						checkFailed = true
 						break
 					end
-					if shouldPlayAnimation and HasAnimDictLoaded("random@arrests") then
-						if not IsEntityPlayingAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 3) then
-							TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false,
+					if shouldPlayAnimation and HasAnimDictLoaded(radioAnim.dict) then
+						if not IsEntityPlayingAnim(PlayerPedId(), radioAnim.dict, radioAnim.name, 3) then
+							TaskPlayAnim(PlayerPedId(), radioAnim.dict, radioAnim.name, 8.0, 2.0, -1, 50, 2.0, false,
 								false,
 							false)
 						end
@@ -233,6 +234,15 @@ RegisterCommand('+radiotalk', function()
 		end
 	end
 end, false)
+
+local function setRadioTalkAnim(dict, name)	
+	if dict and name then		
+		radioAnim.dict = dict
+		radioAnim.name = name
+	end	
+end
+
+exports('setRadioTalkAnim', setRadioTalkAnim)
 
 RegisterCommand('-radiotalk', function()
 	if radioChannel > 0 and radioPressed then
