@@ -236,10 +236,12 @@ RegisterCommand('+radiotalk', function()
 end, false)
 
 local function setRadioTalkAnim(dict, name)	
-	if dict and name then		
-		radioAnim.dict = dict
-		radioAnim.name = name
-	end	
+    type_check({dict, "string"}, {name, "string"})
+    if not DoesAnimDictExist(dict) then
+      return error(("Dict: %s did not exist"):format(dict))
+    end
+    radioAnim.dict = dict
+    radioAnim.name = name
 end
 
 exports('setRadioTalkAnim', setRadioTalkAnim)
