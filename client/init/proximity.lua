@@ -15,6 +15,11 @@ end
 local addProximityCheck = orig_addProximityCheck
 
 exports("overrideProximityCheck", function(fn)
+	local caller = GetInvokingResource()
+	local dataType = type(fn)
+	if dataType ~= "table" or not fn.__cfx_functionReference then
+		return error(("%s tried to call 'overrideProximityCheck' but didn't send a function (got type: %s)"):format(caller, dataType))
+	end
 	addProximityCheck = fn
 end)
 
