@@ -226,7 +226,7 @@ RegisterCommand('+radiotalk', function()
 					ExecuteCommand("-radiotalk")
 				end
 				if shouldPlayAnimation then
-					RemoveAnimDict('random@arrests')
+					RemoveAnimDict(radioAnim.dict)
 				end
 			end)
 		else
