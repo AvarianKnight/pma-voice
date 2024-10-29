@@ -33,8 +33,6 @@ You only need to add the convar **if** you're changing the value.
 
 All of the configs here are set using `setr [voice_configOption] [boolean]`
 
-Native audio will not work on RedM, you will have to use 3d audio.
-
 | ConVar                     | Default | Description                                                   | Parameter(s) |
 |----------------------------|---------|---------------------------------------------------------------|--------------|
 | voice_useNativeAudio       |  false  | Uses the games native audio, will add 3d sound, echo, reverb, and more. **Required for submixs**   | boolean      |
