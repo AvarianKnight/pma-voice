@@ -115,6 +115,7 @@ function setRadioChannel(channel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	type_check({ channel, "number" })
 	TriggerServerEvent('pma-voice:setPlayerRadio', channel)
+	TriggerEvent("pma-voice:radioChannelChange", channel)
 	radioChannel = channel
 end
 
@@ -258,6 +259,7 @@ end
 function syncRadio(_radioChannel)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	logger.info('[radio] radio set serverside update to radio %s', radioChannel)
+	TriggerEvent("pma-voice:radioChannelChange", _radioChannel)
 	radioChannel = _radioChannel
 end
 RegisterNetEvent('pma-voice:clSetPlayerRadio', syncRadio)
