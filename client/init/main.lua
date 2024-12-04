@@ -273,19 +273,64 @@ exports('SetMumbleProperty', setVoiceProperty)
 exports('SetTokoProperty', setVoiceProperty)
 
 
+local address = GetConvar("voice_externalAddressExt", "")
 -- cache their external servers so if it changes in runtime we can reconnect the client.
 local externalAddress = ''
 local externalPort = 0
-CreateThread(function()
-	while true do
-		Wait(500)
-		-- only change if what we have doesn't match the cache
-		if GetConvar('voice_externalAddress', '') ~= externalAddress or GetConvarInt('voice_externalPort', 0) ~= externalPort then
-			externalAddress = GetConvar('voice_externalAddress', '')
-			externalPort = GetConvarInt('voice_externalPort', 0)
-			MumbleSetServerAddress(GetConvar('voice_externalAddress', ''), GetConvarInt('voice_externalPort', 0))
-		end
+
+local function getAddressAndPortFromString(addressStr)
+	local address = addressStr:match("(%d+%.%d+%.%d+%.%d+)")
+	if not address then
+		error("The address was not valid")
 	end
+	local port = addressStr:match(":(%d+)")
+	if not port then
+		error("The port was not valid")
+	end
+
+	local portNumber = tonumber(port)
+
+	return address, portNumber
+end
+
+AddConvarChangeListener("voice_externalAddressExt", function(varName)
+	-- TODO: Does FiveM support IPv6 for this?
+	local addr = GetConvar("voice_externalAddressExt", "")
+	if addr == "" then return end
+	local addr, port = getAddressAndPortFromString(address)
+	connectToMumble(addr, port)
+end)
+
+function connectToMumble(address, port)
+	MumbleSetServerAddress(address, port)
+end
+
+CreateThread(function()
+
+	-- if address ~= "" then
+	-- 	local addr, port = getAddressAndPortFromString(address)
+	-- 	connectToMumble(addr, port)
+	-- 	return
+	-- end
+	-- LEGACY: This should be removed in next major version bump
+	local voiceAddr = GetConvar("voice_externalAddress", "")
+	local voicePort = GetConvar("voice_externalPort", 0)
+	if voiceAddr ~= "" and voicePort ~= 0 then
+		connectToMumble(voiceAddr, voicePort)
+		return
+	end
+
+	-- if GetPlayerServerId(PlayerId()) ~= 2 then return end
+	-- while true do
+	-- 	local addr = GetConvar("voice_externalAddressExt", "")
+	-- 	if addr == "" then return end
+	-- 	local addr, port = getAddressAndPortFromString(address)
+	-- 	connectToMumble(addr, port)
+	--
+	-- 	Wait(2500)
+		connectToMumble("127.0.0.1", 64738)
+	-- 	Wait(2504)
+	-- end
 end)
 
 
