@@ -125,7 +125,8 @@ CreateThread(function()
 				lastTalkingStatus = curTalkingStatus
 				sendUIMessage({
 					usingRadio = lastRadioStatus,
-					talking = lastTalkingStatus
+					talking = lastTalkingStatus,
+					isMuted = MumbleIsPlayerMuted(PlayerId())
 				})
 			end
 		end

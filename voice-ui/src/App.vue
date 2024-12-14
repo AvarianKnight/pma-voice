@@ -30,6 +30,7 @@ export default {
 			usingRadio: false,
 			callInfo: 0,
 			talking: false,
+			isMuted: false,
 		});
 
 		// stops from toggling voice at the end of talking
@@ -72,6 +73,10 @@ export default {
 				voice.talking = data.talking;
 			}
 
+			if ((data.isMuted !== undefined)) {
+				voice.isMuted = data.isMuted;
+			}
+
 			if (data.sound && voice.radioEnabled && voice.radioChannel !== 0) {
 				let click = document.getElementById(data.sound);
 				// discard these errors as its usually just a 'uncaught promise' from two clicks happening too fast.
@@ -106,6 +111,11 @@ export default {
 .talking {
 	color: rgba(255, 255, 255, 0.822);
 }
+
+.isMuted {
+	color: rgba(255, 0, 0, 0.822);
+}
+
 p {
 	margin: 0;
 }
