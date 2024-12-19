@@ -5,6 +5,19 @@ local plyCoords = GetEntityCoords(PlayerPedId())
 proximity = MumbleGetTalkerProximity()
 currentTargets = {}
 
+local bagFilter = "player:" .. GetPlayerServerId(PlayerId())
+-- Handler for changes in the 'muted' state bag, updates the UI when the player is muted/unmuted
+AddStateBagChangeHandler("muted", bagFilter, function(bagName, state, value)
+	--if state is not muted or the bagName is not the local player, return
+	if bagName ~= bagFilter then return end
+	if state ~= "muted" then return end
+
+	sendUIMessage({
+		isMuted = value
+	})
+end)
+
+
 function orig_addProximityCheck(ply)
 	local tgtPed = GetPlayerPed(ply)
 	local voiceRange = GetConvar('voice_useNativeAudio', 'false') == 'true' and proximity * 3 or proximity
@@ -123,10 +136,12 @@ CreateThread(function()
 			if lastRadioStatus ~= radioPressed or lastTalkingStatus ~= curTalkingStatus then
 				lastRadioStatus = radioPressed
 				lastTalkingStatus = curTalkingStatus
+				-- Retrieve the muted state
+				local isMuted = LocalPlayer.state.muted
 				sendUIMessage({
 					usingRadio = lastRadioStatus,
 					talking = lastTalkingStatus,
-					isMuted = MumbleIsPlayerMuted(PlayerId())
+					isMuted = isMuted
 				})
 			end
 		end

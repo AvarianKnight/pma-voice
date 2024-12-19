@@ -3,14 +3,19 @@
 		<audio id="audio_on" src="mic_click_on.ogg"></audio>
 		<audio id="audio_off" src="mic_click_off.ogg"></audio>
 		<div v-if="voice.uiEnabled" class="voiceInfo">
-			<p v-if="voice.callInfo !== 0" :class="{ talking: voice.talking }">
-				[Call]
+			<p v-if="voice.isMuted" class="isMuted">
+				YOU ARE MUTED
 			</p>
-			<p v-if="voice.radioEnabled && voice.radioChannel !== 0" :class="{ talking: voice.usingRadio }">
-				{{ voice.radioChannel }} Mhz [Radio]
-			</p>
-			<p v-if="voice.voiceModes.length" :class="{ talking: voice.talking }">
-				{{ voice.voiceModes[voice.voiceMode][1] }} [Range]
+			<p v-else>
+				<p v-if="voice.callInfo !== 0" :class="{ talking: voice.talking }">
+					[Call]
+				</p>
+				<p v-if="voice.radioEnabled && voice.radioChannel !== 0" :class="{ talking: voice.usingRadio }">
+					{{ voice.radioChannel }} Mhz [Radio]
+				</p>
+				<p v-if="voice.voiceModes.length" :class="{ talking: voice.talking }">
+					{{ voice.voiceModes[voice.voiceMode][1] }} [Range]
+				</p>
 			</p>
 		</div>
 	</body>

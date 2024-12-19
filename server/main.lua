@@ -33,6 +33,7 @@ function handleStateBagInitilization(source)
 		plyState:set('callChannel', 0, true)
 		plyState:set('radioChannel', 0, true)
 		plyState:set('voiceIntent', 'speech', true)
+		plyState:set('muted', false, true)
 		-- We want to save voice inits because we'll automatically reinitalize calls and channels
 		plyState:set('pmaVoiceInit', true, false)
 	end
