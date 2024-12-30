@@ -1,4 +1,5 @@
 local radioChecks = {}
+local radioLists = {}
 
 --- checks if the player can join the channel specified
 --- @param source number the source of the player
@@ -56,6 +57,7 @@ function addPlayerToRadio(source, radioChannel)
 		-- remove the player from the radio client side
 		TriggerClientEvent("pma-voice:radioChangeRejected", source)
 		TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source)
+		TriggerEvent('pma-voice:svRemovePlayerFromRadioList', source)
 		return false
 	end
 	logger.verbose('[radio] Added %s to radio %s', source, radioChannel)
@@ -83,6 +85,7 @@ function removePlayerFromRadio(source, radioChannel)
 	radioData[radioChannel] = radioData[radioChannel] or {}
 	for player, _ in pairs(radioData[radioChannel]) do
 		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source)
+		TriggerEvent('pma-voice:svRemovePlayerFromRadioList', source)
 	end
 	radioData[radioChannel][source] = nil
 	voiceData[source] = voiceData[source] or defaultTable(source)
@@ -172,6 +175,90 @@ AddEventHandler("onResourceStop", function(resource)
 				radioNameGetter = radioNameGetter_orig
 				logger.warn(
 					'Radio name getter is resetting to default because the resource that gave the cb got turned off')
+			end
+		end
+	end
+end)
+
+--// Radio List \\--
+
+local function GetPlayerNames(src)
+	if GetResourceState('qb-core') == 'started' then
+		local Framework = exports['qb-core']:GetCoreObject()
+		local Player = Framework.Functions.GetPlayer(src)
+		local Name = Player.PlayerData.charinfo.firstname..' '..Player.PlayerData.charinfo.lastname
+		return Name
+	elseif GetResourceState('es_extended') == 'started' then
+		local Framework = exports['es_extended']:getSharedObject()
+		local FirstName, LastName = Framework.GetPlayerFromId(source)?.variables?.firstName, Framework.GetPlayerFromId(source)?.variables?.lastName
+		if FirstName == nil or LastName == nil then
+			FirstName, LastName = Framework.GetPlayerFromId(source)?.firstname, Framework.GetPlayerFromId(source)?.lastname
+		elseif FirstName == nil or LastName == nil then
+			FirstName, LastName = Framework.GetPlayerFromId(source)?.firstName, Framework.GetPlayerFromId(source)?.lastName
+		end
+		local Name = FirstName..' '..LastName
+		return Name
+	else
+		return GetPlayerName(src)
+	end
+end
+
+local function handleRadioChange(src, channel)
+    if channel == 0 then return end
+    local name = GetPlayerNames(src)
+    if not name or name == '' then name = 'Unknown_'..src end
+    local formattedChannel = FormatRadioListChannel(channel)
+    if not radioLists[formattedChannel] then radioLists[formattedChannel] = {} end
+    radioLists[formattedChannel][#radioLists[formattedChannel]+1] = {Name = name, id = src, Talking = false}
+    TriggerClientEvent('pma-voice:clUpdateRadioList', -1, formattedChannel, radioLists[formattedChannel])
+end
+
+local function RemoveFromChannel(channel, src)
+	for i, player in ipairs(radioLists[channel]) do
+		if player.id == src then
+			table.remove(radioLists[channel], i)
+			TriggerClientEvent('pma-voice:clUpdateRadioList', -1, channel, radioLists[channel])
+			break
+		end
+	end
+end
+
+RegisterNetEvent('pma-voice:setPlayerRadio', function(channel)
+    local src = source
+    handleRadioChange(src, channel)
+end)
+
+RegisterNetEvent('pma-voice:svRemovePlayerFromRadioList', function(plySource)
+	local src = plySource
+	for channel, players in pairs(radioLists) do
+		for i, player in ipairs(players) do
+			if player.id == src then
+				RemoveFromChannel(channel, src)
+				break
+			end
+		end
+	end
+end)
+
+RegisterServerEvent('pma-voice:setTalkingOnRadio', function(Talking, channel)
+	local src = source
+	local formattedChannel = FormatRadioListChannel(channel)
+	for i, player in ipairs(radioLists[formattedChannel]) do
+		if player.id == src then
+			player.Talking = Talking
+			TriggerClientEvent('pma-voice:clUpdateRadioList', -1, formattedChannel, radioLists[formattedChannel])
+			break
+		end
+	end
+end)
+
+AddEventHandler("playerDropped", function()
+    local src = source
+	for channel, players in pairs(radioLists) do
+		for i, player in ipairs(players) do
+			if player.id == src then
+				RemoveFromChannel(channel, src)
+				break
 			end
 		end
 	end

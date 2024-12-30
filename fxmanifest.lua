@@ -3,6 +3,7 @@ game 'common'
 fx_version 'cerulean'
 author 'AvarianKnight'
 description 'VOIP built using FiveM\'s built in mumble.'
+version '7.0.2'
 
 dependencies {
 	'/onesync',
@@ -28,13 +29,11 @@ server_scripts {
 }
 
 files {
-	'ui/*.ogg',
-	'ui/css/*.css',
-	'ui/js/*.js',
-	'ui/index.html',
+  'web/build/index.html',
+  'web/build/**/*',
 }
 
-ui_page 'ui/index.html'
+ui_page 'web/build/index.html'
 
 provides {
 	'mumble-voip',

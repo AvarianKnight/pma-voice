@@ -125,3 +125,7 @@ function type_check(...)
 		end
 	end
 end
+
+function FormatRadioListChannel(channel)
+    return 'channel_' .. channel
+end

@@ -190,7 +190,7 @@ RegisterCommand('+radiotalk', function()
 		if radioChannel > 0 then
 			logger.info('[radio] Start broadcasting, update targets and notify server.')
 			addVoiceTargets(radioData, callData)
-			TriggerServerEvent('pma-voice:setTalkingOnRadio', true)
+			TriggerServerEvent('pma-voice:setTalkingOnRadio', true, radioChannel)
 			radioPressed = true
 			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
@@ -245,7 +245,7 @@ RegisterCommand('-radiotalk', function()
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
 			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
 		end
-		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
+		TriggerServerEvent('pma-voice:setTalkingOnRadio', false, radioChannel)
 	end
 end, false)
 if gameVersion == 'fivem' then
@@ -291,3 +291,15 @@ local function removeRadioDisableBit(bit)
 end
 exports("removeRadioDisableBit", removeRadioDisableBit)
 
+--// Radio List \\--
+
+local radioLists = {}
+
+RegisterNetEvent('pma-voice:clUpdateRadioList', function(channel, list)
+    radioLists[channel] = list
+end)
+
+RegisterNUICallback('radiolist', function(data, cb)
+	local list = radioLists[FormatRadioListChannel(radioChannel)] or {}
+    cb(list)
+end)
