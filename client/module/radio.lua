@@ -291,3 +291,6 @@ local function removeRadioDisableBit(bit)
 end
 exports("removeRadioDisableBit", removeRadioDisableBit)
 
+exports("isPlayerInAnyRadio", function()
+    return radioChannel > 0
+end)
