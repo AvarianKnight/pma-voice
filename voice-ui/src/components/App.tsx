@@ -72,30 +72,18 @@ const App: React.FC = () => {
             if (EnableUI === "") {
                 EnableUI = data.uiEnabled
             }
+            if (data.RadioList !== undefined) {
+                if (Array.isArray(data.RadioList)) {
+                    setRadioList(data.RadioList);
+                }
+            }
         };
 
         window.addEventListener("message", handleMessage);
         fetchNui("uiReady", {});
 
-        const fetchRadioList = () => {
-            if (voice.radioEnabled && voice.radioChannel !== 0) {
-                fetchNui("radiolist", {}, [
-                    {id: 1, Name: "Player 1", Talking: true},
-                    {id: 2, Name: "Player 2", Talking: false},
-                ]).then((data: any) => {
-                    if (Array.isArray(data)) {
-                        setRadioList(data);
-                    }
-                });
-            }
-        };
-
-        fetchRadioList();
-        const intervalId = setInterval(fetchRadioList, 500);
-
         return () => {
             window.removeEventListener("message", handleMessage);
-            clearInterval(intervalId);
         };
     }, [voice.radioEnabled, voice.radioChannel]);
 

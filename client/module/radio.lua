@@ -296,10 +296,8 @@ exports("removeRadioDisableBit", removeRadioDisableBit)
 local radioLists = {}
 
 RegisterNetEvent('pma-voice:clUpdateRadioList', function(channel, list)
-    radioLists[channel] = list
-end)
-
-RegisterNUICallback('radiolist', function(data, cb)
-	local list = radioLists[FormatRadioListChannel(radioChannel)] or {}
-    cb(list)
+    radioLists[channel] = list or {}
+	sendUIMessage({
+		RadioList = radioLists[channel]
+	})
 end)
