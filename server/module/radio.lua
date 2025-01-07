@@ -243,7 +243,8 @@ end)
 RegisterServerEvent('pma-voice:setTalkingOnRadio', function(Talking, channel)
 	local src = source
 	local formattedChannel = FormatRadioListChannel(channel)
-	for i, player in ipairs(radioLists[formattedChannel]) do
+	for ply=1,#radioLists[formattedChannel] do
+		local player = radioLists[formattedChannel][ply]
 		if player.id == src then
 			player.Talking = Talking
 			TriggerClientEvent('pma-voice:clUpdateRadioList', -1, formattedChannel, radioLists[formattedChannel])
