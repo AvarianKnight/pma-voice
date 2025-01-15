@@ -6,6 +6,7 @@ AddStateBagChangeHandler("submix", "", function(bagName, _, value)
 		return logger.warn("Player %s applied submix %s but it isn't valid",
 			tgtId, value)
 	end
+
 	-- we don't want to reset submix if the player is talking on the radio
 	if not value then
 		if not radioData[tgtId] and not callData[tgtId] then
@@ -16,4 +17,11 @@ AddStateBagChangeHandler("submix", "", function(bagName, _, value)
 	end
 	logger.info("%s had their submix set to %s", tgtId, value)
 	MumbleSetSubmixForServerId(tgtId, submixIndicies[value])
+end)
+
+RegisterNetEvent("onPlayerDropped", function(tgtId)
+	if not radioData[tgtId] and not callData[tgtId] then
+		logger.info("Resetting submix for player %s", tgtId)
+		MumbleSetSubmixForServerId(tgtId, -1)
+	end
 end)
