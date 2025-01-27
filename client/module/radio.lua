@@ -195,7 +195,7 @@ RegisterCommand('+radiotalk', function()
 			radioPressed = true
 			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
-			if shouldPlayAnimation then
+			if shouldPlayAnimation and radioAnim.dict then
 				RequestAnimDict(radioAnim.dict)
 			end
 			CreateThread(function()
