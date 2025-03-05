@@ -1,6 +1,10 @@
 local radioChannel = 0
 local radioNames = {}
 local disableRadioAnim = false
+local radioAnim = {
+	dict = "random@arrests",
+	anim = "generic_radio_enter",
+}
 
 ---@return boolean isEnabled if radioEnabled is true and LocalPlayer.state.disableRadio is 0 (no bits set)
 function isRadioEnabled()
@@ -194,8 +198,12 @@ RegisterCommand('+radiotalk', function()
 			radioPressed = true
 			local shouldPlayAnimation = isRadioAnimEnabled()
 			playMicClicks(true)
+			-- localize here so in the off case someone changes this while its in use we
+			-- still remove our dictionary down below here
+			local dict = radioAnim.dict
+			local anim = radioAnim.anim
 			if shouldPlayAnimation then
-				RequestAnimDict('random@arrests')
+				RequestAnimDict(dict)
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
@@ -206,9 +214,9 @@ RegisterCommand('+radiotalk', function()
 						checkFailed = true
 						break
 					end
-					if shouldPlayAnimation and HasAnimDictLoaded("random@arrests") then
-						if not IsEntityPlayingAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 3) then
-							TaskPlayAnim(PlayerPedId(), "random@arrests", "generic_radio_enter", 8.0, 2.0, -1, 50, 2.0, false,
+					if shouldPlayAnimation and HasAnimDictLoaded(dict) then
+						if not IsEntityPlayingAnim(PlayerPedId(), dict, anim, 3) then
+							TaskPlayAnim(PlayerPedId(), dict, anim, 8.0, 2.0, -1, 50, 2.0, false,
 								false,
 							false)
 						end
@@ -225,7 +233,7 @@ RegisterCommand('+radiotalk', function()
 					ExecuteCommand("-radiotalk")
 				end
 				if shouldPlayAnimation then
-					RemoveAnimDict('random@arrests')
+					RemoveAnimDict(dict)
 				end
 			end)
 		else
@@ -243,7 +251,7 @@ RegisterCommand('-radiotalk', function()
 		LocalPlayer.state:set("radioActive", false, true);
 		playMicClicks(false)
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
-			StopAnimTask(PlayerPedId(), "random@arrests", "generic_radio_enter", -4.0)
+			StopAnimTask(PlayerPedId(), radioAnim.dict, radioAnim.anim, -4.0)
 		end
 		TriggerServerEvent('pma-voice:setTalkingOnRadio', false)
 	end
@@ -251,6 +259,17 @@ end, false)
 if gameVersion == 'fivem' then
 	RegisterKeyMapping('+radiotalk', 'Talk over Radio', 'keyboard', GetConvar('voice_defaultRadio', 'LMENU'))
 end
+
+local function setRadioTalkAnim(dict, anim)
+    type_check({dict, "string"}, {anim, "string"})
+    if not DoesAnimDictExist(dict) then
+      return error(("Dict: %s did not exist"):format(dict))
+    end
+    radioAnim.dict = dict
+    radioAnim.anim = anim
+end
+
+exports('setRadioTalkAnim', setRadioTalkAnim)
 
 --- event syncRadio
 --- syncs the players radio, only happens if the radio was set server side.
