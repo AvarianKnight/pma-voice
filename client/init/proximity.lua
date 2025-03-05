@@ -5,6 +5,11 @@ local plyCoords = GetEntityCoords(PlayerPedId())
 proximity = MumbleGetTalkerProximity()
 currentTargets = {}
 
+-- a list of all the players the current client us listening to
+-- the value will be set to false if we didn't actually start listening to them (in situations where their channel didn't exist)
+-- TODO: PR a native to let us get if we're listening to a certain channel.
+local listeners = {}
+
 function orig_addProximityCheck(ply)
 	local tgtPed = GetPlayerPed(ply)
 	local voiceRange = GetConvar('voice_useNativeAudio', 'false') == 'true' and proximity * 3 or proximity
@@ -35,10 +40,12 @@ function addNearbyPlayers()
 
 	for source, _ in pairs(callData) do
 		if source ~= playerServerId then
-			MumbleAddVoiceTargetChannel(voiceTarget, MumbleGetVoiceChannelFromServerId(source))
+			local channel = MumbleGetVoiceChannelFromServerId(source)
+			if channel ~= -1 then
+				MumbleAddVoiceTargetChannel(voiceTarget, channel)
+			end
 		end
 	end
-
 
 	local players = GetActivePlayers()
 	for i = 1, #players do
@@ -53,9 +60,34 @@ function addNearbyPlayers()
 			-- 	currentTargets[serverId] = 15.0
 			-- end
 			-- logger.verbose('Added %s as a voice target', serverId)
-			MumbleAddVoiceTargetChannel(voiceTarget, MumbleGetVoiceChannelFromServerId(serverId))
+			local channel = MumbleGetVoiceChannelFromServerId(serverId)
+			if channel ~= -1 then
+				MumbleAddVoiceTargetChannel(voiceTarget, channel)
+			end
 		end
 	end
+end
+
+function addChannelListener(serverId)
+	-- not in the documentation, but this will return -1 whenever the client isn't in a channel
+	local channel = MumbleGetVoiceChannelFromServerId(serverId)
+	if channel ~= -1 then
+		MumbleAddVoiceChannelListen(channel)
+		logger.verbose("Adding %s to listen table", serverId)
+	end
+	listeners[serverId] = channel ~= -1
+end
+
+function removeChannelListener(serverId)
+	if listeners[serverId] then
+		local channel = MumbleGetVoiceChannelFromServerId(serverId)
+		if channel ~= -1 then
+			MumbleRemoveVoiceChannelListen(channel)
+		end
+		logger.verbose("Removing %s from listen table", serverId)
+	end
+	-- remove the listener if they exist
+	listeners[serverId] = nil
 end
 
 function setSpectatorMode(enabled)
@@ -67,8 +99,7 @@ function setSpectatorMode(enabled)
 			local ply = players[i]
 			local serverId = GetPlayerServerId(ply)
 			if serverId == playerServerId then goto skip_loop end
-			logger.verbose("Adding %s to listen table", serverId)
-			MumbleAddVoiceChannelListen(MumbleGetVoiceChannelFromServerId(serverId))
+			addChannelListener(serverId)
 			::skip_loop::
 		end
 	else
@@ -76,24 +107,33 @@ function setSpectatorMode(enabled)
 			local ply = players[i]
 			local serverId = GetPlayerServerId(ply)
 			if serverId == playerServerId then goto skip_loop end
-			logger.verbose("Removing %s from listen table", serverId)
-			MumbleRemoveVoiceChannelListen(MumbleGetVoiceChannelFromServerId(serverId))
+			removeChannelListener(serverId)
 			::skip_loop::
+		end
+
+		-- cleanup table if we stop listening
+		listeners = {}
+	end
+end
+
+function tryListeningToFailedListeners()
+	for src, isListening in pairs(listeners) do
+		-- if we failed to listen before we'll be set to false
+		if not isListening then
+			addChannelListener(src)
 		end
 	end
 end
 
 RegisterNetEvent('onPlayerJoining', function(serverId)
 	if isListenerEnabled then
-		MumbleAddVoiceChannelListen(MumbleGetVoiceChannelFromServerId(serverId))
-		logger.verbose("Adding %s to listen table", serverId)
+		addChannelListener(serverId)
 	end
 end)
 
 RegisterNetEvent('onPlayerDropped', function(serverId)
 	if isListenerEnabled then
-		MumbleRemoveVoiceChannelListen(MumbleGetVoiceChannelFromServerId(serverId))
-		logger.verbose("Removing %s from listen table", serverId)
+		removeChannelListener(serverId)
 	end
 end)
 
@@ -114,7 +154,7 @@ CreateThread(function()
 	})
 	while true do
 		-- wait for mumble to reconnect
-		while not MumbleIsConnected() do
+		while not MumbleIsConnected() or not isInitialized do
 			Wait(100)
 		end
 		-- Leave the check here as we don't want to do any of this logic
@@ -140,6 +180,7 @@ CreateThread(function()
 			elseif isListenerEnabled and not isSpectating and not listenerOverride then
 				setSpectatorMode(false)
 			end
+			tryListeningToFailedListeners()
 		end
 
 		Wait(GetConvarInt('voice_refreshRate', 200))
