@@ -12,8 +12,6 @@ A voice system designed around the use of FiveM/RedM internal mumble server.
 
 Please report any issues you have in the GitHub [Issues](https://github.com/AvarianKnight/pma-voice/issues)
 
-### NOTE: It is expected for servers to be on the latest recommended version, which you can find [here for Windows](https://runtime.fivem.net/artifacts/fivem/build_server_windows/master/) and [here for Linux](https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/).
-
 # Compatibility Notice:
 
 This script is not compatible with other voice systems (duh), that means if you have vMenus voice chat you will **have** to [disable](https://docs.vespura.com/vmenu/faq/#q-how-do-i-disable-voice-chat) it.
