@@ -10,11 +10,12 @@ AddEventHandler('onClientResourceStart', function(resource)
 		local micClicksKvp = GetResourceKvpString('pma-voice_enableMicClicks')
 		if not micClicksKvp then
 			SetResourceKvp('pma-voice_enableMicClicks', "true")
+			micClicks = true
 		else
 			if micClicksKvp ~= 'true' and micClicksKvp ~= 'false' then
 				error('Invalid Kvp, throwing error for automatic fix')
 			end
-			micClicks = micClicksKvp
+			micClicks = micClicksKvp == "true"
 		end
 	end)
 
@@ -22,7 +23,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 		logger.warn(
 			'Failed to load resource Kvp, likely was inappropriately modified by another server, resetting the Kvp.')
 		SetResourceKvp('pma-voice_enableMicClicks', "true")
-		micClicks = 'true'
+		micClicks = true
 	end
 	sendUIMessage({
 		uiEnabled = GetConvarInt("voice_enableUi", 1) == 1,
