@@ -10,7 +10,7 @@ AddEventHandler('onClientResourceStart', function(resource)
 		local micClicksKvp = GetResourceKvpString('pma-voice_enableMicClicks')
 		if not micClicksKvp then
 			SetResourceKvp('pma-voice_enableMicClicks', "true")
-      micClicks = true
+			micClicks = true
 		else
 			if micClicksKvp ~= 'true' and micClicksKvp ~= 'false' then
 				error('Invalid Kvp, throwing error for automatic fix')
