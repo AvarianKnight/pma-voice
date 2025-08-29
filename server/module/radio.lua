@@ -55,22 +55,47 @@ function addPlayerToRadio(source, radioChannel)
 	if not canJoinChannel(source, radioChannel) then
 		-- remove the player from the radio client side
 		TriggerClientEvent("pma-voice:radioChangeRejected", source)
-		TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source)
+		TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source, radioChannel)
 		return false
 	end
 	logger.verbose('[radio] Added %s to radio %s', source, radioChannel)
 
-	-- check if the channel exists, if it does set the varaible to it
-	-- if not create it (basically if not radiodata make radiodata)
+	-- Initialize channel data structure if it doesn't exist
 	radioData[radioChannel] = radioData[radioChannel] or {}
 	local plyName = radioNameGetter(source)
 	for player, _ in pairs(radioData[radioChannel]) do
-		TriggerClientEvent('pma-voice:addPlayerToRadio', player, source, plyName)
+		TriggerClientEvent('pma-voice:addPlayerToRadio', player, source, plyName, radioChannel)
 	end
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	voiceData[source].radio = radioChannel
 	radioData[radioChannel][source] = false
 	TriggerClientEvent('pma-voice:syncRadioData', source, radioData[radioChannel],
+		GetConvarInt("voice_syncPlayerNames", 0) == 1 and plyName)
+	return true
+end
+
+--- adds a player to the secondary radio channel
+---@param source number the player to add to the channel
+---@param radioChannel number the channel to add them to
+function addPlayerToSecondaryRadio(source, radioChannel)
+	if not canJoinChannel(source, radioChannel) then
+		-- remove the player from the secondary radio client side
+		TriggerClientEvent("pma-voice:radioChangeRejected", source)
+		TriggerClientEvent('pma-voice:removePlayerFromRadio', source, source, radioChannel)
+		return false
+	end
+	logger.verbose('[radio] Added %s to secondary radio %s', source, radioChannel)
+
+	-- Initialize channel data structure if it doesn't exist
+	radioData[radioChannel] = radioData[radioChannel] or {}
+	local plyName = radioNameGetter(source)
+	for player, _ in pairs(radioData[radioChannel]) do
+		TriggerClientEvent('pma-voice:addPlayerToRadio', player, source, plyName, radioChannel)
+	end
+	voiceData[source] = voiceData[source] or defaultTable(source)
+	voiceData[source].secondaryRadio = radioChannel
+	radioData[radioChannel][source] = false
+	TriggerClientEvent('pma-voice:syncSecondaryRadioData', source, radioData[radioChannel],
 		GetConvarInt("voice_syncPlayerNames", 0) == 1 and plyName)
 	return true
 end
@@ -82,23 +107,39 @@ function removePlayerFromRadio(source, radioChannel)
 	logger.verbose('[radio] Removed %s from radio %s', source, radioChannel)
 	radioData[radioChannel] = radioData[radioChannel] or {}
 	for player, _ in pairs(radioData[radioChannel]) do
-		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source)
+		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source, radioChannel)
 	end
 	radioData[radioChannel][source] = nil
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	voiceData[source].radio = 0
 end
 
--- TODO: Implement this in a way that allows players to be on multiple channels
+--- removes a player from the specified secondary channel
+---@param source number the player to remove
+---@param radioChannel number the current channel to remove them from
+function removePlayerFromSecondaryRadio(source, radioChannel)
+	logger.verbose('[radio] Removed %s from secondary radio %s', source, radioChannel)
+	radioData[radioChannel] = radioData[radioChannel] or {}
+	for player, _ in pairs(radioData[radioChannel]) do
+		TriggerClientEvent('pma-voice:removePlayerFromRadio', player, source, radioChannel)
+	end
+	radioData[radioChannel][source] = nil
+	voiceData[source] = voiceData[source] or defaultTable(source)
+	voiceData[source].secondaryRadio = 0
+end
+
 --- sets the players current radio channel
 ---@param source number the player to set the channel of
----@param _radioChannel number the radio channel to set them to (or 0 to remove them from radios)
-function setPlayerRadio(source, _radioChannel)
+---@param _radioChannel number the radio channel to set them to (or 0 to remove them from radios)  
+---@param radioType string optional radio type, "primary" or "secondary" (defaults to "primary")
+function setPlayerRadio(source, _radioChannel, radioType)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	local isResource = GetInvokingResource()
 	local plyVoice = voiceData[source]
 	local radioChannel = tonumber(_radioChannel)
+	radioType = radioType or "primary"
+	
 	if not radioChannel then
 		-- only full error if its sent from another server-side resource
 		if isResource then
@@ -108,39 +149,70 @@ function setPlayerRadio(source, _radioChannel)
 				type(_radioChannel))
 		end
 	end
+	
 	if isResource then
 		-- got set in a export, need to update the client to tell them that their radio
 		-- changed
-		TriggerClientEvent('pma-voice:clSetPlayerRadio', source, radioChannel)
+		TriggerClientEvent('pma-voice:clSetPlayerRadio', source, radioChannel, radioType)
 	end
-	if radioChannel ~= 0 then
-		if plyVoice.radio > 0 then
-			removePlayerFromRadio(source, plyVoice.radio)
+	
+	if radioType == "secondary" then
+		-- Handle secondary radio
+		voiceData[source] = voiceData[source] or defaultTable(source)
+		if not voiceData[source].secondaryRadio then
+			voiceData[source].secondaryRadio = 0
 		end
-		local wasAdded = addPlayerToRadio(source, radioChannel)
-		Player(source).state.radioChannel = wasAdded and radioChannel or 0
-	elseif radioChannel == 0 then
-		removePlayerFromRadio(source, plyVoice.radio)
-		Player(source).state.radioChannel = 0
+		
+		if radioChannel ~= 0 then
+			if voiceData[source].secondaryRadio > 0 then
+				removePlayerFromSecondaryRadio(source, voiceData[source].secondaryRadio)
+			end
+			local wasAdded = addPlayerToSecondaryRadio(source, radioChannel)
+			Player(source).state.secondaryRadioChannel = wasAdded and radioChannel or 0
+		elseif radioChannel == 0 then
+			if voiceData[source].secondaryRadio > 0 then
+				removePlayerFromSecondaryRadio(source, voiceData[source].secondaryRadio)
+			end
+			Player(source).state.secondaryRadioChannel = 0
+		end
+	else
+		-- Handle primary radio (backwards compatibility)
+		if radioChannel ~= 0 then
+			if plyVoice.radio > 0 then
+				removePlayerFromRadio(source, plyVoice.radio)
+			end
+			local wasAdded = addPlayerToRadio(source, radioChannel)
+			Player(source).state.radioChannel = wasAdded and radioChannel or 0
+		elseif radioChannel == 0 then
+			removePlayerFromRadio(source, plyVoice.radio)
+			Player(source).state.radioChannel = 0
+		end
 	end
 end
 
 exports('setPlayerRadio', setPlayerRadio)
+exports('addPlayerToSecondaryRadio', addPlayerToSecondaryRadio)
+exports('removePlayerFromSecondaryRadio', removePlayerFromSecondaryRadio)
 
-RegisterNetEvent('pma-voice:setPlayerRadio', function(radioChannel)
-	setPlayerRadio(source, radioChannel)
+RegisterNetEvent('pma-voice:setPlayerRadio', function(radioChannel, radioType)
+	setPlayerRadio(source, radioChannel, radioType)
 end)
 
 --- syncs the player talking across all radio members
 ---@param talking boolean sets if the palyer is talking.
-function setTalkingOnRadio(talking)
+---@param radioType string the radio type they're talking on
+function setTalkingOnRadio(talking, radioType)
 	if GetConvarInt('voice_enableRadios', 1) ~= 1 then return end
 	voiceData[source] = voiceData[source] or defaultTable(source)
 	local plyVoice = voiceData[source]
-	local radioTbl = radioData[plyVoice.radio]
+	radioType = radioType or "primary"
+	
+	local radioChannel = (radioType == "secondary") and plyVoice.secondaryRadio or plyVoice.radio
+	local radioTbl = radioData[radioChannel]
+	
 	if radioTbl then
 		radioTbl[source] = talking
-		logger.verbose('[radio] Set %s to talking: %s on radio %s', source, talking, plyVoice.radio)
+		logger.verbose('[radio] Set %s to talking: %s on %s radio %s', source, talking, radioType, radioChannel)
 		for player, _ in pairs(radioTbl) do
 			if player ~= source then
 				TriggerClientEvent('pma-voice:setTalkingOnRadio', player, source, talking)

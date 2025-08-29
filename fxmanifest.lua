@@ -28,13 +28,12 @@ server_scripts {
 }
 
 files {
-	'ui/*.ogg',
-	'ui/css/*.css',
-	'ui/js/*.js',
-	'ui/index.html',
+	'ui/dist/*.ogg',
+	'ui/dist/assets/*',
+	'ui/dist/index.html',
 }
 
-ui_page 'ui/index.html'
+ui_page 'ui/dist/index.html'
 
 provides {
 	'mumble-voip',
@@ -59,6 +58,7 @@ convar_category 'PMA-Voice' {
 		{ "Enable submix",                         "$voice_enableSubmix",         "CV_INT",    "1" },
 		{ "Enable radio animation",                "$voice_enableRadioAnim",      "CV_INT",    "0" },
 		{ "Radio key",                             "$voice_defaultRadio",         "CV_STRING", "LMENU" },
+		{ "Radio switch key",                      "$voice_defaultRadioSwitch",   "CV_STRING", "J" },
 		{ "UI refresh rate",                       "$voice_uiRefreshRate",        "CV_INT",    "200" },
 		{ "Allow players to set audio intent",     "$voice_allowSetIntent",       "CV_INT",    "1" },
 		{ "External mumble server address",        "$voice_externalAddress",      "CV_STRING", "" },

@@ -19,13 +19,14 @@ RegisterNetEvent('pma-voice:removePlayerFromCall', function(plySource)
 		end
 		callData = {}
 		MumbleClearVoiceTargetPlayers(voiceTarget)
-		addVoiceTargets((radioPressed and isRadioEnabled()) and radioData or {}, callData)
+		addVoiceTargets((radioPressed and isRadioEnabled()) and getCombinedRadioData() or {}, callData)
 	else
 		callData[plySource] = nil
-		toggleVoice(plySource, radioData[plySource], 'call')
+		local isOnRadio = radioData[plySource] or secondaryRadioData[plySource]
+		toggleVoice(plySource, isOnRadio, 'call')
 		if MumbleIsPlayerTalking(PlayerId()) then
 			MumbleClearVoiceTargetPlayers(voiceTarget)
-			addVoiceTargets((radioPressed and isRadioEnabled()) and radioData or {}, callData)
+			addVoiceTargets((radioPressed and isRadioEnabled()) and getCombinedRadioData() or {}, callData)
 		end
 	end
 end)

@@ -19,7 +19,8 @@ function defaultTable(source)
 		radio = 0,
 		call = 0,
 		lastRadio = 0,
-		lastCall = 0
+		lastCall = 0,
+		secondaryRadio = 0
 	}
 end
 
@@ -32,6 +33,7 @@ function handleStateBagInitilization(source)
 		plyState:set('proximity', {}, true)
 		plyState:set('callChannel', 0, true)
 		plyState:set('radioChannel', 0, true)
+		plyState:set('secondaryRadioChannel', 0, true)
 		plyState:set('voiceIntent', 'speech', true)
 		-- We want to save voice inits because we'll automatically reinitalize calls and channels
 		plyState:set('pmaVoiceInit', true, false)
@@ -114,6 +116,10 @@ AddEventHandler("playerDropped", function()
 
 		if plyData.radio ~= 0 then
 			removePlayerFromRadio(source, plyData.radio)
+		end
+
+		if plyData.secondaryRadio ~= 0 then
+			removePlayerFromSecondaryRadio(source, plyData.secondaryRadio)
 		end
 
 		if plyData.call ~= 0 then

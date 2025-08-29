@@ -11,6 +11,7 @@ local volumes = {
 
 radioEnabled, radioPressed, mode = true, false, GetConvarInt('voice_defaultVoiceMode', 2)
 radioData = {}
+secondaryRadioData = {}
 callData = {}
 submixIndicies = {}
 --- function setVolume
@@ -180,6 +181,7 @@ function resyncVolume(volumeType, newVolume)
 		resyncVolume("call", newVolume)
 	elseif volumeType == "radio" then
 		updateVolumes(radioData, newVolume)
+		updateVolumes(secondaryRadioData, newVolume)
 	elseif volumeType == "call" then
 		updateVolumes(callData, newVolume)
 	end
@@ -311,6 +313,12 @@ end
 --- theres no delay in talking.
 function handleRadioAndCallInit()
 	for tgt, enabled in pairs(radioData) do
+		if tgt ~= playerServerId then
+			toggleVoice(tgt, enabled, 'radio')
+		end
+	end
+	
+	for tgt, enabled in pairs(secondaryRadioData) do
 		if tgt ~= playerServerId then
 			toggleVoice(tgt, enabled, 'radio')
 		end

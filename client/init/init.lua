@@ -32,11 +32,16 @@ AddEventHandler('onClientResourceStart', function(resource)
 	})
 
 	local radioChannel = LocalPlayer.state.radioChannel or 0
+	local secondaryRadioChannel = LocalPlayer.state.secondaryRadioChannel or 0
 	local callChannel = LocalPlayer.state.callChannel or 0
 
 	-- Reinitialize channels if they're set.
 	if radioChannel ~= 0 then
 		setRadioChannel(radioChannel)
+	end
+
+	if secondaryRadioChannel ~= 0 then
+		setSecondaryRadioChannel(secondaryRadioChannel)
 	end
 
 	if callChannel ~= 0 then
@@ -45,6 +50,15 @@ AddEventHandler('onClientResourceStart', function(resource)
 	if not LocalPlayer.state.disableRadio then
 		LocalPlayer.state:set("disableRadio", 0, true)
 	end
+
+	-- Fix initialization after resource restart
+	Citizen.CreateThread(function()
+		Citizen.Wait(5000)
+		-- Force initialization if mumble is connected but not initialized after restart
+		if MumbleIsConnected() and not isInitialized then
+			handleInitialState()
+		end
+	end)
 
 	print('Script initialization finished.')
 end)

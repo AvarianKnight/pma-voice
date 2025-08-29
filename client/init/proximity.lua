@@ -147,6 +147,7 @@ end)
 local lastTalkingStatus = false
 local lastRadioStatus = false
 local voiceState = "proximity"
+
 CreateThread(function()
 	TriggerEvent('chat:addSuggestion', '/muteply', 'Mutes the player with the specified id', {
 		{ name = "player id", help = "the player to toggle mute" },

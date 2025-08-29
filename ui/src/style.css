@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+body {
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+
+.voiceInfo {
+	font-family: 'Inter', system-ui, -apple-system, sans-serif;
+	position: fixed;
+	text-align: right;
+	bottom: 5px;
+	padding: 0;
+	right: 8px;
+	font-size: 13px;
+	font-weight: 500;
+	color: rgba(156, 163, 175, 0.9); /* Modern gray */
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8),
+	             0 0 8px rgba(0, 0, 0, 0.6);
+	line-height: 1.2;
+}
+
+.talking {
+	color: rgba(34, 197, 94, 0.95);
+	text-shadow: 0 0 8px rgba(34, 197, 94, 0.4),
+	             0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.active {
+	color: rgba(249, 115, 22, 0.95);
+	text-shadow: 0 0 8px rgba(249, 115, 22, 0.3),
+	             0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+p {
+	margin: 0;
+	margin-bottom: 0px;
+	padding: 1px 0;
+	transition: all 0.15s ease;
+}

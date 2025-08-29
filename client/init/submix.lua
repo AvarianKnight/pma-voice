@@ -9,7 +9,7 @@ AddStateBagChangeHandler("submix", "", function(bagName, _, value)
 
 	-- we don't want to reset submix if the player is talking on the radio
 	if not value then
-		if not radioData[tgtId] and not callData[tgtId] then
+		if not radioData[tgtId] and not secondaryRadioData[tgtId] and not callData[tgtId] then
 			logger.info("Resetting submix for player %s", tgtId)
 			MumbleSetSubmixForServerId(tgtId, -1)
 		end
@@ -20,7 +20,7 @@ AddStateBagChangeHandler("submix", "", function(bagName, _, value)
 end)
 
 RegisterNetEvent("onPlayerDropped", function(tgtId)
-	if not radioData[tgtId] and not callData[tgtId] then
+	if not radioData[tgtId] and not secondaryRadioData[tgtId] and not callData[tgtId] then
 		logger.info("Resetting submix for player %s", tgtId)
 		MumbleSetSubmixForServerId(tgtId, -1)
 	end
