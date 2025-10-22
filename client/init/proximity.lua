@@ -35,8 +35,15 @@ function addNearbyPlayers()
 	currentTargets = {}
 	MumbleClearVoiceTargetChannels(voiceTarget)
 	if LocalPlayer.state.disableProximity then return end
-	MumbleAddVoiceChannelListen(LocalPlayer.state.assignedChannel)
-	MumbleAddVoiceTargetChannel(voiceTarget, LocalPlayer.state.assignedChannel)
+
+	local assignedChannel = LocalPlayer.state.assignedChannel
+	if assignedChannel and assignedChannel ~= 0 then
+		local channel = MumbleGetVoiceChannelFromServerId(playerServerId)
+		if channel ~= -1 and channel == assignedChannel then
+			MumbleAddVoiceChannelListen(assignedChannel)
+			MumbleAddVoiceTargetChannel(voiceTarget, assignedChannel)
+		end
+	end
 
 	for source, _ in pairs(callData) do
 		if source ~= playerServerId then
