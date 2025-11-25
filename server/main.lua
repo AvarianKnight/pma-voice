@@ -68,17 +68,10 @@ CreateThread(function()
 		and _3dAudio == 'not-set'
 		and _2dAudio == 'not-set'
 	then
-		SetConvarReplicated('voice_useNativeAudio', 'true')
-		if sendingRangeOnly == 'not-set' then
-			SetConvarReplicated('voice_useSendingRangeOnly', 'true')
-			logger.info(
-				'No convars detected for voice mode, defaulting to \'setr voice_useNativeAudio true\' and \'setr voice_useSendingRangeOnly true\'')
-		else
 			logger.info('No voice mod detected, defaulting to \'setr voice_useNativeAudio true\'')
-		end
-	elseif sendingRangeOnly == 'not-set' then
+	elseif sendingRangeOnly == 'true' then
 		logger.warn(
-			"It's recommended to have 'voice_useSendingRangeOnly' set to true, you can do that with 'setr voice_useSendingRangeOnly true', this prevents players who directly join the mumble server from broadcasting to players.")
+			"It's recommended to have 'voice_useSendingRangeOnly' set to false, you can do that with 'setr voice_useSendingRangeOnly false', this makes clients ignore the position information sent from the client.")
 	end
 
 	local radioVolume = GetConvarInt("voice_defaultRadioVolume", 30)
