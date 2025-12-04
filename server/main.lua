@@ -68,7 +68,8 @@ CreateThread(function()
 		and _3dAudio == 'not-set'
 		and _2dAudio == 'not-set'
 	then
-			logger.info('No voice mod detected, defaulting to \'setr voice_useNativeAudio true\'')
+		SetConvarReplicated('voice_useNativeAudio', 'true')
+		logger.info('No voice mod detected, defaulting to \'setr voice_useNativeAudio true\'')
 	elseif sendingRangeOnly == 'true' then
 		logger.warn(
 			"It's recommended to have 'voice_useSendingRangeOnly' set to false, you can do that with 'setr voice_useSendingRangeOnly false', this makes clients ignore the position information sent from the client.")
