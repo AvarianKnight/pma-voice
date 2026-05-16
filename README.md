@@ -59,6 +59,8 @@ All of the configs here are set using `setr [voice_configOption] [int]` OR `setr
 | voice_defaultCycle           |   F11   | The default key to cycle the players proximity. You can find a list of valid keys [in the Cfx docs](https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/)                | string       |
 | voice_defaultRadioVolume          |   30   | The default volume to set the radio to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
 | voice_defaultCallVolume          |   60   | The default volume to set the call to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
+| voice_onClickVolume          |   10   | The default volume to set the radio turn on mic click's to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
+| voice_offClickVolume          |   3   | The default volume to set the radio turn off mic click's to (has to be between 1 and 100) *NOTE: Only new joins will have the new value, players that already joined will not.* | float       |
 | voice_defaultVoiceMode  |  2      | Default proximity voice value when player joins server. (Voice Modes; 1:Whisper, 2:Normal, 3:Shouting) | int      |
 
 ### Call & Radio
@@ -111,6 +113,8 @@ This would only allow the superadmin group to mute players.
 | [setCallChannel](docs/client-setters/setCallChannel.md)      | Set call channel            | int          |
 | [setRadioVolume](docs/client-setters/setRadioVolume.md)      | Set radio volume for player | int          |
 | [setCallVolume](docs/client-setters/setCallVolume.md)        | Set call volume for player  | int          |
+| [setMicClickOnVolume](docs/client-setters/setMicClickOnVolume.md)      | Set mic click on volume for player | int          |
+| [setMicClickOffVolume](docs/client-setters/setCallVolume.md)        | Set mic click off volume for player  | int          |
 | [addPlayerToRadio](docs/client-setters/setRadioChannel.md)      | Set radio channel        | int          |
 | [addPlayerToCall](docs/client-setters/setCallChannel.md)       | Set call channel         | int          |
 | [removePlayerFromRadio](docs/client-setters/removePlayerFromRadio.md) | Remove player from radio |              |
