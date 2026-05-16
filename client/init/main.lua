@@ -51,6 +51,18 @@ end)
 exports('getCallVolume', function()
 	return volumes['call'] * 100
 end)
+exports('setMicClickOnVolume', function(vol)
+	setVolume(vol, 'click_on')
+end)
+exports('getMicClickOnVolume', function()
+	return volumes['click_on'] * 100
+end)
+exports('setMicClickOffVolume', function(vol)
+	setVolume(vol, 'click_off')
+end)
+exports('getMicClickOffVolume', function()
+	return volumes['click_off'] * 100
+end)
 
 
 -- default submix incase people want to fiddle with it.
