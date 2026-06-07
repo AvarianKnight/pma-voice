@@ -4,6 +4,8 @@ voiceTarget = 1
 
 gameVersion = GetGameName()
 
+stateBagStrictMode = GetConvarBool('sv_stateBagStrictMode', false)
+
 -- these are just here to satisfy linting
 if not IsDuplicityVersion() then
 	LocalPlayer = LocalPlayer
@@ -124,4 +126,14 @@ function type_check(...)
 			error(("Invalid type sent to argument #%s, expected %s, got %s"):format(i, table.concat(var, "|"), varType))
 		end
 	end
+end
+
+--- applies or clears a bit in the disableRadio bitmask. shared so the client
+--- (when strict mode is off) and the server (when it is on) compute it the same
+---@param curVal number the current bitmask value
+---@param bit number the bit to set or clear
+---@param shouldAdd boolean true to set the bit, false to clear it
+---@return number newVal the updated bitmask
+function applyRadioDisableBit(curVal, bit, shouldAdd)
+	return shouldAdd and (curVal | bit) or (curVal & (~bit))
 end

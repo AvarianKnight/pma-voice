@@ -207,7 +207,7 @@ RegisterCommand('+radiotalk', function()
 			end
 			CreateThread(function()
 				TriggerEvent("pma-voice:radioActive", true)
-				LocalPlayer.state:set("radioActive", true, true);
+				setReplicatedState("radioActive", true);
 				local checkFailed = false
 				while radioPressed do
 					local ped = PlayerPedId()
@@ -249,7 +249,7 @@ RegisterCommand('-radiotalk', function()
 		MumbleClearVoiceTargetPlayers(voiceTarget)
 		addVoiceTargets(callData)
 		TriggerEvent("pma-voice:radioActive", false)
-		LocalPlayer.state:set("radioActive", false, true);
+		setReplicatedState("radioActive", false);
 		playMicClicks(false)
 		if GetConvarInt('voice_enableRadioAnim', 1) == 1 then
 			StopAnimTask(PlayerPedId(), radioAnim.dict, radioAnim.anim, -4.0)
@@ -296,8 +296,10 @@ end
 --- adds the bit to the disableRadio bits
 ---@param bit number the bit to add
 local function addRadioDisableBit(bit)
-	local curVal = LocalPlayer.state.disableRadio or 0
-	curVal = curVal | bit
+	if stateBagStrictMode then
+		return TriggerServerEvent('pma-voice:setRadioDisableBit', bit, true)
+	end
+	local curVal = applyRadioDisableBit(LocalPlayer.state.disableRadio or 0, bit, true)
 	LocalPlayer.state:set("disableRadio", curVal, true)
 end
 exports("addRadioDisableBit", addRadioDisableBit)
@@ -305,8 +307,10 @@ exports("addRadioDisableBit", addRadioDisableBit)
 --- removes the bit from disableRadio
 ---@param bit number the bit to remove
 local function removeRadioDisableBit(bit)
-	local curVal = LocalPlayer.state.disableRadio or 0
-	curVal = curVal & (~bit)
+	if stateBagStrictMode then
+		return TriggerServerEvent('pma-voice:setRadioDisableBit', bit, false)
+	end
+	local curVal = applyRadioDisableBit(LocalPlayer.state.disableRadio or 0, bit, false)
 	LocalPlayer.state:set("disableRadio", curVal, true)
 end
 exports("removeRadioDisableBit", removeRadioDisableBit)

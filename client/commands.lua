@@ -8,7 +8,7 @@ RegisterCommand('setvoiceintent', function(source, args)
 		elseif intent == 'music' then
 			MumbleSetAudioInputIntent(`music`)
 		end
-		LocalPlayer.state:set('voiceIntent', intent, true)
+		setReplicatedState('voiceIntent', intent)
 	end
 end)
 TriggerEvent('chat:addSuggestion', '/setvoiceintent', 'Sets the players voice intent', {
@@ -35,11 +35,11 @@ end)
 function setProximityState(proximityRange, isCustom)
 	local voiceModeData = Cfg.voiceModes[mode]
 	MumbleSetTalkerProximity(proximityRange + 0.0)
-	LocalPlayer.state:set('proximity', {
+	setReplicatedState('proximity', {
 		index = mode,
 		distance = proximityRange,
 		mode = isCustom and "Custom" or voiceModeData[2],
-	}, true)
+	})
 	sendUIMessage({
 		-- JS expects this value to be - 1, "custom" voice is on the last index
 		voiceMode = isCustom and #Cfg.voiceModes or mode - 1

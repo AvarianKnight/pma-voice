@@ -26,11 +26,11 @@ AddEventHandler('mumbleConnected', function(address, isReconnecting)
 	logger.log('Connecting to mumble, setting targets.')
 	-- don't try to set channel instantly, we're still getting data.
 	local voiceModeData = Cfg.voiceModes[mode]
-	LocalPlayer.state:set('proximity', {
+	setReplicatedState('proximity', {
 		index = mode,
 		distance = voiceModeData[1],
 		mode = voiceModeData[2],
-	}, true)
+	})
 
 	handleInitialState()
 

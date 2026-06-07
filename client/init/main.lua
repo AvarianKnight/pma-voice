@@ -24,7 +24,7 @@ function setVolume(volume, volumeType)
 	if volumeType then
 		local volumeTbl = volumes[volumeType]
 		if volumeTbl then
-			LocalPlayer.state:set(volumeType, volume, true)
+			setReplicatedState(volumeType, volume)
 			volumes[volumeType] = volumeFraction
 			resyncVolume(volumeType, volumeFraction)
 		else
@@ -33,7 +33,7 @@ function setVolume(volume, volumeType)
 	else
 		for volumeType, _ in pairs(volumes) do
 			volumes[volumeType] = volumeFraction
-			LocalPlayer.state:set(volumeType, volume, true)
+			setReplicatedState(volumeType, volume)
 		end
 		resyncVolume("all", volumeFraction)
 	end

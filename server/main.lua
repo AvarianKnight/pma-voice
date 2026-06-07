@@ -37,6 +37,10 @@ function handleStateBagInitilization(source)
 		plyState:set('pmaVoiceInit', true, false)
 	end
 
+	if stateBagStrictMode and plyState.disableRadio == nil then
+		plyState:set('disableRadio', 0, true)
+	end
+
 	local assignedChannel = firstFreeChannel()
 	plyState:set('assignedChannel', assignedChannel, true)
 	if assignedChannel ~= 0 then

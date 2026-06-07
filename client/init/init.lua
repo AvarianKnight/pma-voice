@@ -42,7 +42,8 @@ AddEventHandler('onClientResourceStart', function(resource)
 	if callChannel ~= 0 then
 		setCallChannel(callChannel)
 	end
-	if not LocalPlayer.state.disableRadio then
+	-- under strict mode the server seeds this instead (clients can't replicate)
+	if not stateBagStrictMode and not LocalPlayer.state.disableRadio then
 		LocalPlayer.state:set("disableRadio", 0, true)
 	end
 
