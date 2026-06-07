@@ -13,6 +13,7 @@ RegisterCommand('muteply', (source, args) => {
 		// that they're currently muted, so we'll clear the timeout and unmute
 		if (mutedPlayers[mutePly]) {
 			clearTimeout(mutedPlayers[mutePly]);
+			delete mutedPlayers[mutePly];
 			MumbleSetPlayerMuted(mutePly, isMuted)
 			Player(mutePly).state.muted = isMuted;
 			return;
