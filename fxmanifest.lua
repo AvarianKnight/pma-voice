@@ -23,10 +23,7 @@ client_scripts {
 	'client/*.lua',
 }
 
-server_scripts {
-	'server/**/*.lua',
-	'server/**/*.js'
-}
+server_script 'server/**/*.lua'
 
 files {
 	'ui/*.ogg',

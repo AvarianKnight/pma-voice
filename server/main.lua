@@ -149,3 +149,31 @@ end
 
 exports('getPlayersInRadioChannel', getPlayersInRadioChannel)
 exports('GetPlayersInRadioChannel', getPlayersInRadioChannel)
+
+local mutedPlayers = {}
+-- now implemented in Lua since FiveM introduced ClearTimeout (paired with local timeoutId = SetTimeout(ms, handler))
+-- muteply instead of mute because mute conflicts with rp-radio
+RegisterCommand('muteply', function(source, args)
+	local mutePly = tonumber(args[1])
+	local duration = tonumber(args[2]) or 900
+	if mutePly and isValidPlayer(mutePly) then
+		local isMuted = not MumbleIsPlayerMuted(mutePly)
+		Player(mutePly).state.muted = isMuted
+		MumbleSetPlayerMuted(mutePly, isMuted)
+		TriggerEvent('pma-voice:playerMuted', mutePly, source, isMuted, duration)
+		-- since this is a toggle, if theres a mutedPlayers entry it can be assumed
+		-- that they're currently muted, so we'll clear the timeout and unmute
+		if mutedPlayers[mutePly] then
+			ClearTimeout(mutedPlayers[mutePly])
+			mutedPlayers[mutePly] = nil
+			MumbleSetPlayerMuted(mutePly, isMuted)
+			Player(mutePly).state.muted = isMuted
+			return
+		end
+		mutedPlayers[mutePly] = SetTimeout(duration * 1000, function()
+			MumbleSetPlayerMuted(mutePly, not isMuted)
+			Player(mutePly).state.muted = not isMuted
+			mutedPlayers[mutePly] = nil
+		end)
+	end
+end, true)
