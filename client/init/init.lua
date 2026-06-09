@@ -48,3 +48,9 @@ AddEventHandler('onClientResourceStart', function(resource)
 
 	print('Script initialization finished.')
 end)
+
+--- Add suggestions for muting players registered server side.
+TriggerEvent('chat:addSuggestion', '/muteply', 'Mute a player from being heard.', {
+	{ name = 'serverId', help = 'The server ID of the player to mute.' },
+	{ name = 'duration', help = 'The duration in seconds to mute the player for.' }
+})
