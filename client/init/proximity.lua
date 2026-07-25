@@ -75,15 +75,12 @@ function addChannelListener(serverId)
 		MumbleAddVoiceChannelListen(channel)
 		logger.verbose("Adding %s to listen table", serverId)
 	end
-	listeners[serverId] = channel ~= -1
+	listeners[serverId] = channel and channel ~= -1
 end
 
 function removeChannelListener(serverId)
 	if listeners[serverId] then
-		local channel = MumbleGetVoiceChannelFromServerId(serverId)
-		if channel ~= -1 then
-			MumbleRemoveVoiceChannelListen(channel)
-		end
+		MumbleRemoveVoiceChannelListen(listeners[serverId])
 		logger.verbose("Removing %s from listen table", serverId)
 	end
 	-- remove the listener if they exist
